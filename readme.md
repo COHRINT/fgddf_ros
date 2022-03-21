@@ -10,19 +10,19 @@ For the following steps, let XX be the IP address of the master computer and YY 
 - On master computer:
     ```
     export ROS_MASTER_URI=http://192.168.1.XX:11311
-    export ROS_IP = 192.168.1.XX
+    export ROS_IP=192.168.1.XX
     roscore
     ```
     Open a new tab and run the boss script:
     ```
     export ROS_MASTER_URI=http://192.168.1.XX:11311
-    export ROS_IP = 192.168.1.XX
+    export ROS_IP=192.168.1.XX
     rosrun fgddf_ros boss.py
     ```
 - On each robot:
     ```
     export ROS_MASTER_URI=http://192.168.1.XX:11311
-    export ROS_IP = 192.168.1.YY
+    export ROS_IP=192.168.1.YY
     rosrun fgddf_ros main.py
     ```
 
