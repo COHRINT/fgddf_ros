@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from fglib import graphs, nodes, inference, rv, utils
-import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import scipy.linalg
