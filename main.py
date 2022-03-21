@@ -1590,7 +1590,7 @@ variables["T1"]["G"] = np.array(
 variables["T1"]["uInd"] = [0, 1]
 
 rospack = rospkg.RosPack()
-p = rospack.get_path("fgDDF")
+p = rospack.get_path("fgddf_ros")
 matFile = sio.loadmat(path.join(p, "measurements_TRO_1T_2A_Dynamic_250.mat"))
 for i in range(nAgents):
     YData[i] = matFile["yTruth"][i, 0:1].item()
