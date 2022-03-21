@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>fgDDF</name>
+  <name>fgddf_ros</name>
   <version>0.0.0</version>
   <description>The fgDDF package</description>
 

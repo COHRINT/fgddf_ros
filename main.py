@@ -16,7 +16,7 @@ import rospy
 import rospkg
 import os.path as path
 from std_msgs.msg import String
-from fgDDF.msg import ChannelFilter
+from fgddf_ros.msg import ChannelFilter
 
 
 class FG_KF(object):

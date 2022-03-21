@@ -3,7 +3,7 @@
 import rospy
 from std_msgs.msg import String
 import numpy as np
-from fgDDF.msg import ChannelFilter
+from fgddf_ros.msg import ChannelFilter
 
 
 class Boss:
