@@ -1,0 +1,18 @@
+dist: xenial
+language: python
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "nightly"
+# install dependencies
+install:
+  - pip install pycodestyle coveralls
+  - pip install -r requirements.txt
+# run tests
+script:
+  - pycodestyle fglib
+  - nosetests --with-coverage --cover-package=fglib
+after_success:
+  - coveralls
