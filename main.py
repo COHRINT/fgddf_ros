@@ -9,8 +9,6 @@ from scipy.io import savemat
 import itertools
 from copy import deepcopy
 
-import time
-
 import rospy
 import rospkg
 import os.path as path
@@ -1613,13 +1611,14 @@ for i, ag in enumerate(agents):
             ag["agent"] = ag["filter"].filterPastState(
                 ag["agent"], getattr(ag["agent"], var + "_Past")
             )
-
     nM = len(ag["measData"])  # number of measurements
     for l in range(nM):
+        print(l)
         p = ag["measData"][l]["H"].shape[0]  # number of vector elements
         ag["currentMeas"][l] = np.array(
             [YData[i][l * p : (l + 1) * p, 1]]
         ).T  # 1st measurement
+        print(ag["currentMeas"][l])
 
     ag["agent"] = ag["filter"].add_Measurement(ag["agent"], ag["currentMeas"])
 
