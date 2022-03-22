@@ -13,6 +13,7 @@ import rospy
 import rospkg
 import os.path as path
 from std_msgs.msg import String
+from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from fgddf_ros.msg import ChannelFilter
 
 
@@ -1483,6 +1484,22 @@ def convertMsgToDict(msg):
     msgs[1] = data
     return msgs
 
+def meas_callback(msg,ag,meas_data):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    bias = np.array([2,3])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data = [m1,m2]
+    # print(meas_data)
+    return 
+
 
 np.set_printoptions(precision=3)
 
@@ -1589,6 +1606,27 @@ variables["T1"]["uInd"] = [0, 1]
 rospack = rospkg.RosPack()
 p = rospack.get_path("fgddf_ros")
 matFile = sio.loadmat(path.join(p, "measurements_TRO_1T_2A_Dynamic_250.mat"))
+
+class MeasData:
+    def __init__(self) -> None:
+        self.data = []
+
+rospy.init_node("talker", anonymous=True)
+meas_data = MeasData
+print("Enter agent number: ")
+ag_idx = int(input())
+ag = agents[ag_idx]
+
+meas_callback_lambda = lambda x: meas_callback(x,ag,meas_data)
+
+meas_topic = "tars/tars/vicon_pose"
+meas_sub = rospy.Subscriber("/tars/tars/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda)
+# meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback)
+sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
+boss_sub = rospy.Subscriber("boss", String, boss_callback)
+pub = rospy.Publisher("chatter", ChannelFilter, queue_size=10)
+data = ChannelFilter()
+
 for i in range(nAgents):
     YData[i] = matFile["yTruth"][i, 0:1].item()
     uData = matFile["u"]
@@ -1611,14 +1649,14 @@ for i, ag in enumerate(agents):
             ag["agent"] = ag["filter"].filterPastState(
                 ag["agent"], getattr(ag["agent"], var + "_Past")
             )
+
+    rospy.wait_for_message(meas_topic, PoseWithCovarianceStamped)
     nM = len(ag["measData"])  # number of measurements
     for l in range(nM):
         print(l)
         p = ag["measData"][l]["H"].shape[0]  # number of vector elements
-        ag["currentMeas"][l] = np.array(
-            [YData[i][l * p : (l + 1) * p, 1]]
-        ).T  # 1st measurement
-        print(ag["currentMeas"][l])
+        ag["currentMeas"][l] = meas_data.data[l].reshape((len(meas_data.data[l]),1))
+        
 
     ag["agent"] = ag["filter"].add_Measurement(ag["agent"], ag["currentMeas"])
 
@@ -1730,16 +1768,7 @@ for i, ag in enumerate(agents):
 del tmpGraph
 
 
-print("Enter agent number: ")
-ag_idx = int(input())
-ag = agents[ag_idx]
-
 k = 2
-rospy.init_node("talker", anonymous=True)
-sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
-boss_sub = rospy.Subscriber("boss", String, boss_callback)
-pub = rospy.Publisher("chatter", ChannelFilter, queue_size=10)
-data = ChannelFilter()
 rospy.sleep(1)
 while not rospy.is_shutdown() and (k < 200):
     # Prediction step
@@ -1779,9 +1808,8 @@ while not rospy.is_shutdown() and (k < 200):
     nM = len(ag["currentMeas"])  # number of measurements
     for l in range(nM):
         p = ag["measData"][l]["H"].shape[0]  # number of vector elements
-        ag["currentMeas"][l] = np.array(
-            [YData[i][l * p : (l + 1) * p, k]]
-        ).T  # measurement
+        ag["currentMeas"][l] = meas_data.data[l].reshape((len(meas_data.data[l]),1))
+
     ag["agent"] = ag["filter"].add_Measurement(ag["agent"], ag["currentMeas"])
 
     # Recive messages, time step k:
