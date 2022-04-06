@@ -1632,83 +1632,83 @@ for i in range(nAgents):
     uData = matFile["u"]
 
 # instanciate filters and agents:
-for i, ag in enumerate(agents):
+for i, a in enumerate(agents):
     print("Initializing agent:", i)
-    ag["filter"] = FG_KF(variables, varSet[i], ag["measData"], uData)
-    ag["agent"] = agent(
-        varSet[i], dynamicList, ag["filter"], "HS_CF", i, condVar[i], variables
+    a["filter"] = FG_KF(variables, varSet[i], a["measData"], uData)
+    a["agent"] = agent(
+        varSet[i], dynamicList, a["filter"], "HS_CF", i, condVar[i], variables
     )
-    ag["agent"].set_prior(prior)
+    a["agent"].set_prior(prior)
 
     # Add prediction nodes to the agent's graph
-    ag["agent"] = ag["filter"].add_Prediction(ag["agent"])
+    a["agent"] = a["filter"].add_Prediction(a["agent"])
 
     # Marginalize out time 0:
-    for var in ag["agent"].varSet:
-        if var in ag["agent"].dynamicList:
-            ag["agent"] = ag["filter"].filterPastState(
-                ag["agent"], getattr(ag["agent"], var + "_Past")
+    for var in a["agent"].varSet:
+        if var in a["agent"].dynamicList:
+            a["agent"] = a["filter"].filterPastState(
+                a["agent"], getattr(a["agent"], var + "_Past")
             )
 
     rospy.wait_for_message(meas_topic, PoseWithCovarianceStamped)
-    nM = len(ag["measData"])  # number of measurements
+    nM = len(a["measData"])  # number of measurements
     for l in range(nM):
         print(l)
-        p = ag["measData"][l]["H"].shape[0]  # number of vector elements
-        ag["currentMeas"][l] = meas_data.data[l].reshape((len(meas_data.data[l]),1))
+        p = a["measData"][l]["H"].shape[0]  # number of vector elements
+        a["currentMeas"][l] = meas_data.data[l].reshape((len(meas_data.data[l]),1))
         
 
-    ag["agent"] = ag["filter"].add_Measurement(ag["agent"], ag["currentMeas"])
+    a["agent"] = a["filter"].add_Measurement(a["agent"], a["currentMeas"])
 
 # set initial fusion defenitions:
-for i, ag in enumerate(agents):
-    for n in ag["neighbors"]:
-        ag["agent"].set_fusion(agents[n]["agent"], variables)
+for i, a in enumerate(agents):
+    for n in a["neighbors"]:
+        a["agent"].set_fusion(agents[n]["agent"], variables)
         # Add prediction nodes to the agent's CF graph
-        tmpCFgraph = ag["agent"].fusion.fusionLib[n]
+        tmpCFgraph = a["agent"].fusion.fusionLib[n]
         tmpCFgraph.filter.add_Prediction(tmpCFgraph)
 
         for var in tmpCFgraph.varSet:
-            if var in ag["agent"].dynamicList:
+            if var in a["agent"].dynamicList:
                 tmpCFgraph.filter.filterPastState(
-                    tmpCFgraph, getattr(ag["agent"], var + "_Past")
+                    tmpCFgraph, getattr(a["agent"], var + "_Past")
                 )
         del tmpCFgraph
 
 
 # Recive messages, time step 1:
-for i, ag in enumerate(agents):
+for i, a in enumerate(agents):
     print("agent", i)
-    for n in ag["neighbors"]:
+    for n in a["neighbors"]:
         # recieve message (a dictionary of factors):
         print("neighbor", n)
         msg = agents[n]["agent"].sendMsg(agents, n, i)
-        ag["agent"].fusion.fusionLib[n].inMsg = msg
+        a["agent"].fusion.fusionLib[n].inMsg = msg
 
 # Fuse incoming messages, time step 1:
-for ag in agents:
+for a in agents:
     # if len(agents[a]['neighbors'])>0:
-    ag["agent"].fuseMsg()
-    for key in ag["agent"].fusion.commonVars:
-        ag["agent"] = mergeFactors(ag["agent"], ag["agent"].fusion.commonVars[key])
+    a["agent"].fuseMsg()
+    for key in a["agent"].fusion.commonVars:
+        a["agent"] = mergeFactors(a["agent"], a["agent"].fusion.commonVars[key])
         # TODO check if mergeFactors works with dynamic variables
 
-for ag in agents:
-    ag["agent"].build_semiclique_tree()
+for a in agents:
+    a["agent"].build_semiclique_tree()
 
 
 tmpGraph = dict()
 # Inference
-for i, ag in enumerate(agents):
-    tmpGraph[i] = ag["agent"].add_factors_to_clique_fg()
+for i, a in enumerate(agents):
+    tmpGraph[i] = a["agent"].add_factors_to_clique_fg()
 
-    ag["results"][0] = dict()  # m is the MC run number
+    a["results"][0] = dict()  # m is the MC run number
 
     # Calculate full covariance for NEES test
-    jointInfMat = buildJointMatrix(ag["agent"])
+    jointInfMat = buildJointMatrix(a["agent"])
     # jointCovMat=jointInfMat.factor.cov
 
-    if ag["agent"].clique_fg.graph["cliqueFlag"] == 0:
+    if a["agent"].clique_fg.graph["cliqueFlag"] == 0:
         # for n in agents[a]['agent'].fg.get_vnodes():
         for n in tmpGraph[i].get_vnodes():
             varStr = str(n)
@@ -1719,11 +1719,11 @@ for i, ag in enumerate(agents):
 
             # belief = inference.sum_product(agents[a]['agent'].fg, n);
             belief = inference.sum_product(tmpGraph[i], n)
-            ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)
-            ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)
+            a["results"][0][(varStr + "_mu")] = np.array(belief.mean)
+            a["results"][0][(varStr + "_cov")] = np.array(belief.cov)
 
-        ag["results"][0]["FullCov"] = np.array(jointInfMat.factor.cov)
-        ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
+        a["results"][0]["FullCov"] = np.array(jointInfMat.factor.cov)
+        a["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
         # agents[a]['results'][m]['Lamda']=np.array(int(1))
     else:
         for n in tmpGraph[i].get_vnodes():
@@ -1744,10 +1744,10 @@ for i, ag in enumerate(agents):
                             varStr = v
                             break
 
-                    ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)[
+                    a["results"][0][(varStr + "_mu")] = np.array(belief.mean)[
                         currentDims[0] : currentDims[-1] + 1
                     ]
-                    ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)[
+                    a["results"][0][(varStr + "_cov")] = np.array(belief.cov)[
                         currentDims[0] : currentDims[-1] + 1,
                         currentDims[0] : currentDims[-1] + 1,
                     ]
@@ -1760,11 +1760,11 @@ for i, ag in enumerate(agents):
                     if varStr.find(v) != -1:
                         varStr = v
                         break
-                ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)
-                ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)
+                a["results"][0][(varStr + "_mu")] = np.array(belief.mean)
+                a["results"][0][(varStr + "_cov")] = np.array(belief.cov)
 
-        ag["results"][0]["FullCov"] = np.array(jointInfMat.factor.cov)
-        ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
+        a["results"][0]["FullCov"] = np.array(jointInfMat.factor.cov)
+        a["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
 del tmpGraph
 
 
@@ -1819,6 +1819,7 @@ while not rospy.is_shutdown() and (k < 200):
         msgs = ag["agent"].sendMsg(agents, ag["agent"].id, n)
         for msg in msgs.values():
             data.sender = ag["agent"].id
+            print(f'Sending from {data.sender}')
             data.recipient = n
             data.dims = msg["dims"]
             data.matrixDim = len(data.dims)
