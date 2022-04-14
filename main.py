@@ -1965,9 +1965,13 @@ while not rospy.is_shutdown() and (k < 200):
     agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
     agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
     agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
-    agent_results.BeliefMuDim = np.array(ag["results"][0][(varStr + "_mu")].shape)
-    agent_results.BeliefMu = ag["results"][0][(varStr + "_mu")].flatten()
-    agent_results.BeliefCovDim = np.array(ag["results"][0][(varStr + "_cov")].shape)
-    agent_results.BeliefCov = ag["results"][0][(varStr + "_cov")].flatten()
+    agent_results.T1MuDim = np.array(ag["results"][0]["T1_mu"].shape)
+    agent_results.T1Mu = ag["results"][0]["T1_mu"].flatten()
+    agent_results.S1MuDim = np.array(ag["results"][0]["S1_mu"].shape)
+    agent_results.S1Mu = ag["results"][0]["S1_mu"].flatten()
+    agent_results.T1CovDim = np.array(ag["results"][0]["T1_cov"].shape)
+    agent_results.T1Cov = ag["results"][0]["T1_cov"]
+    agent_results.S1CovDim = np.array(ag["results"][0]["S1_cov"].shape)
+    agent_results.S1Cov = ag["results"][0]["S1_cov"]
 
     pub_results.publish(agent_results)

@@ -4,7 +4,11 @@ float64[] FullMu
 int16[] FullMuDim
 float64[] FullCov
 int16[] FullCovDim
-float64[] BeliefMu
-int16[] BeliefMuDim
-float64[] BeliefCov
-int16[] BeliefCovDim
+float64[] T1Mu
+int16[] T1MuDim
+float64[] S1Mu
+int16[] S1MuDim
+float64[] T1Cov
+int16[] T1CovDim
+float64[] S1Cov
+int16[] S1CovDim
