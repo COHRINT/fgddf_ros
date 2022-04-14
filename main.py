@@ -15,6 +15,7 @@ import os.path as path
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from fgddf_ros.msg import ChannelFilter
+from fgddf_ros.msg import Results
 
 
 class FG_KF(object):
@@ -1767,10 +1768,51 @@ for i, a in enumerate(agents):
         a["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
 del tmpGraph
 
+pub_results = rospy.Publisher("results", Results, queue_size=10)
+
+print('Publishing now...')
+agent_results = Results()
+agent_results.robotNumber = ag_idx
+print(agent_results.robotNumber)
+agent_results.TimeStep = 1
+print(agent_results.TimeStep)
+print('----')
+agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
+agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
+print(agent_results.FullMu)
+print('----')
+agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
+agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
+print(agent_results.FullCov)
+print('----')
+agent_results.BeliefMuDim = np.array(ag["results"][0][(varStr + "_mu")].shape)
+agent_results.BeliefMu = ag["results"][0][(varStr + "_mu")].flatten()
+print(agent_results.BeliefMu)
+print('----')
+agent_results.BeliefCovDim = np.array(ag["results"][0][(varStr + "_cov")].shape)
+agent_results.BeliefCov = ag["results"][0][(varStr + "_cov")].flatten()
+print(agent_results.BeliefCov)
+print('----')
+
+# pub_results.publish(agent_results)
 
 k = 2
 rospy.sleep(1)
 while not rospy.is_shutdown() and (k < 200):
+    agent_results = Results()
+    agent_results.robotNumber = ag_idx
+    agent_results.TimeStep = k-1
+    agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
+    agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
+    agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
+    agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
+    agent_results.BeliefMuDim = np.array(ag["results"][0][(varStr + "_mu")].shape)
+    agent_results.BeliefMu = ag["results"][0][(varStr + "_mu")].flatten()
+    agent_results.BeliefCovDim = np.array(ag["results"][0][(varStr + "_cov")].shape)
+    agent_results.BeliefCov = ag["results"][0][(varStr + "_cov")].flatten()
+
+    pub_results.publish(agent_results)
+
     # Prediction step
     ag["agent"] = ag["filter"].add_Prediction(ag["agent"])
 
@@ -1929,3 +1971,17 @@ while not rospy.is_shutdown() and (k < 200):
         )
     del tmpGraph
     k += 1
+
+    # agent_results = Results()
+    # agent_results.robotNumber = ag_idx
+    # agent_results.TimeStep = k-1
+    # agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
+    # agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
+    # agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
+    # agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
+    # agent_results.BeliefMuDim = np.array(ag["results"][0][(varStr + "_mu")].shape)
+    # agent_results.BeliefMu = ag["results"][0][(varStr + "_mu")].flatten()
+    # agent_results.BeliefCovDim = np.array(ag["results"][0][(varStr + "_cov")].shape)
+    # agent_results.BeliefCov = ag["results"][0][(varStr + "_cov")].flatten()
+
+    # pub_results.publish(agent_results)

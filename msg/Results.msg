@@ -1,0 +1,10 @@
+int16 robotNumber
+int16 TimeStep
+float64[] FullMu
+int16[] FullMuDim
+float64[] FullCov
+int16[] FullCovDim
+float64[] BeliefMu
+int16[] BeliefMuDim
+float64[] BeliefCov
+int16[] BeliefCovDim
