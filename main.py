@@ -1620,8 +1620,8 @@ ag = agents[ag_idx]
 
 meas_callback_lambda = lambda x: meas_callback(x,ag,meas_data)
 
-meas_topic = "tars/tars/vicon_pose"
-meas_sub = rospy.Subscriber("/tars/tars/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda)
+meas_topic = "/tars/vicon_pose"
+meas_sub = rospy.Subscriber("/tars/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda)
 # meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback)
 sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
@@ -1770,32 +1770,6 @@ del tmpGraph
 
 pub_results = rospy.Publisher("results", Results, queue_size=10)
 
-# print('Publishing now...')
-# agent_results = Results()
-# agent_results.robotNumber = ag_idx
-# print(agent_results.robotNumber)
-# agent_results.TimeStep = 1
-# print(agent_results.TimeStep)
-# print('----')
-# agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
-# agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
-# print(agent_results.FullMu)
-# print('----')
-# agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
-# agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
-# print(agent_results.FullCov)
-# print('----')
-# agent_results.BeliefMuDim = np.array(ag["results"][0][(varStr + "_mu")].shape)
-# agent_results.BeliefMu = ag["results"][0][(varStr + "_mu")].flatten()
-# print(agent_results.BeliefMu)
-# print('----')
-# agent_results.BeliefCovDim = np.array(ag["results"][0][(varStr + "_cov")].shape)
-# agent_results.BeliefCov = ag["results"][0][(varStr + "_cov")].flatten()
-# print(agent_results.BeliefCov)
-# print('----')
-
-# pub_results.publish(agent_results)
-
 k = 2
 rospy.sleep(1)
 while not rospy.is_shutdown() and (k < 200):
@@ -1875,11 +1849,7 @@ while not rospy.is_shutdown() and (k < 200):
                     break
 
             belief = inference.sum_product(tmpGraph[ag["agent"].id], n)
-            ag["results"][0][(varStr + "_mu")] = np.append(
-                ag["results"][0][(varStr + "_mu")],
-                np.array(belief.mean),
-                axis=1,
-            )
+            ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)
             ag["results"][0][(varStr + "_cov")] = np.append(
                 ag["results"][0][(varStr + "_cov")],
                 np.array(belief.cov),
@@ -1891,11 +1861,7 @@ while not rospy.is_shutdown() and (k < 200):
             np.array(jointInfMat.factor.cov),
             axis=1,
         )
-        ag["results"][0]["FullMu"] = np.append(
-            ag["results"][0]["FullMu"],
-            np.array(jointInfMat.factor.mean),
-            axis=1,
-        )
+        ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
 
     else:
         for n in tmpGraph[ag["agent"].id].get_vnodes():
@@ -1914,11 +1880,7 @@ while not rospy.is_shutdown() and (k < 200):
                         if varStr.find(v) != -1:
                             varStr = v
                             break
-                    ag["results"][0][(varStr + "_mu")] = np.append(
-                        ag["results"][0][(varStr + "_mu")],
-                        np.array(belief.mean)[currentDims[0] : currentDims[-1] + 1],
-                        axis=1,
-                    )
+                    ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)[currentDims[0] : currentDims[-1] + 1]
                     ag["results"][0][(varStr + "_cov")] = np.append(
                         ag["results"][0][(varStr + "_cov")],
                         np.array(belief.cov)[
@@ -1934,11 +1896,7 @@ while not rospy.is_shutdown() and (k < 200):
                     if varStr.find(v) != -1:
                         varStr = v
                         break
-                ag["results"][0][(varStr + "_mu")] = np.append(
-                    ag["results"][0][(varStr + "_mu")],
-                    np.array(belief.mean),
-                    axis=1,
-                )
+                ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)
                 ag["results"][0][(varStr + "_cov")] = np.append(
                     ag["results"][0][(varStr + "_cov")],
                     np.array(belief.cov),
@@ -1950,11 +1908,7 @@ while not rospy.is_shutdown() and (k < 200):
             np.array(jointInfMat.factor.cov),
             axis=1,
         )
-        ag["results"][0]["FullMu"] = np.append(
-            ag["results"][0]["FullMu"],
-            np.array(jointInfMat.factor.mean),
-            axis=1,
-        )
+        ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
     del tmpGraph
     k += 1
 
@@ -1970,8 +1924,8 @@ while not rospy.is_shutdown() and (k < 200):
     agent_results.S1MuDim = np.array(ag["results"][0]["S1_mu"].shape)
     agent_results.S1Mu = ag["results"][0]["S1_mu"].flatten()
     agent_results.T1CovDim = np.array(ag["results"][0]["T1_cov"].shape)
-    agent_results.T1Cov = ag["results"][0]["T1_cov"]
+    agent_results.T1Cov = ag["results"][0]["T1_cov"].flatten()
     agent_results.S1CovDim = np.array(ag["results"][0]["S1_cov"].shape)
-    agent_results.S1Cov = ag["results"][0]["S1_cov"]
+    agent_results.S1Cov = ag["results"][0]["S1_cov"].flatten()
 
     pub_results.publish(agent_results)
