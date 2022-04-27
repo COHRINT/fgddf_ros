@@ -1504,30 +1504,32 @@ def meas_callback(msg,ag,meas_data):
 
 np.set_printoptions(precision=3)
 
+#### BEGINNING OF INPUT FILE
+
 DEBUG = 0
 dt = 0.1
 saveFlag = 1
 conservativeFlag = 0  # use conservative marginalization
 YData = dict()
 # uData = dict()
-nAgents = 2  # number of agents
+nAgents = 3  # number of agents
 
 
 prior = dict()
 variables = dict()
 agents = []
-varSet = [set({"T1", "S1"}), set({"T1", "S2"})]
-condVar = [{"S1"}, {"S2"}]
+varSet = [set({"T1", "S1"}), set({"T1", "S2"}), set({"T1", "S2"})] # Is this third set wrong?
+condVar = [{"S1"}, {"S2"}, {"S3"}]
 commonVars = dict()
-localVars = {"S1", "S2"}
+localVars = {"S1", "S2", "S3"}
 
-S1 = S2 = {"n": 2}  # Bias dimensions
+S1 = S2 = S3 = {"n": 2}  # Bias dimensions
 T1 = {"n": 4}  # Target dimensions
 
 
 variables["T1"] = T1
 
-variables["S1"], variables["S2"] = S1, S2
+variables["S1"], variables["S2"], variables["S3"] = S1, S2, S3
 
 for var in variables:
     if var in localVars:
@@ -1549,31 +1551,50 @@ for _ in range(nAgents):
 
 # Define neighbors:
 agents[0]["neighbors"] = [1]
-agents[1]["neighbors"] = [0]
+agents[1]["neighbors"] = [0,2]
+agents[1]["neighbors"] = [1]
 
 H0 = np.array([[1, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 1]], dtype=np.float64)
 
 # agent 1:
-agents[0]["measData"][0]["H"] = H0
-agents[0]["measData"][0]["R"] = np.diag([1.0, 10.0])
-agents[0]["measData"][0]["invR"] = np.linalg.inv(agents[0]["measData"][0]["R"])
-agents[0]["measData"][0]["measuredVars"] = ["T1", "S1"]
+agents[0]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[0]['measData'][0]['R'] = np.diag([1.0, 10.0])
+agents[0]['measData'][0]['invR'] = np.linalg.inv(agents[0]['measData'][0]['R'])
+agents[0]['measData'][0]['measuredVars'] = ['T1','S1']   # has to be in the order of the variable vector
 
-agents[0]["measData"][1]["H"] = np.array([[1, 0], [0, 1]], dtype=np.float64)
-agents[0]["measData"][1]["R"] = np.diag([3.0, 3.0])
-agents[0]["measData"][1]["invR"] = np.linalg.inv(agents[0]["measData"][1]["R"])
-agents[0]["measData"][1]["measuredVars"] = ["S1"]
+
+agents[0]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
+agents[0]['measData'][1]['R'] = np.diag([3.0, 3.0])
+agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
+agents[0]['measData'][1]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
 
 # agent 2:
-agents[1]["measData"][0]["H"] = H0
-agents[1]["measData"][0]["R"] = np.diag([3.0, 3.0])
-agents[1]["measData"][0]["invR"] = np.linalg.inv(agents[1]["measData"][0]["R"])
-agents[1]["measData"][0]["measuredVars"] = ["T1", "S2"]
+agents[1]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[1]['measData'][0]['R'] = np.diag([3.0, 3.0])
+agents[1]['measData'][0]['invR'] = np.linalg.inv(agents[1]['measData'][0]['R'])
+agents[1]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the order of the variable vector
 
-agents[1]["measData"][1]["H"] = np.array([[1, 0], [0, 1]], dtype=np.float64)
-agents[1]["measData"][1]["R"] = np.diag([3.0, 3.0])
-agents[1]["measData"][1]["invR"] = np.linalg.inv(agents[1]["measData"][1]["R"])
-agents[1]["measData"][1]["measuredVars"] = ["S2"]
+# agent 2:
+agents[1]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
+agents[1]['measData'][1]['R'] = np.diag([3.0, 3.0])
+agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
+agents[1]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
+
+# agent 3:
+agents[2]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[2]['measData'][0]['R'] = np.diag([7.0, 2.0])
+agents[2]['measData'][0]['invR'] = np.linalg.inv(agents[2]['measData'][0]['R'])
+agents[2]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the order of the variable vector
+# agents[2]['currentMeas'][1] = np.array([YData[2][0:2,1]]).T
+
+# agent 2:
+agents[2]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
+agents[2]['measData'][1]['R'] = np.diag([5.0, 5.0])
+agents[2]['measData'][1]['invR'] = np.linalg.inv(agents[2]['measData'][1]['R'])
+agents[2]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
 
 # Create factor nodes for prior:
 x0 = np.array([[0], [0], [0], [0]])
@@ -1587,7 +1608,7 @@ prior["T1_0"] = {
     "infVec": np.dot(np.linalg.inv(X0), x0),
     "dim": X0.shape[0],
 }
-prior["S1"] = prior["S2"] = {
+prior["S1"] = prior["S2"] = prior["S3"] = {
     "infMat": np.linalg.inv(S0),
     "infVec": np.dot(np.linalg.inv(S0), s0),
     "dim": S0.shape[0],
@@ -1603,6 +1624,8 @@ variables["T1"]["G"] = np.array(
     [[0.5 * dt**2, 0], [dt, 0], [0, 0.5 * dt**2], [0, dt]], dtype=np.float64
 )
 variables["T1"]["uInd"] = [0, 1]
+
+#### END OF INPUT FILE
 
 rospack = rospkg.RosPack()
 p = rospack.get_path("fgddf_ros")
