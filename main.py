@@ -1620,8 +1620,8 @@ ag = agents[ag_idx]
 
 meas_callback_lambda = lambda x: meas_callback(x,ag,meas_data)
 
-meas_topic = "/tars/vicon_pose"
-meas_sub = rospy.Subscriber("/tars/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda)
+meas_topic = "/tars/tars/vicon_pose"
+meas_sub = rospy.Subscriber("/tars/tars/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda)
 # meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback)
 sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
@@ -1850,17 +1850,9 @@ while not rospy.is_shutdown() and (k < 200):
 
             belief = inference.sum_product(tmpGraph[ag["agent"].id], n)
             ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)
-            ag["results"][0][(varStr + "_cov")] = np.append(
-                ag["results"][0][(varStr + "_cov")],
-                np.array(belief.cov),
-                axis=1,
-            )
+            ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)
 
-        ag["results"][0]["FullCov"] = np.append(
-            ag["results"][0]["FullCov"],
-            np.array(jointInfMat.factor.cov),
-            axis=1,
-        )
+        ag["results"][0]["FullCov"] = np.array(jointInfMat.factor.cov)
         ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
 
     else:
@@ -1881,14 +1873,10 @@ while not rospy.is_shutdown() and (k < 200):
                             varStr = v
                             break
                     ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)[currentDims[0] : currentDims[-1] + 1]
-                    ag["results"][0][(varStr + "_cov")] = np.append(
-                        ag["results"][0][(varStr + "_cov")],
-                        np.array(belief.cov)[
+                    ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)[
                             currentDims[0] : currentDims[-1] + 1,
                             currentDims[0] : currentDims[-1] + 1,
-                        ],
-                        axis=1,
-                    )
+                        ]
                     varCount = varCount + len(currentDims)
             except:
                 varStr = str(n)
@@ -1897,17 +1885,9 @@ while not rospy.is_shutdown() and (k < 200):
                         varStr = v
                         break
                 ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)
-                ag["results"][0][(varStr + "_cov")] = np.append(
-                    ag["results"][0][(varStr + "_cov")],
-                    np.array(belief.cov),
-                    axis=1,
-                )
+                ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)
 
-        ag["results"][0]["FullCov"] = np.append(
-            ag["results"][0]["FullCov"],
-            np.array(jointInfMat.factor.cov),
-            axis=1,
-        )
+        ag["results"][0]["FullCov"] = np.array(jointInfMat.factor.cov)
         ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
     del tmpGraph
     k += 1
