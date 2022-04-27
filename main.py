@@ -1620,8 +1620,8 @@ ag = agents[ag_idx]
 
 meas_callback_lambda = lambda x: meas_callback(x,ag,meas_data)
 
-meas_topic = "/tars/tars/vicon_pose"
-meas_sub = rospy.Subscriber("/tars/tars/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda)
+meas_topic = "/cohrint_tycho_bot_1/vicon_pose"
+meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback_lambda)
 # meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback)
 sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
