@@ -1593,7 +1593,7 @@ agents[2]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the orde
 # agent 2:
 agents[2]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
 agents[2]['measData'][1]['R'] = np.diag([5.0, 5.0])
-agents[2]['measData'][1]['invR'] = np.linalg.inv(agents[2]['measData'][1]['R'])
+agents[2]['measData'][1]['invR'] = np.linalg.inv(agents[2]['measData'][2]['R'])
 agents[2]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
 
 # Create factor nodes for prior:
