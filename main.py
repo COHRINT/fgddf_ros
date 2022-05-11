@@ -1518,7 +1518,7 @@ nAgents = 3  # number of agents
 prior = dict()
 variables = dict()
 agents = []
-varSet = [set({"T1", "S1"}), set({"T1", "S2"}), set({"T1", "S2"})] # Is this third set wrong?
+varSet = [set({"T1", "S1"}), set({"T1", "S2"}), set({"T1", "S3"})] # Is this third set wrong?
 condVar = [{"S1"}, {"S2"}, {"S3"}]
 commonVars = dict()
 localVars = {"S1", "S2", "S3"}
@@ -1543,7 +1543,7 @@ variables["dynamicList"] = dynamicList
 # Define Linear observations:
 for _ in range(nAgents):
     ag = dict()
-    ag["measData"] = [dict() for _ in range(nAgents)]
+    ag["measData"] = [dict() for _ in range(2)]
     ag["currentMeas"] = dict()
     ag["neighbors"] = dict()
     ag["results"] = dict()
@@ -1552,7 +1552,7 @@ for _ in range(nAgents):
 # Define neighbors:
 agents[0]["neighbors"] = [1]
 agents[1]["neighbors"] = [0,2]
-agents[1]["neighbors"] = [1]
+agents[2]["neighbors"] = [1]
 
 H0 = np.array([[1, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 1]], dtype=np.float64)
 
@@ -1566,7 +1566,7 @@ agents[0]['measData'][0]['measuredVars'] = ['T1','S1']   # has to be in the orde
 
 agents[0]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
 agents[0]['measData'][1]['R'] = np.diag([3.0, 3.0])
-agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
+agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[0]['measData'][1]['R'])
 agents[0]['measData'][1]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
 
 # agent 2:
@@ -1574,12 +1574,12 @@ agents[1]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
 agents[1]['measData'][0]['R'] = np.diag([3.0, 3.0])
 agents[1]['measData'][0]['invR'] = np.linalg.inv(agents[1]['measData'][0]['R'])
-agents[1]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the order of the variable vector
+agents[1]['measData'][0]['measuredVars'] = ['T1','S2']   # has to be in the order of the variable vector
 
 # agent 2:
 agents[1]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
 agents[1]['measData'][1]['R'] = np.diag([3.0, 3.0])
-agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
+agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
 agents[1]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
 
 # agent 3:
@@ -1587,14 +1587,14 @@ agents[2]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
 agents[2]['measData'][0]['R'] = np.diag([7.0, 2.0])
 agents[2]['measData'][0]['invR'] = np.linalg.inv(agents[2]['measData'][0]['R'])
-agents[2]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the order of the variable vector
+agents[2]['measData'][0]['measuredVars'] = ['T1','S3']   # has to be in the order of the variable vector
 # agents[2]['currentMeas'][1] = np.array([YData[2][0:2,1]]).T
 
 # agent 2:
 agents[2]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
 agents[2]['measData'][1]['R'] = np.diag([5.0, 5.0])
-agents[2]['measData'][1]['invR'] = np.linalg.inv(agents[2]['measData'][2]['R'])
-agents[2]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
+agents[2]['measData'][1]['invR'] = np.linalg.inv(agents[2]['measData'][1]['R'])
+agents[2]['measData'][1]['measuredVars'] = ['S3']   # has to be in the order of the variable vector
 
 # Create factor nodes for prior:
 x0 = np.array([[0], [0], [0], [0]])
@@ -1652,7 +1652,7 @@ pub = rospy.Publisher("chatter", ChannelFilter, queue_size=10)
 data = ChannelFilter()
 
 for i in range(nAgents):
-    YData[i] = matFile["yTruth"][i, 0:1].item()
+    # YData[i] = matFile["yTruth"][i, 0:1].item()
     uData = matFile["u"]
 
 # instanciate filters and agents:
@@ -1924,11 +1924,11 @@ while not rospy.is_shutdown() and (k < 200):
     agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
     agent_results.T1MuDim = np.array(ag["results"][0]["T1_mu"].shape)
     agent_results.T1Mu = ag["results"][0]["T1_mu"].flatten()
-    agent_results.S1MuDim = np.array(ag["results"][0]["S1_mu"].shape)
-    agent_results.S1Mu = ag["results"][0]["S1_mu"].flatten()
+    agent_results.S1MuDim = np.array(ag["results"][0]["S2_mu"].shape)
+    agent_results.S1Mu = ag["results"][0]["S2_mu"].flatten()
     agent_results.T1CovDim = np.array(ag["results"][0]["T1_cov"].shape)
     agent_results.T1Cov = ag["results"][0]["T1_cov"].flatten()
-    agent_results.S1CovDim = np.array(ag["results"][0]["S1_cov"].shape)
-    agent_results.S1Cov = ag["results"][0]["S1_cov"].flatten()
+    agent_results.S1CovDim = np.array(ag["results"][0]["S2_cov"].shape)
+    agent_results.S1Cov = ag["results"][0]["S2_cov"].flatten()
 
     pub_results.publish(agent_results)
