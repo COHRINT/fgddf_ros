@@ -1,5 +1,6 @@
 int16 TimeStep
 string Agent
+float64[] Bias
 string Target
 float64[] FullMu
 int16[] FullMuDim

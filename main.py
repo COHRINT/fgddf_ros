@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from typing import Counter
 from fglib import graphs, nodes, inference, rv, utils
 import networkx as nx
 import numpy as np
@@ -1485,19 +1486,339 @@ def convertMsgToDict(msg):
     msgs[1] = data
     return msgs
 
-def meas_callback(msg,ag,meas_data):
+# def meas_callback(msg,ag,meas_data):
+
+#     x = msg.pose.pose.position.x
+#     y = msg.pose.pose.position.y
+#     mu = np.array([0,0])
+#     R0 = ag["measData"][0]["R"]
+#     R1 = ag["measData"][1]["R"]
+#     # bias = np.array([5,5])
+#     noise1 = np.random.multivariate_normal(mu, R0)
+#     noise2 = np.random.multivariate_normal(mu,R1)
+#     m1 = np.array([x,y]) + bias + noise1
+#     m2 = bias + noise2
+#     meas_data.data = [m1,m2]
+#     # print(meas_data)
+#     return 
+
+def meas_callback_1(msg,ag,meas_data,l):
 
     x = msg.pose.pose.position.x
     y = msg.pose.pose.position.y
     mu = np.array([0,0])
     R0 = ag["measData"][0]["R"]
     R1 = ag["measData"][1]["R"]
-    bias = np.array([5,5])
+    # bias = np.array([5,5])
     noise1 = np.random.multivariate_normal(mu, R0)
     noise2 = np.random.multivariate_normal(mu,R1)
     m1 = np.array([x,y]) + bias + noise1
     m2 = bias + noise2
-    meas_data.data = [m1,m2]
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_2(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_3(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_4(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_5(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_6(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_7(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_8(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_9(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_10(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_11(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_12(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_13(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_14(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_15(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_16(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_17(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_18(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_19(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
+    # print(meas_data)
+    return 
+
+def meas_callback_20(msg,ag,meas_data,l):
+
+    x = msg.pose.pose.position.x
+    y = msg.pose.pose.position.y
+    mu = np.array([0,0])
+    R0 = ag["measData"][0]["R"]
+    R1 = ag["measData"][1]["R"]
+    # bias = np.array([5,5])
+    noise1 = np.random.multivariate_normal(mu, R0)
+    noise2 = np.random.multivariate_normal(mu,R1)
+    m1 = np.array([x,y]) + bias + noise1
+    m2 = bias + noise2
+    meas_data.data[l] = [m1,m2]
     # print(meas_data)
     return 
 
@@ -1512,24 +1833,24 @@ saveFlag = 1
 conservativeFlag = 0  # use conservative marginalization
 YData = dict()
 # uData = dict()
-nAgents = 3  # number of agents
+nAgents = 2  # number of agents
 
 
 prior = dict()
 variables = dict()
 agents = []
-varSet = [set({"T1", "S1"}), set({"T1", "S2"}), set({"T1", "S3"})]
-condVar = [{"S1"}, {"S2"}, {"S3"}]
+varSet = [set({"T1", "S1"}), set({"T1", "S2"})]
+condVar = [{"S1"}, {"S2"}]
 commonVars = dict()
-localVars = {"S1", "S2", "S3"}
+localVars = {"S1", "S2"}
 
-S1 = S2 = S3 = {"n": 2}  # Bias dimensions
+S1 = S2 = {"n": 2}  # Bias dimensions
 T1 = {"n": 4}  # Target dimensions
 
 
 variables["T1"] = T1
 
-variables["S1"], variables["S2"], variables["S3"] = S1, S2, S3
+variables["S1"], variables["S2"] = S1, S2
 
 for var in variables:
     if var in localVars:
@@ -1543,7 +1864,7 @@ variables["dynamicList"] = dynamicList
 # Define Linear observations:
 for _ in range(nAgents):
     ag = dict()
-    ag["measData"] = [dict() for _ in range(2)]
+    ag["measData"] = [dict() for _ in range(nAgents)]
     ag["currentMeas"] = dict()
     ag["neighbors"] = dict()
     ag["results"] = dict()
@@ -1551,50 +1872,31 @@ for _ in range(nAgents):
 
 # Define neighbors:
 agents[0]["neighbors"] = [1]
-agents[1]["neighbors"] = [0,2]
-agents[2]["neighbors"] = [1]
+agents[1]["neighbors"] = [0]
 
 H0 = np.array([[1, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 1]], dtype=np.float64)
 
 # agent 1:
-agents[0]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
-agents[0]['measData'][0]['R'] = np.diag([1.0, 10.0])
-agents[0]['measData'][0]['invR'] = np.linalg.inv(agents[0]['measData'][0]['R'])
-agents[0]['measData'][0]['measuredVars'] = ['T1','S1']   # has to be in the order of the variable vector
+agents[0]["measData"][0]["H"] = H0
+agents[0]["measData"][0]["R"] = np.diag([1.0, 10.0])
+agents[0]["measData"][0]["invR"] = np.linalg.inv(agents[0]["measData"][0]["R"])
+agents[0]["measData"][0]["measuredVars"] = ["T1", "S1"]
 
-
-agents[0]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
-agents[0]['measData'][1]['R'] = np.diag([3.0, 3.0])
-agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[0]['measData'][1]['R'])
-agents[0]['measData'][1]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
+agents[0]["measData"][1]["H"] = np.array([[1, 0], [0, 1]], dtype=np.float64)
+agents[0]["measData"][1]["R"] = np.diag([3.0, 3.0])
+agents[0]["measData"][1]["invR"] = np.linalg.inv(agents[0]["measData"][1]["R"])
+agents[0]["measData"][1]["measuredVars"] = ["S1"]
 
 # agent 2:
-agents[1]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
-agents[1]['measData'][0]['R'] = np.diag([3.0, 3.0])
-agents[1]['measData'][0]['invR'] = np.linalg.inv(agents[1]['measData'][0]['R'])
-agents[1]['measData'][0]['measuredVars'] = ['T1','S2']   # has to be in the order of the variable vector
+agents[1]["measData"][0]["H"] = H0
+agents[1]["measData"][0]["R"] = np.diag([3.0, 3.0])
+agents[1]["measData"][0]["invR"] = np.linalg.inv(agents[1]["measData"][0]["R"])
+agents[1]["measData"][0]["measuredVars"] = ["T1", "S2"]
 
-# agent 2:
-agents[1]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
-agents[1]['measData'][1]['R'] = np.diag([3.0, 3.0])
-agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
-agents[1]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
-
-# agent 3:
-agents[2]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
-agents[2]['measData'][0]['R'] = np.diag([7.0, 2.0])
-agents[2]['measData'][0]['invR'] = np.linalg.inv(agents[2]['measData'][0]['R'])
-agents[2]['measData'][0]['measuredVars'] = ['T1','S3']   # has to be in the order of the variable vector
-# agents[2]['currentMeas'][1] = np.array([YData[2][0:2,1]]).T
-
-# agent 2:
-agents[2]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
-agents[2]['measData'][1]['R'] = np.diag([5.0, 5.0])
-agents[2]['measData'][1]['invR'] = np.linalg.inv(agents[2]['measData'][1]['R'])
-agents[2]['measData'][1]['measuredVars'] = ['S3']   # has to be in the order of the variable vector
+agents[1]["measData"][1]["H"] = np.array([[1, 0], [0, 1]], dtype=np.float64)
+agents[1]["measData"][1]["R"] = np.diag([3.0, 3.0])
+agents[1]["measData"][1]["invR"] = np.linalg.inv(agents[1]["measData"][1]["R"])
+agents[1]["measData"][1]["measuredVars"] = ["S2"]
 
 # Create factor nodes for prior:
 x0 = np.array([[0], [0], [0], [0]])
@@ -1608,7 +1910,7 @@ prior["T1_0"] = {
     "infVec": np.dot(np.linalg.inv(X0), x0),
     "dim": X0.shape[0],
 }
-prior["S1"] = prior["S2"] = prior["S3"] = {
+prior["S1"] = prior["S2"] = {
     "infMat": np.linalg.inv(S0),
     "infVec": np.dot(np.linalg.inv(S0), s0),
     "dim": S0.shape[0],
@@ -1624,6 +1926,31 @@ variables["T1"]["G"] = np.array(
     [[0.5 * dt**2, 0], [dt, 0], [0, 0.5 * dt**2], [0, dt]], dtype=np.float64
 )
 variables["T1"]["uInd"] = [0, 1]
+
+# Agent bias
+bias = np.array([5,5])
+
+# Target names
+target1 = "/cohrint_tycho_bot_1"
+target2 = "/cohrint_tycho_bot_2"
+target3 = "/cohrint_tycho_bot_3"
+target4 = "/cohrint_tycho_bot_4"
+target5 = "/cohrint_tycho_bot_5"
+target6 = None
+target7 = None
+target8 = None
+target9 = None
+target10 = None
+target11 = None
+target12 = None
+target13 = None
+target14 = None
+target15 = None
+target16 = None
+target17 = None
+target18 = None
+target19 = None
+target20 = None
 
 #### END OF INPUT FILE
 
@@ -1641,10 +1968,113 @@ print("Enter agent number: ")
 ag_idx = int(input())
 ag = agents[ag_idx]
 
-meas_callback_lambda = lambda x: meas_callback(x,ag,meas_data)
+# meas_callback_lambda = lambda x: meas_callback(x,ag,meas_data,l)
+meas_callback_lambda_1 = lambda x: meas_callback_1(x,ag,meas_data,target1_idx)
+meas_callback_lambda_2 = lambda x: meas_callback_2(x,ag,meas_data,target2_idx)
+meas_callback_lambda_3 = lambda x: meas_callback_3(x,ag,meas_data,target3_idx)
+meas_callback_lambda_4 = lambda x: meas_callback_4(x,ag,meas_data,target4_idx)
+meas_callback_lambda_5 = lambda x: meas_callback_5(x,ag,meas_data,target5_idx)
+meas_callback_lambda_6 = lambda x: meas_callback_6(x,ag,meas_data,target6_idx)
+meas_callback_lambda_7 = lambda x: meas_callback_7(x,ag,meas_data,target7_idx)
+meas_callback_lambda_8 = lambda x: meas_callback_8(x,ag,meas_data,target8_idx)
+meas_callback_lambda_9 = lambda x: meas_callback_9(x,ag,meas_data,target9_idx)
+meas_callback_lambda_10 = lambda x: meas_callback_10(x,ag,meas_data,target10_idx)
+meas_callback_lambda_11 = lambda x: meas_callback_11(x,ag,meas_data,target11_idx)
+meas_callback_lambda_12 = lambda x: meas_callback_12(x,ag,meas_data,target12_idx)
+meas_callback_lambda_13 = lambda x: meas_callback_13(x,ag,meas_data,target13_idx)
+meas_callback_lambda_14 = lambda x: meas_callback_14(x,ag,meas_data,target14_idx)
+meas_callback_lambda_15 = lambda x: meas_callback_15(x,ag,meas_data,target15_idx)
+meas_callback_lambda_16 = lambda x: meas_callback_16(x,ag,meas_data,target16_idx)
+meas_callback_lambda_17 = lambda x: meas_callback_17(x,ag,meas_data,target17_idx)
+meas_callback_lambda_18 = lambda x: meas_callback_18(x,ag,meas_data,target18_idx)
+meas_callback_lambda_19 = lambda x: meas_callback_19(x,ag,meas_data,target19_idx)
+meas_callback_lambda_20 = lambda x: meas_callback_20(x,ag,meas_data,target20_idx)
 
-meas_topic = "/cohrint_tycho_bot_1/vicon_pose"
-meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback_lambda)
+# meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback_lambda)
+
+target_counter = 0
+for var in ag["measData"][0]["measuredVars"]:
+    if var == "T1":
+        target1_idx = target_counter
+        meas_sub1 = rospy.Subscriber("/"+target1+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_1)
+        target_counter = target_counter + 1
+    if var == "T2":
+        target2_idx = target_counter
+        meas_sub2 = rospy.Subscriber("/"+target2+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_2)
+        target_counter = target_counter + 1
+    if var == "T3":
+        target3_idx = target_counter
+        meas_sub3 = rospy.Subscriber("/"+target3+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_3)
+        target_counter = target_counter + 1
+    if var == "T4":
+        target4_idx = target_counter
+        meas_sub4 = rospy.Subscriber("/"+target4+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_4)
+        target_counter = target_counter + 1
+    if var == "T5":
+        target5_idx = target_counter
+        meas_sub5 = rospy.Subscriber("/"+target5+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_5)
+        target_counter = target_counter + 1
+    if var == "T6":
+        target6_idx = target_counter
+        meas_sub6 = rospy.Subscriber("/"+target6+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_6)
+        target_counter = target_counter + 1
+    if var == "T7":
+        target7_idx = target_counter
+        meas_sub7 = rospy.Subscriber("/"+target7+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_7)
+        target_counter = target_counter + 1
+    if var == "T8":
+        target8_idx = target_counter
+        meas_sub8 = rospy.Subscriber("/"+target8+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_8)
+        target_counter = target_counter + 1
+    if var == "T9":
+        target9_idx = target_counter
+        meas_sub9 = rospy.Subscriber("/"+target9+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_9)
+        target_counter = target_counter + 1
+    if var == "T10":
+        target10_idx = target_counter
+        meas_sub10 = rospy.Subscriber("/"+target10+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_10)
+        target_counter = target_counter + 1
+    if var == "T11":
+        target11_idx = target_counter
+        meas_sub11 = rospy.Subscriber("/"+target11+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_11)
+        target_counter = target_counter + 1
+    if var == "T12":
+        target12_idx = target_counter
+        meas_sub12 = rospy.Subscriber("/"+target12+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_12)
+        target_counter = target_counter + 1
+    if var == "T13":
+        target13_idx = target_counter
+        meas_sub13 = rospy.Subscriber("/"+target13+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_13)
+        target_counter = target_counter + 1
+    if var == "T14":
+        target14_idx = target_counter
+        meas_sub14 = rospy.Subscriber("/"+target14+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_14)
+        target_counter = target_counter + 1
+    if var == "T15":
+        target15_idx = target_counter
+        meas_sub15 = rospy.Subscriber("/"+target15+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_15)
+        target_counter = target_counter + 1
+    if var == "T16":
+        target16_idx = target_counter
+        meas_sub16 = rospy.Subscriber("/"+target16+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_16)
+        target_counter = target_counter + 1
+    if var == "T17":
+        target17_idx = target_counter
+        meas_sub17 = rospy.Subscriber("/"+target17+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_17)
+        target_counter = target_counter + 1
+    if var == "T18":
+        target18_idx = target_counter
+        meas_sub18 = rospy.Subscriber("/"+target18+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_18)
+        target_counter = target_counter + 1
+    if var == "T19":
+        target19_idx = target_counter
+        meas_sub19 = rospy.Subscriber("/"+target19+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_19)
+        target_counter = target_counter + 1
+    if var == "T20":
+        target20_idx = target_counter
+        meas_sub20 = rospy.Subscriber("/"+target20+"/vicon_pose",PoseWithCovarianceStamped,meas_callback_lambda_20)
+        target_counter = target_counter + 1
+
 # meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback)
 sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
@@ -1921,6 +2351,7 @@ while not rospy.is_shutdown() and (k < 200):
             agent_results = Results()
             agent_results.TimeStep = k-1
             agent_results.Agent = ag_tag
+            agent_results.Bias = bias
             agent_results.Target = var
             agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
             agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
@@ -1936,21 +2367,3 @@ while not rospy.is_shutdown() and (k < 200):
             agent_results.SCov = ag["results"][0][ag_tag + "_cov"].flatten()
 
             pub_results.publish(agent_results)
-
-
-
-    # agent_results = Results()
-    # agent_results.robotNumber = ag_idx
-    # agent_results.TimeStep = k-1
-    # agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
-    # agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
-    # agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
-    # agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
-    # agent_results.T1MuDim = np.array(ag["results"][0]["T1_mu"].shape)
-    # agent_results.T1Mu = ag["results"][0]["T1_mu"].flatten()
-    # agent_results.S1MuDim = np.array(ag["results"][0]["S3_mu"].shape)
-    # agent_results.S1Mu = ag["results"][0]["S3_mu"].flatten()
-    # agent_results.T1CovDim = np.array(ag["results"][0]["T1_cov"].shape)
-    # agent_results.T1Cov = ag["results"][0]["T1_cov"].flatten()
-    # agent_results.S1CovDim = np.array(ag["results"][0]["S3_cov"].shape)
-    # agent_results.S1Cov = ag["results"][0]["S3_cov"].flatten()
