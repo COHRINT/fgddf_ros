@@ -1653,12 +1653,9 @@ nAgents = 4   # number of agents
 prior = dict()
 
 variables = dict()
-agents = dict()
-varSet = dict()
-condVar =  dict() # variables for conditional independence (will need to be automated later)
-varList = dict()
-commonVars = dict()
-localVars = dict()
+agents = []
+# varList = dict()
+# commonVars = dict()
 
 # define local agent variable sets in dictionaries:
 localVars = {"S1", "S2", "T1"}
@@ -1683,14 +1680,22 @@ dynamicList = {"T1", "T2"}
 variables["dynamicList"] = dynamicList
 
 # Define Linear observations:
-for a in range(1, nAgents+1):
-    agents[a] = dict()
-    agents[a]['measData'] = dict()
-    agents[a]['measData'][1] = dict()
-    agents[a]['measData'][2] = dict()
-    agents[a]['currentMeas'] = dict()
-    agents[a]['neighbors'] = dict()
-    agents[a]['results'] = dict()
+for _ in range(nAgents):
+    ag = dict()
+    ag["measData"] = [dict() for _ in range(nAgents)]
+    ag["currentMeas"] = dict()
+    ag["neighbors"] = dict()
+    ag["results"] = dict()
+    agents.append(ag)
+
+# for a in range(0, nAgents):
+#     agents[a] = dict()
+#     agents[a]['measData'] = dict()
+#     agents[a]['measData'][1] = dict()
+#     agents[a]['measData'][2] = dict()
+#     agents[a]['currentMeas'] = dict()
+#     agents[a]['neighbors'] = dict()
+#     agents[a]['results'] = dict()
 
 agents[1]['measData'][3]=dict()
 
@@ -1698,7 +1703,7 @@ agents[1]['measData'][3]=dict()
 agents[0]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
 agents[0]['measData'][0]['R'] = np.diag([1.0, 10.0])
-agents[0]['measData'][0]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
+agents[0]['measData'][0]['invR'] = np.linalg.inv(agents[0]['measData'][0]['R'])
 agents[0]['measData'][0]['measuredVars'] = ['T1','S1']   # has to be in the order of the variable vector
 agents[0]["measData"][0]["measType"] = "targetPos"
 
@@ -1706,14 +1711,14 @@ agents[0]["measData"][0]["measType"] = "targetPos"
 agents[0]['measData'][1]['H'] = np.array([[1, 0, 0, 0, 1, 0],
                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
 agents[0]['measData'][1]['R'] = np.diag([1.0, 10.0])
-agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
+agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[0]['measData'][1]['R'])
 agents[0]['measData'][1]['measuredVars'] = ['T2','S1']   # has to be in the order of the variable vector
 agents[0]["measData"][1]["measType"] = "targetPos"
 
 
 agents[0]['measData'][2]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
 agents[0]['measData'][2]['R'] = np.diag([3.0, 3.0])
-agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[1]['measData'][3]['R'])
+agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[0]['measData'][2]['R'])
 agents[0]['measData'][2]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
 agents[0]["measData"][2]["measType"] = "agentBias"
 
@@ -1721,14 +1726,14 @@ agents[0]["measData"][2]["measType"] = "agentBias"
 agents[1]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
 agents[1]['measData'][0]['R'] = np.diag([3.0, 3.0])
-agents[1]['measData'][0]['invR'] = np.linalg.inv(agents[2]['measData'][1]['R'])
+agents[1]['measData'][0]['invR'] = np.linalg.inv(agents[1]['measData'][0]['R'])
 agents[1]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the order of the variable vector
 agents[1]["measData"][0]["measType"] = "targetPos" 
 
 # agent 2:
 agents[1]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
 agents[1]['measData'][1]['R'] = np.diag([3.0, 3.0])
-agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[2]['measData'][2]['R'])
+agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
 agents[1]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
 agents[1]["measData"][1]["measType"] = "agentBias"
 
@@ -1765,7 +1770,7 @@ variables["T1"]["uInd"] = [0,1]
 variables["T2"]["uInd"] = [2,3]
 
 # Agent bias
-bias = np.array([5,5])
+bias = np.array([4,6])
 
 # Target names
 target1 = "cohrint_tycho_bot_1"
