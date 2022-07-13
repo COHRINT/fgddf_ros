@@ -1640,82 +1640,104 @@ np.set_printoptions(precision=3)
 
 #### BEGINNING OF INPUT FILE
 
+"""
+Dynamic target estimation example - 2 agent, 2 target
+The agent has East and north bias (s) and the target has East and North position states (x)
+This example uses a linear observation model
+"""
+
 DEBUG = 0
 dt = 0.1
-saveFlag = 1
-conservativeFlag = 0  # use conservative marginalization
-YData = dict()
-# uData = dict()
-nAgents = 2  # number of agents
-
+nAgents = 4   # number of agents
 
 prior = dict()
+
 variables = dict()
-agents = []
-varSet = [set({"T1", "S1"}), set({"T1", "S2"})]
-condVar = [{"S1"}, {"S2"}]
+agents = dict()
+varSet = dict()
+condVar =  dict() # variables for conditional independence (will need to be automated later)
+varList = dict()
 commonVars = dict()
-localVars = {"S1", "S2"}
+localVars = dict()
 
-S1 = S2 = {"n": 2}  # Bias dimensions
-T1 = {"n": 4}  # Target dimensions
+# define local agent variable sets in dictionaries:
+localVars = {"S1", "S2", "T1"}
+varSet = [set({"T1", "T2", "S1"}), set({"T2", "S2"})]
+condVar = [{"S1"},{"S2"}]
 
+S1 = {'n' : 2}
+S2 = {'n' : 2}  #{'n' : 2}
+T1 = {'n' : 4}
+T2 = {'n' : 4}
 
-variables["T1"] = T1
-
-variables["S1"], variables["S2"] = S1, S2
+variables["T1"], variables["T2"]= T1, T2
+variables["S1"], variables["S2"]  = S1, S2
 
 for var in variables:
     if var in localVars:
-        variables[var]["Type"] = "local"
+        variables[var]['Type'] = 'local'
     else:
-        variables[var]["Type"] = "common"
+        variables[var]['Type']= 'common'
 
-dynamicList = {"T1"}
+dynamicList = {"T1", "T2"}
 variables["dynamicList"] = dynamicList
 
 # Define Linear observations:
-for _ in range(nAgents):
-    ag = dict()
-    ag["measData"] = [dict() for _ in range(nAgents)]
-    ag["currentMeas"] = dict()
-    ag["neighbors"] = dict()
-    ag["results"] = dict()
-    agents.append(ag)
+for a in range(1, nAgents+1):
+    agents[a] = dict()
+    agents[a]['measData'] = dict()
+    agents[a]['measData'][1] = dict()
+    agents[a]['measData'][2] = dict()
+    agents[a]['currentMeas'] = dict()
+    agents[a]['neighbors'] = dict()
+    agents[a]['results'] = dict()
 
-# Define neighbors:
-agents[0]["neighbors"] = [1]
-agents[1]["neighbors"] = [0]
-
-H0 = np.array([[1, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 1]], dtype=np.float64)
+agents[1]['measData'][3]=dict()
 
 # agent 1:
-# measuring relative distance between T1 and S1
-agents[0]["measData"][0]["H"] = H0
-agents[0]["measData"][0]["R"] = np.diag([1.0, 10.0])
-agents[0]["measData"][0]["invR"] = np.linalg.inv(agents[0]["measData"][0]["R"])
-agents[0]["measData"][0]["measuredVars"] = ["T1", "S1"]
-agents[0]["measData"][0]["measType"] = "targetPos" # CHANGE TO FUNCTION CALL WHEN MODULARIZE CODE
+agents[0]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[0]['measData'][0]['R'] = np.diag([1.0, 10.0])
+agents[0]['measData'][0]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
+agents[0]['measData'][0]['measuredVars'] = ['T1','S1']   # has to be in the order of the variable vector
+agents[0]["measData"][0]["measType"] = "targetPos"
 
-# measures relative noise of S1
-agents[0]["measData"][1]["H"] = np.array([[1, 0], [0, 1]], dtype=np.float64)
-agents[0]["measData"][1]["R"] = np.diag([3.0, 3.0])
-agents[0]["measData"][1]["invR"] = np.linalg.inv(agents[0]["measData"][1]["R"])
-agents[0]["measData"][1]["measuredVars"] = ["S1"]
-agents[0]["measData"][1]["measType"] = "agentBias" # CHANGE TO FUNCTION CALL WHEN MODULARIZE CODE
+# agent 1:
+agents[0]['measData'][1]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[0]['measData'][1]['R'] = np.diag([1.0, 10.0])
+agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
+agents[0]['measData'][1]['measuredVars'] = ['T2','S1']   # has to be in the order of the variable vector
+agents[0]["measData"][1]["measType"] = "targetPos"
+
+
+agents[0]['measData'][2]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
+agents[0]['measData'][2]['R'] = np.diag([3.0, 3.0])
+agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[1]['measData'][3]['R'])
+agents[0]['measData'][2]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
+agents[0]["measData"][2]["measType"] = "agentBias"
 
 # agent 2:
-agents[1]["measData"][0]["H"] = H0
-agents[1]["measData"][0]["R"] = np.diag([3.0, 3.0])
-agents[1]["measData"][0]["invR"] = np.linalg.inv(agents[1]["measData"][0]["R"])
-agents[1]["measData"][0]["measuredVars"] = ["T1", "S2"]
-agents[1]["measData"][0]["measType"] = "targetPos" # CHANGE TO FUNCTION CALL WHEN MODULARIZE CODE
+agents[1]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[1]['measData'][0]['R'] = np.diag([3.0, 3.0])
+agents[1]['measData'][0]['invR'] = np.linalg.inv(agents[2]['measData'][1]['R'])
+agents[1]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the order of the variable vector
+agents[1]["measData"][0]["measType"] = "targetPos" 
 
-agents[1]["measData"][1]["H"] = np.array([[1, 0], [0, 1]], dtype=np.float64)
-agents[1]["measData"][1]["R"] = np.diag([3.0, 3.0])
-agents[1]["measData"][1]["invR"] = np.linalg.inv(agents[1]["measData"][1]["R"])
-agents[1]["measData"][1]["measuredVars"] = ["S2"]
-agents[1]["measData"][1]["measType"] = "agentBias" # CHANGE TO FUNCTION CALL WHEN MODULARIZE CODE
+# agent 2:
+agents[1]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
+agents[1]['measData'][1]['R'] = np.diag([3.0, 3.0])
+agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[2]['measData'][2]['R'])
+agents[1]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
+agents[1]["measData"][1]["measType"] = "agentBias"
+
+
+
+# Define neighbors:
+agents[1]['neighbors'] = [2]
+agents[2]['neighbors'] = [1]
+
 
 # Create factor nodes for prior:
 x0 = np.array([[0], [0], [0], [0]])
@@ -1724,34 +1746,30 @@ X0 = np.diag([100.0, 100.0, 100.0, 100.0])
 s0 = np.array([[5], [5]])
 S0 = np.diag([10.0, 10.0])
 
-prior["T1_0"] = {
-    "infMat": np.linalg.inv(X0),
-    "infVec": np.dot(np.linalg.inv(X0), x0),
-    "dim": X0.shape[0],
-}
-prior["S1"] = prior["S2"] = {
-    "infMat": np.linalg.inv(S0),
-    "infVec": np.dot(np.linalg.inv(S0), s0),
-    "dim": S0.shape[0],
-}
+prior['T1_0'] = prior['T2_0']   \
+    = {'infMat': np.linalg.inv(X0), 'infVec': np.dot(np.linalg.inv(X0), x0), 'dim': X0.shape[0]  }
+prior['S1'] = prior['S2']   \
+    = {'infMat': np.linalg.inv(S0), 'infVec': np.dot(np.linalg.inv(S0), s0), 'dim': S0.shape[0]  }
 
 
 # Dynamic definitions
 variables["T1"]["Q"] = np.diag([0.08, 0.08, 0.08, 0.08])
-variables["T1"]["F"] = np.array(
-    [[1, dt, 0, 0], [0, 1, 0, 0], [0, 0, 1, dt], [0, 0, 0, 1]], dtype=np.float64
-)
-variables["T1"]["G"] = np.array(
-    [[0.5 * dt**2, 0], [dt, 0], [0, 0.5 * dt**2], [0, dt]], dtype=np.float64
-)
-variables["T1"]["uInd"] = [0, 1]
+variables["T1"]["F"] = np.array([[ 1, dt, 0, 0], [ 0, 1,0 ,0 ], [ 0, 0, 1, dt], [ 0, 0, 0, 1]] ,  dtype=np.float64)
+variables["T1"]["G"] = np.array([[ 0.5*dt**2, 0], [dt,0 ], [ 0, 0.5*dt**2], [ 0, dt]] ,  dtype=np.float64)
+
+variables["T2"]["Q"] = np.diag([0.08, 0.08, 0.08, 0.08])
+variables["T2"]["F"] = np.array([[ 1, dt, 0, 0], [ 0, 1,0 ,0 ], [ 0, 0, 1, dt], [ 0, 0, 0, 1]] ,  dtype=np.float64)
+variables["T2"]["G"] = np.array([[ 0.5*dt**2, 0], [dt,0 ], [ 0, 0.5*dt**2], [ 0, dt]] ,  dtype=np.float64)
+
+variables["T1"]["uInd"] = [0,1]
+variables["T2"]["uInd"] = [2,3]
 
 # Agent bias
 bias = np.array([5,5])
 
 # Target names
 target1 = "cohrint_tycho_bot_1"
-target2 = None
+target2 = "cohrint_tycho_bot_2"
 target3 = None
 target4 = None
 target5 = None
