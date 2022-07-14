@@ -35,10 +35,13 @@ class FG_KF(object):
         self.measurementData = measurementData
         self.var = dict()
 
+        # print(varSet)
+
         for var in varSet:
             if var in variables["dynamicList"]:  # dynamic variable
 
                 variables[var]["Qinv"] = np.linalg.inv(variables[var]["Q"])
+                # print(variables[var]["uInd"])
                 variables[var]["u"] = uData[variables[var]["uInd"], :]
                 setattr(self, var, variables[var])
             else:
@@ -1648,7 +1651,8 @@ This example uses a linear observation model
 
 DEBUG = 0
 dt = 0.1
-nAgents = 4   # number of agents
+nAgents = 2   # number of agents
+conservativeFlag = 0
 
 prior = dict()
 
@@ -1682,22 +1686,15 @@ variables["dynamicList"] = dynamicList
 # Define Linear observations:
 for _ in range(nAgents):
     ag = dict()
-    ag["measData"] = [dict() for _ in range(nAgents)]
+    ag["measData"] = dict()
+    for ii in range(2):
+        ag["measData"][ii] = dict()
     ag["currentMeas"] = dict()
     ag["neighbors"] = dict()
     ag["results"] = dict()
     agents.append(ag)
 
-# for a in range(0, nAgents):
-#     agents[a] = dict()
-#     agents[a]['measData'] = dict()
-#     agents[a]['measData'][1] = dict()
-#     agents[a]['measData'][2] = dict()
-#     agents[a]['currentMeas'] = dict()
-#     agents[a]['neighbors'] = dict()
-#     agents[a]['results'] = dict()
-
-agents[1]['measData'][3]=dict()
+agents[0]['measData'][2]=dict()
 
 # agent 1:
 agents[0]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
@@ -1740,8 +1737,8 @@ agents[1]["measData"][1]["measType"] = "agentBias"
 
 
 # Define neighbors:
-agents[1]['neighbors'] = [2]
-agents[2]['neighbors'] = [1]
+agents[0]['neighbors'] = [1]
+agents[1]['neighbors'] = [0]
 
 
 # Create factor nodes for prior:
@@ -1766,8 +1763,9 @@ variables["T2"]["Q"] = np.diag([0.08, 0.08, 0.08, 0.08])
 variables["T2"]["F"] = np.array([[ 1, dt, 0, 0], [ 0, 1,0 ,0 ], [ 0, 0, 1, dt], [ 0, 0, 0, 1]] ,  dtype=np.float64)
 variables["T2"]["G"] = np.array([[ 0.5*dt**2, 0], [dt,0 ], [ 0, 0.5*dt**2], [ 0, dt]] ,  dtype=np.float64)
 
+# Set [0,1] for all the targets
 variables["T1"]["uInd"] = [0,1]
-variables["T2"]["uInd"] = [2,3]
+variables["T2"]["uInd"] = [0,1] 
 
 # Agent bias
 bias = np.array([4,6])
@@ -1946,6 +1944,7 @@ for i, a in enumerate(agents):
     nM = len(a["measData"])  # number of measurements
     for l in range(nM):
         # p = a["measData"][l]["H"].shape[0]  # number of vector elements
+        # print(a)
         if (a["measData"][l]["measType"] == "targetPos"):
             a["currentMeas"][l] = get_target_pos(a["measData"][l])
         elif (a["measData"][l]["measType"] == "agentBias"):
@@ -2102,13 +2101,12 @@ while not rospy.is_shutdown() and (k < 200):
                 )
 
     # Measurement update step:
-    nM = len(a["measData"])  # number of measurements
+    nM = len(ag["measData"])  # number of measurements
     for l in range(nM):
-        # p = a["measData"][l]["H"].shape[0]  # number of vector elements
-        if (a["measData"][l]["measType"] == "targetPos"):
-            a["currentMeas"][l] = get_target_pos(a["measData"][l])
-        elif (a["measData"][l]["measType"] == "agentBias"):
-            a["currentMeas"][l] = get_agent_bias(a["measData"][l])
+        if (ag["measData"][l]["measType"] == "targetPos"):
+            ag["currentMeas"][l] = get_target_pos(ag["measData"][l])
+        elif (ag["measData"][l]["measType"] == "agentBias"):
+            ag["currentMeas"][l] = get_agent_bias(ag["measData"][l])
 
     ag["agent"] = ag["filter"].add_Measurement(ag["agent"], ag["currentMeas"])
 
