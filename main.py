@@ -1652,7 +1652,7 @@ This example uses a linear observation model
 DEBUG = 0
 dt = 0.1
 nAgents = 2   # number of agents
-conservativeFlag = 0
+conservativeFlag = 1
 
 prior = dict()
 
@@ -1768,7 +1768,7 @@ variables["T1"]["uInd"] = [0,1]
 variables["T2"]["uInd"] = [0,1] 
 
 # Agent bias
-bias = np.array([4,6])
+bias = np.array([3,4])
 
 # Target names
 target1 = "cohrint_tycho_bot_1"
@@ -2196,6 +2196,7 @@ while not rospy.is_shutdown() and (k < 200):
             agent_results.Agent = ag_tag
             agent_results.Bias = bias
             agent_results.Target = var
+            agent_results.LambdaMin = ag["agent"].lamdaMin
             agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
             agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
             agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
