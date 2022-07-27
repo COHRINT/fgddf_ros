@@ -9,7 +9,7 @@ import networkx as nx
 import scipy.linalg
 # import scipy.io as sio
 # from copy import deepcopy
-from factor_utils import *
+from fgDDF.factor_utils import *
 # from operator import itemgetter
 
 class FG_KF(object):

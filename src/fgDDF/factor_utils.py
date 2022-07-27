@@ -188,17 +188,19 @@ def buildJointMatrix(agent):
 
     fList = list(agent.fg.get_fnodes())
 
-    infMat = deepcopy(fList[0])
+    # infMat = deepcopy(fList[0])
 
-    infMat.factor._W = infMat.factor._W * 0
-    infMat.factor._Wm = infMat.factor._Wm * 0
+    # infMat.factor._W = infMat.factor._W * 0
+    # infMat.factor._Wm = infMat.factor._Wm * 0
 
-    infMat.factor._dim = fList[0].factor._dim
+    # infMat.factor._dim = fList[0].factor._dim
 
+    infMat = nodes.FNode("infMat",rv.Gaussian.inf_form(fList[0].factor._W*0, fList[0].factor._Wm*0, *fList[0].factor._dim))
     for f in fList:
-        tmp_f = deepcopy(f)
+        # tmp_f = deepcopy(f)
+        tmp_f = nodes.FNode("infMat",rv.Gaussian.inf_form(f.factor._W, f.factor._Wm, *f.factor._dim))
 
-        tmp_f.factor._dim = f.factor._dim
+        # tmp_f.factor._dim = f.factor._dim
         infMat.factor = infMat.factor.__mul__(tmp_f.factor)
 
         del tmp_f

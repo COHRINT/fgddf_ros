@@ -7,7 +7,7 @@ agent is the base class for all agents in the network
 # import networkx as nx
 # import matplotlib.pyplot as plt
 # import numpy as np
-from factor_utils import *
+from fgDDF.factor_utils import *
 
 class fusionAlgo(object):
     """docstring for fusion class.

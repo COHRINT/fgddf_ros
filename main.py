@@ -12,6 +12,12 @@ from copy import deepcopy
 
 import fgDDF
 
+from fgDDF.agent import *
+from fgDDF.factor_utils import *
+from fgDDF.FG_KF import *
+from fgDDF.fusionAlgo import *
+from fgDDF.inputFile_2T_2A import *
+
 import rospy
 import rospkg
 import os.path as path
@@ -20,25 +26,7 @@ from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from fgddf_ros.msg import ChannelFilter
 from fgddf_ros.msg import Results
 
-def callback(data, agent):
-    if data.recipient == agent["agent"].id:
-        agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
-
-
-def boss_callback(msg):
-    pass
-
-
-def convertMsgToDict(msg):
-    msgs = {}
-    data = {}
-    data["dims"] = msg.dims
-    n = msg.matrixDim
-    data["infMat"] = np.array(msg.infMat).reshape((n, n))
-    data["infVec"] = np.array(msg.infVec).reshape((n, 1))
-    msgs[1] = data
-    return msgs
-
+# Function definitions
 def get_target_pos(current_agent):
     for var in current_agent["measuredVars"]:
         if "T" in var:
@@ -57,6 +45,24 @@ def get_agent_bias(current_agent):
     measurement = bias + noise
     measurement = measurement.reshape((len(measurement),1))
     return measurement
+
+def convertMsgToDict(msg):
+    msgs = {}
+    data = {}
+    data["dims"] = msg.dims
+    n = msg.matrixDim
+    data["infMat"] = np.array(msg.infMat).reshape((n, n))
+    data["infVec"] = np.array(msg.infVec).reshape((n, 1))
+    msgs[1] = data
+    return msgs
+
+# ROS callback functions
+def callback(data, agent):
+    if data.recipient == agent["agent"].id:
+        agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
+
+def boss_callback(msg):
+    pass
 
 def target1_callback(msg):
     x = msg.pose.position.x
@@ -158,191 +164,7 @@ def target20_callback(msg):
     y = msg.pose.position.y
     target_pos[19] = np.array([x,y])
 
-# def meas_callback(msg,ag,meas_data):
-#     x = msg.pose.pose.position.x
-#     y = msg.pose.pose.position.y
-#     mu = np.array([0,0])
-#     R0 = ag["measData"][0]["R"]
-#     R1 = ag["measData"][1]["R"]
-#     # bias = np.array([5,5])
-#     noise1 = np.random.multivariate_normal(mu, R0)
-#     noise2 = np.random.multivariate_normal(mu,R1)
-#     m1 = np.array([x,y]) + bias + noise1
-#     m2 = bias + noise2
-#     meas_data.data = [m1,m2]
-#     # print(meas_data)
-#     return 
-
-# def meas_callback_1(msg,ag,meas_data,l):
-#     print(type(meas_data))
-#     x = msg.pose.position.x
-#     y = msg.pose.position.y
-#     mu = np.array([0,0])
-#     R0 = ag["measData"][0]["R"]
-#     R1 = ag["measData"][1]["R"]
-#     # bias = np.array([5,5])
-#     noise1 = np.random.multivariate_normal(mu, R0)
-#     noise2 = np.random.multivariate_normal(mu,R1)
-#     m1 = np.array([x,y]) + bias + noise1
-#     m2 = bias + noise2
-#     meas_data.data[l] = [m1,m2]
-#     # print(meas_data)
-#     return 
-
 np.set_printoptions(precision=3)
-
-#### BEGINNING OF INPUT FILE
-
-"""
-Dynamic target estimation example - 2 agent, 2 target
-The agent has East and north bias (s) and the target has East and North position states (x)
-This example uses a linear observation model
-"""
-
-DEBUG = 0
-dt = 0.1
-nAgents = 2   # number of agents
-conservativeFlag = 1
-
-prior = dict()
-
-variables = dict()
-agents = []
-# varList = dict()
-# commonVars = dict()
-
-# define local agent variable sets in dictionaries:
-localVars = {"S1", "S2", "T1"}
-varSet = [set({"T1", "T2", "S1"}), set({"T2", "S2"})]
-condVar = [{"S1"},{"S2"}]
-
-S1 = {'n' : 2}
-S2 = {'n' : 2}  #{'n' : 2}
-T1 = {'n' : 4}
-T2 = {'n' : 4}
-
-variables["T1"], variables["T2"]= T1, T2
-variables["S1"], variables["S2"]  = S1, S2
-
-for var in variables:
-    if var in localVars:
-        variables[var]['Type'] = 'local'
-    else:
-        variables[var]['Type']= 'common'
-
-dynamicList = {"T1", "T2"}
-variables["dynamicList"] = dynamicList
-
-# Define Linear observations:
-for _ in range(nAgents):
-    ag = dict()
-    ag["measData"] = dict()
-    for ii in range(2):
-        ag["measData"][ii] = dict()
-    ag["currentMeas"] = dict()
-    ag["neighbors"] = dict()
-    ag["results"] = dict()
-    agents.append(ag)
-
-agents[0]['measData'][2]=dict()
-
-# agent 1:
-agents[0]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
-agents[0]['measData'][0]['R'] = np.diag([1.0, 10.0])
-agents[0]['measData'][0]['invR'] = np.linalg.inv(agents[0]['measData'][0]['R'])
-agents[0]['measData'][0]['measuredVars'] = ['T1','S1']   # has to be in the order of the variable vector
-agents[0]["measData"][0]["measType"] = "targetPos"
-
-# agent 1:
-agents[0]['measData'][1]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
-agents[0]['measData'][1]['R'] = np.diag([1.0, 10.0])
-agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[0]['measData'][1]['R'])
-agents[0]['measData'][1]['measuredVars'] = ['T2','S1']   # has to be in the order of the variable vector
-agents[0]["measData"][1]["measType"] = "targetPos"
-
-
-agents[0]['measData'][2]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
-agents[0]['measData'][2]['R'] = np.diag([3.0, 3.0])
-agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[0]['measData'][2]['R'])
-agents[0]['measData'][2]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
-agents[0]["measData"][2]["measType"] = "agentBias"
-
-# agent 2:
-agents[1]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
-agents[1]['measData'][0]['R'] = np.diag([3.0, 3.0])
-agents[1]['measData'][0]['invR'] = np.linalg.inv(agents[1]['measData'][0]['R'])
-agents[1]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the order of the variable vector
-agents[1]["measData"][0]["measType"] = "targetPos" 
-
-# agent 2:
-agents[1]['measData'][1]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
-agents[1]['measData'][1]['R'] = np.diag([3.0, 3.0])
-agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
-agents[1]['measData'][1]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
-agents[1]["measData"][1]["measType"] = "agentBias"
-
-
-
-# Define neighbors:
-agents[0]['neighbors'] = [1]
-agents[1]['neighbors'] = [0]
-
-
-# Create factor nodes for prior:
-x0 = np.array([[0], [0], [0], [0]])
-X0 = np.diag([100.0, 100.0, 100.0, 100.0])
-
-s0 = np.array([[5], [5]])
-S0 = np.diag([10.0, 10.0])
-
-prior['T1_0'] = prior['T2_0']   \
-    = {'infMat': np.linalg.inv(X0), 'infVec': np.dot(np.linalg.inv(X0), x0), 'dim': X0.shape[0]  }
-prior['S1'] = prior['S2']   \
-    = {'infMat': np.linalg.inv(S0), 'infVec': np.dot(np.linalg.inv(S0), s0), 'dim': S0.shape[0]  }
-
-
-# Dynamic definitions
-variables["T1"]["Q"] = np.diag([0.08, 0.08, 0.08, 0.08])
-variables["T1"]["F"] = np.array([[ 1, dt, 0, 0], [ 0, 1,0 ,0 ], [ 0, 0, 1, dt], [ 0, 0, 0, 1]] ,  dtype=np.float64)
-variables["T1"]["G"] = np.array([[ 0.5*dt**2, 0], [dt,0 ], [ 0, 0.5*dt**2], [ 0, dt]] ,  dtype=np.float64)
-
-variables["T2"]["Q"] = np.diag([0.08, 0.08, 0.08, 0.08])
-variables["T2"]["F"] = np.array([[ 1, dt, 0, 0], [ 0, 1,0 ,0 ], [ 0, 0, 1, dt], [ 0, 0, 0, 1]] ,  dtype=np.float64)
-variables["T2"]["G"] = np.array([[ 0.5*dt**2, 0], [dt,0 ], [ 0, 0.5*dt**2], [ 0, dt]] ,  dtype=np.float64)
-
-# Set [0,1] for all the targets
-variables["T1"]["uInd"] = [0,1]
-variables["T2"]["uInd"] = [0,1] 
-
-# Agent bias
-bias = np.array([3,4])
-
-# Target names
-target1 = "cohrint_tycho_bot_1"
-target2 = "cohrint_tycho_bot_2"
-target3 = None
-target4 = None
-target5 = None
-target6 = None
-target7 = None
-target8 = None
-target9 = None
-target10 = None
-target11 = None
-target12 = None
-target13 = None
-target14 = None
-target15 = None
-target16 = None
-target17 = None
-target18 = None
-target19 = None
-target20 = None
-
-#### END OF INPUT FILE
 
 rospack = rospkg.RosPack()
 p = rospack.get_path("fgddf_ros")
@@ -354,7 +176,6 @@ class MeasData:
 
 rospy.init_node("talker", anonymous=True)
 meas_data = MeasData()
-# print(meas_data)
 print("Enter agent number: ")
 ag_idx = int(input())
 ag = agents[ag_idx]
@@ -404,25 +225,10 @@ if (target19 is not None):
 if (target20 is not None):
     target20_sub = rospy.Subscriber("vrpn_client_node/"+target20+"/pose",PoseStamped,target20_callback)
 
-# meas_callback_lambda = lambda x: meas_callback(x,ag,meas_data,l)
-# meas_callback_lambda_1 = lambda x: meas_callback_1(x,ag,meas_data,target1_idx)
-
-# meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback_lambda)
-
-# target_counter = 0
-# for var in ag["measData"][0]["measuredVars"]:
-#     if var == "T1":
-#         meas_data.data.append([None,None])
-#         target1_idx = target_counter
-#         meas_sub1 = rospy.Subscriber("vrpn_client_node/"+target1+"/pose",PoseStamped,meas_callback_lambda_1)
-#         target_counter = target_counter + 1
-
-# meas_sub = rospy.Subscriber(meas_topic,PoseWithCovarianceStamped,meas_callback)
 sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
 pub = rospy.Publisher("chatter", ChannelFilter, queue_size=10)
 data = ChannelFilter()
-# meas_topic = 'cohrint_tycho_bot_1/vicon_pose'
 
 for i in range(nAgents):
     # YData[i] = matFile["yTruth"][i, 0:1].item()
