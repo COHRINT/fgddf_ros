@@ -14,7 +14,7 @@ from fgddf_ros.msg import ChannelFilter
 from fgddf_ros.msg import Results
 
 # FGDDF libraries
-from fgDDF.inputFile_2T_2A import *
+from fgDDF.inputFile import *
 
 # Misc libraries
 import numpy as np

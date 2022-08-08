@@ -16,7 +16,7 @@ from fgDDF.agent import *
 from fgDDF.factor_utils import *
 from fgDDF.FG_KF import *
 from fgDDF.fusionAlgo import *
-from fgDDF.inputFile_2T_2A import *
+from fgDDF.inputFile import *
 
 import rospy
 import rospkg
@@ -64,105 +64,105 @@ def callback(data, agent):
 def boss_callback(msg):
     pass
 
-def target1_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[0] = np.array([x,y])
+# def target1_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[0] = np.array([x,y])
 
-def target2_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[1] = np.array([x,y])
+# def target2_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[1] = np.array([x,y])
 
-def target3_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[2] = np.array([x,y])
+# def target3_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[2] = np.array([x,y])
 
-def target4_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[3] = np.array([x,y])
+# def target4_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[3] = np.array([x,y])
 
-def target5_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[4] = np.array([x,y])
+# def target5_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[4] = np.array([x,y])
 
-def target6_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[5] = np.array([x,y])
+# def target6_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[5] = np.array([x,y])
 
-def target7_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[6] = np.array([x,y])
+# def target7_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[6] = np.array([x,y])
 
-def target8_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[7] = np.array([x,y])
+# def target8_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[7] = np.array([x,y])
 
-def target9_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[8] = np.array([x,y])
+# def target9_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[8] = np.array([x,y])
 
-def target10_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[9] = np.array([x,y])
+# def target10_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[9] = np.array([x,y])
 
-def target11_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[10] = np.array([x,y])
+# def target11_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[10] = np.array([x,y])
 
-def target12_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[11] = np.array([x,y])
+# def target12_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[11] = np.array([x,y])
 
-def target13_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[12] = np.array([x,y])
+# def target13_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[12] = np.array([x,y])
 
-def target14_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[13] = np.array([x,y])
+# def target14_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[13] = np.array([x,y])
 
-def target15_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[14] = np.array([x,y])
+# def target15_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[14] = np.array([x,y])
 
-def target16_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[15] = np.array([x,y])
+# def target16_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[15] = np.array([x,y])
 
-def target17_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[16] = np.array([x,y])
+# def target17_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[16] = np.array([x,y])
 
-def target18_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[17] = np.array([x,y])
+# def target18_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[17] = np.array([x,y])
 
-def target19_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[18] = np.array([x,y])
+# def target19_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[18] = np.array([x,y])
 
-def target20_callback(msg):
-    x = msg.pose.position.x
-    y = msg.pose.position.y
-    target_pos[19] = np.array([x,y])
+# def target20_callback(msg):
+#     x = msg.pose.position.x
+#     y = msg.pose.position.y
+#     target_pos[19] = np.array([x,y])
 
 np.set_printoptions(precision=3)
 
@@ -180,50 +180,50 @@ print("Enter agent number: ")
 ag_idx = int(input())
 ag = agents[ag_idx]
 
-# Create array to save target positions
-target_pos = np.empty([20,2])
+# # Create array to save target positions
+# target_pos = np.empty([20,2])
 
-# Create subscribers to save target positions
-if (target1 is not None):
-    target1_sub = rospy.Subscriber("vrpn_client_node/"+target1+"/pose",PoseStamped,target1_callback)
-if (target2 is not None):
-    target2_sub = rospy.Subscriber("vrpn_client_node/"+target2+"/pose",PoseStamped,target2_callback)
-if (target3 is not None):
-    target3_sub = rospy.Subscriber("vrpn_client_node/"+target3+"/pose",PoseStamped,target3_callback)
-if (target4 is not None):
-    target4_sub = rospy.Subscriber("vrpn_client_node/"+target4+"/pose",PoseStamped,target4_callback)
-if (target5 is not None):
-    target1_sub = rospy.Subscriber("vrpn_client_node/"+target5+"/pose",PoseStamped,target5_callback)
-if (target6 is not None):
-    target6_sub = rospy.Subscriber("vrpn_client_node/"+target6+"/pose",PoseStamped,target6_callback)
-if (target7 is not None):
-    target7_sub = rospy.Subscriber("vrpn_client_node/"+target7+"/pose",PoseStamped,target7_callback)
-if (target8 is not None):
-    target8_sub = rospy.Subscriber("vrpn_client_node/"+target8+"/pose",PoseStamped,target8_callback)
-if (target9 is not None):
-    target9_sub = rospy.Subscriber("vrpn_client_node/"+target9+"/pose",PoseStamped,target9_callback)
-if (target10 is not None):
-    target10_sub = rospy.Subscriber("vrpn_client_node/"+target10+"/pose",PoseStamped,target10_callback)
-if (target11 is not None):
-    target11_sub = rospy.Subscriber("vrpn_client_node/"+target11+"/pose",PoseStamped,target11_callback)
-if (target12 is not None):
-    target12_sub = rospy.Subscriber("vrpn_client_node/"+target12+"/pose",PoseStamped,target12_callback)
-if (target13 is not None):
-    target13_sub = rospy.Subscriber("vrpn_client_node/"+target13+"/pose",PoseStamped,target13_callback)
-if (target14 is not None):
-    target14_sub = rospy.Subscriber("vrpn_client_node/"+target14+"/pose",PoseStamped,target14_callback)
-if (target15 is not None):
-    target15_sub = rospy.Subscriber("vrpn_client_node/"+target15+"/pose",PoseStamped,target15_callback)
-if (target16 is not None):
-    target16_sub = rospy.Subscriber("vrpn_client_node/"+target16+"/pose",PoseStamped,target16_callback)
-if (target17 is not None):
-    target17_sub = rospy.Subscriber("vrpn_client_node/"+target17+"/pose",PoseStamped,target17_callback)
-if (target18 is not None):
-    target18_sub = rospy.Subscriber("vrpn_client_node/"+target18+"/pose",PoseStamped,target18_callback)
-if (target19 is not None):
-    target19_sub = rospy.Subscriber("vrpn_client_node/"+target19+"/pose",PoseStamped,target19_callback)
-if (target20 is not None):
-    target20_sub = rospy.Subscriber("vrpn_client_node/"+target20+"/pose",PoseStamped,target20_callback)
+# # Create subscribers to save target positions
+# if (target1 is not None):
+#     target1_sub = rospy.Subscriber("vrpn_client_node/"+target1+"/pose",PoseStamped,target1_callback)
+# if (target2 is not None):
+#     target2_sub = rospy.Subscriber("vrpn_client_node/"+target2+"/pose",PoseStamped,target2_callback)
+# if (target3 is not None):
+#     target3_sub = rospy.Subscriber("vrpn_client_node/"+target3+"/pose",PoseStamped,target3_callback)
+# if (target4 is not None):
+#     target4_sub = rospy.Subscriber("vrpn_client_node/"+target4+"/pose",PoseStamped,target4_callback)
+# if (target5 is not None):
+#     target1_sub = rospy.Subscriber("vrpn_client_node/"+target5+"/pose",PoseStamped,target5_callback)
+# if (target6 is not None):
+#     target6_sub = rospy.Subscriber("vrpn_client_node/"+target6+"/pose",PoseStamped,target6_callback)
+# if (target7 is not None):
+#     target7_sub = rospy.Subscriber("vrpn_client_node/"+target7+"/pose",PoseStamped,target7_callback)
+# if (target8 is not None):
+#     target8_sub = rospy.Subscriber("vrpn_client_node/"+target8+"/pose",PoseStamped,target8_callback)
+# if (target9 is not None):
+#     target9_sub = rospy.Subscriber("vrpn_client_node/"+target9+"/pose",PoseStamped,target9_callback)
+# if (target10 is not None):
+#     target10_sub = rospy.Subscriber("vrpn_client_node/"+target10+"/pose",PoseStamped,target10_callback)
+# if (target11 is not None):
+#     target11_sub = rospy.Subscriber("vrpn_client_node/"+target11+"/pose",PoseStamped,target11_callback)
+# if (target12 is not None):
+#     target12_sub = rospy.Subscriber("vrpn_client_node/"+target12+"/pose",PoseStamped,target12_callback)
+# if (target13 is not None):
+#     target13_sub = rospy.Subscriber("vrpn_client_node/"+target13+"/pose",PoseStamped,target13_callback)
+# if (target14 is not None):
+#     target14_sub = rospy.Subscriber("vrpn_client_node/"+target14+"/pose",PoseStamped,target14_callback)
+# if (target15 is not None):
+#     target15_sub = rospy.Subscriber("vrpn_client_node/"+target15+"/pose",PoseStamped,target15_callback)
+# if (target16 is not None):
+#     target16_sub = rospy.Subscriber("vrpn_client_node/"+target16+"/pose",PoseStamped,target16_callback)
+# if (target17 is not None):
+#     target17_sub = rospy.Subscriber("vrpn_client_node/"+target17+"/pose",PoseStamped,target17_callback)
+# if (target18 is not None):
+#     target18_sub = rospy.Subscriber("vrpn_client_node/"+target18+"/pose",PoseStamped,target18_callback)
+# if (target19 is not None):
+#     target19_sub = rospy.Subscriber("vrpn_client_node/"+target19+"/pose",PoseStamped,target19_callback)
+# if (target20 is not None):
+#     target20_sub = rospy.Subscriber("vrpn_client_node/"+target20+"/pose",PoseStamped,target20_callback)
 
 sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
