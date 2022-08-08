@@ -17,9 +17,16 @@ from fgddf_ros.msg import Results
 from fgDDF.inputFile_2T_2A import *
 
 # Misc libraries
+import numpy as np
 
 class ROSFxn:
-    def __init__(self):
+    def __init__(self,agent_name):
+        rospack = rospkg.RosPack()
+        p = rospack.get_path("fgddf_ros")
+
+        # Create subscriber to save agent position
+        self.agent_sub = rospy.Subscriber("vrpn_client_node/"+agent_name+"/pose",PoseStamped,self.agent_callback)
+
         # Create subscribers to save target positions
         if (target1 is not None):
             self.target1_sub = rospy.Subscriber("vrpn_client_node/"+target1+"/pose",PoseStamped,self.target1_callback)
@@ -67,115 +74,121 @@ class ROSFxn:
 
         # Run ROS functions
         self.run()
-
-
-    # Define ROS callback functions to store target position
-    def target1_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[0] = np.array([self.x,self.y])
-
-    def target2_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[1] = np.array([self.x,self.y])
-
-    def target3_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[2] = np.array([self.x,self.y])
-
-    def target4_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[3] = np.array([self.x,self.y])
-
-    def target5_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[4] = np.array([self.x,self.y])
-
-    def target6_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[5] = np.array([self.x,self.y])
-
-    def target7_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[6] = np.array([self.x,self.y])
-
-    def target8_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[7] = np.array([self.x,self.y])
-
-    def target9_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[8] = np.array([self.x,self.y])
-
-    def target10_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[9] = np.array([self.x,self.y])
-
-    def target11_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[10] = np.array([self.x,self.y])
-
-    def target12_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[11] = np.array([self.x,self.y])
-
-    def target13_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[12] = np.array([self.x,self.y])
-
-    def target14_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[13] = np.array([self.x,self.y])
-
-    def target15_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[14] = np.array([self.x,self.y])
-
-    def target16_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[15] = np.array([self.x,self.y])
-
-    def target17_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[16] = np.array([self.x,self.y])
-
-    def target18_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[17] = np.array([self.x,self.y])
-
-    def target19_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[18] = np.array([self.x,self.y])
-
-    def target20_callback(self,msg):
-        self.x = msg.pose.position.x
-        self.y = msg.pose.position.y
-        self.target_pos[19] = np.array([self.x,self.y])
-
+    
     # Run the ros functions
     def run(self):
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             rate.sleep()
 
+    # Define ROS callback function to store agent position
+    def agent_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.agent_pos = np.array([x,y])
+
+    # Define ROS callback functions to store target position
+    def target1_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[0] = np.array([x,y])
+
+    def target2_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[1] = np.array([x,y])
+
+    def target3_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[2] = np.array([x,y])
+
+    def target4_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[3] = np.array([x,y])
+
+    def target5_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[4] = np.array([x,y])
+
+    def target6_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[5] = np.array([x,y])
+
+    def target7_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[6] = np.array([x,y])
+
+    def target8_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[7] = np.array([x,y])
+
+    def target9_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[8] = np.array([x,y])
+
+    def target10_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[9] = np.array([x,y])
+
+    def target11_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[10] = np.array([x,y])
+
+    def target12_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[11] = np.array([x,y])
+
+    def target13_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[12] = np.array([x,y])
+
+    def target14_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[13] = np.array([x,y])
+
+    def target15_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[14] = np.array([x,y])
+
+    def target16_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[15] = np.array([x,y])
+
+    def target17_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[16] = np.array([x,y])
+
+    def target18_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[17] = np.array([x,y])
+
+    def target19_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[18] = np.array([x,y])
+
+    def target20_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.target_pos[19] = np.array([x,y])
+
+# NEEDS TO BE MOVVED TO MAIN.PY!!
 if __name__ == "__main__":
     rospy.init_node("ros_functions")
-    rf = ROSFxn()
+    rf = ROSFxn(agent_name)

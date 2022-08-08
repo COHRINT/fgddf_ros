@@ -164,6 +164,7 @@ include_directories(
 catkin_install_python(PROGRAMS
    main.py
    boss.py
+   src/fgDDF/rosFxn.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

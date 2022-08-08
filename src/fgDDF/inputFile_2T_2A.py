@@ -132,6 +132,9 @@ variables["T2"]["uInd"] = [0,1]
 # Agent bias
 bias = np.array([3,4])
 
+# Agent name
+agent_name = "INSERT_NAME_HERE"
+
 # Target names
 target1 = "cohrint_tycho_bot_1"
 target2 = "cohrint_tycho_bot_2"
