@@ -5,7 +5,7 @@ Functions:
 import itertools
 
 from fglib import nodes, rv
-# from fglib import graphs, nodes, inference, rv, utils
+from fglib import inference
 import numpy as np
 # import networkx as nx
 from copy import deepcopy
@@ -326,3 +326,95 @@ def dis_union(G, H, factorCounter):
 
 
     return factorCounter
+
+def inferState(agents, dynamicList, nAgents, m, firstRunFlag, saveFlag):
+    """
+    This function infers all variable marginals
+    """
+    tmpGraph = dict()
+
+    for a in range(nAgents):
+        if firstRunFlag:
+            agents[a]['results'][m] = dict()
+
+        tmpGraph[a] = agents[a]['agent'].add_factors_to_clique_fg()
+
+        if agents[a]['agent'].clique_fg.graph['cliqueFlag']==0:
+            # for n in agents[a]['agent'].fg.get_vnodes():
+            for n in tmpGraph[a].get_vnodes():
+                #print('agent', a)
+                varStr = str(n)
+                for v in list(dynamicList):
+                    if varStr.find(v) != -1:
+                        varStr = v
+                        break
+
+                # belief = inference.sum_product(agents[a]['agent'].fg, n);
+                belief = inference.sum_product(tmpGraph[a], n)
+                myu = belief.mean
+                myu[2] = wrapToPi(myu[2]) # wrapping angle to [-pi pi]
+
+                agents[a]['filter'].x_hat[varStr] = myu
+
+                if saveFlag:
+                    if firstRunFlag:
+                        agents[a]['results'][m][(varStr+'_mu')] = myu
+                        agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)
+                    else:
+                        agents[a]['results'][m][(varStr+'_mu')] = np.append(agents[a]['results'][m][(varStr+'_mu')], myu, axis = 1)
+                        agents[a]['results'][m][(varStr+'_cov')] = np.append(agents[a]['results'][m][(varStr+'_cov')], np.array(belief.cov), axis = 1)
+
+
+
+        else:
+            for n in tmpGraph[a].get_vnodes():
+                varCount = 0
+                belief = inference.sum_product(tmpGraph[a], n)
+                try:
+                    vNames = tmpGraph[a].nodes[n]['dims']
+                    for d in range(len(vNames)):
+                        if d<varCount:
+                            continue
+
+                        currentDims = [i for i, d in enumerate(vNames) if d == vNames[varCount]]
+                        varStr = vNames[varCount]
+                        for v in list(dynamicList):
+                            if varStr.find(v) != -1:
+                                varStr=v
+                                break
+                        myu = np.array(belief.mean)[currentDims[0]:currentDims[-1]+1]
+                        myu[2] = wrapToPi(myu[2])
+
+                        agents[a]['filter'].x_hat[varStr] = myu
+
+                        if saveFlag:
+                            agents[a]['results'][m][(varStr+'_mu')] = myu
+                            agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)[currentDims[0]:currentDims[-1]+1,currentDims[0]:currentDims[-1]+1]
+
+
+                        varCount = varCount+len(currentDims)
+
+                except:
+                    varStr=str(n)
+                    for v in list(dynamicList):
+                        if varStr.find(v) != -1:
+                            varStr=v
+                            break
+                    myu = belief.mean
+                    myu[2] = wrapToPi(myu[2]) # wrapping angle to [-pi pi]
+
+                    agents[a]['filter'].x_hat[varStr] = myu
+
+                    if firstRunFlag:
+                        agents[a]['results'][m][(varStr+'_mu')] = myu
+                        agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)
+                    else:
+                        agents[a]['results'][m][(varStr+'_mu')] = np.append(agents[a]['results'][m][(varStr+'_mu')], myu, axis = 1)
+                        agents[a]['results'][m][(varStr+'_cov')] = np.append(agents[a]['results'][m][(varStr+'_cov')], np.array(belief.cov), axis = 1)
+
+
+
+    del tmpGraph
+
+
+    return agents
