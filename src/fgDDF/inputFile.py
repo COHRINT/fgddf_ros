@@ -26,7 +26,7 @@ DEBUG = 0
 dt = 0.1
 nAgents = 2   # number of agents
 nTargets = 1   # number of targets
-nLM = 6       #number of landmarks
+nLM = 4      #number of landmarks
 
 matFile = sio.loadmat('trackingAndLocalization_2A_1T_MC.mat')
 
@@ -51,7 +51,7 @@ varList[1] = {"T1", "X2"}
 
 localVars = {"X1","X2"}
 
-landMarks = {"l1", "l2", "l3", "l4", "l5", "l6"}
+landMarks = {"l1", "l2", "l3", "l4"}
 
 varSet[0] = set(varList[0])
 varSet[1] = set(varList[1])
@@ -124,7 +124,7 @@ agents[1]['measData'][1]['R'] = np.diag(vector(matFile['Rtrue'][0,1:2].item()[0,
 agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
 agents[1]['measData'][1]['measuredVars'] = dict()
 agents[1]['measData'][1]['measInd'] = dict()
-agents[1]['measData'][1]['measuredVars'] = {1: ['X2', 'l4'], 2: ['X2', 'l5'] , 3: ['X2', 'l6'], 4: ['X2', 'T1'] }
+agents[1]['measData'][1]['measuredVars'] = {1: ['X1', 'l1'], 2: ['X1', 'l2'] , 3: ['X1', 'l3'], 4: ['X1', 'l4'], 5: ['X2', 'T1'] }
 agents[1]['measData'][1]['measInd'] = {1: 6, 2: 8, 3: 10, 4: nLM*2}   # measurement indices in the measurement vector
 # has to be in the order of the variable vector
 # agents[1]['currentMeas'][1] = np.array([YData[1][0:2,1]]).T
@@ -137,7 +137,7 @@ agents[1]['measData'][2]['R'] = np.diag(vector(matFile['Rtrue'][0,1:2].item()[1,
 agents[1]['measData'][2]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
 agents[1]['measData'][2]['measuredVars'] = dict()
 agents[1]['measData'][2]['measInd'] = dict()
-agents[1]['measData'][2]['measuredVars'] = {1: ['X2', 'l4'], 2: ['X2', 'l5'] , 3: ['X2', 'l6'], 4: ['X2', 'T1'] }
+agents[1]['measData'][2]['measuredVars'] = {1: ['X1', 'l1'], 2: ['X1', 'l2'] , 3: ['X1', 'l3'], 4: ['X1', 'l4'], 5: ['X2', 'T1'] }
 agents[1]['measData'][2]['measInd'] = {1: 7, 2: 9, 3: 11, 4: nLM*2+1}
 
 
@@ -206,10 +206,10 @@ target19 = None
 target20 = None
 
 # Landmark names
-landmark1 = None
-landmark2 = None
-landmark3 = None
-landmark4 = None
+landmark1 = "LandMark_blue"
+landmark2 = "LandMark_green"
+landmark3 = "LandMark_pink"
+landmark4 = "cohrint_case"
 landmark5 = None
 landmark6 = None
 landmark7 = None
