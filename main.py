@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
 """
-Dynamic target estimation example - 1 agent, 1 target
+Dynamic target estimation example
 The agent has East and north bias (s) and the target has East and North position states (x)
 This example uses a linear observation model
-
 """
 
 from typing import Counter
@@ -338,65 +337,65 @@ for m in range(nMC):
 
         ag['agent'] = ag['filter'].add_Measurement(ag['agent'])
 
-    # Receive messages, time step k:
-    if k>=fusionFlag:
-        for n in agents[a]['neighbors']:
-            msgs = ag["agent"].sendMsg(agents, ag["agent"].id, n)
-            for msg in msgs.values():
-                data.sender = ag["agent"].id
-                print(f'Sending from {data.sender}')
-                data.recipient = n
-                data.dims = msg["dims"]
-                data.matrixDim = len(data.dims)
-                data.infMat = msg["infMat"].flatten()
-                data.infVec = msg["infVec"]
-                pub.publish(data)
+        # Receive messages, time step k:
+        if k>=fusionFlag:
+            for n in agents[a]['neighbors']:
+                msgs = ag["agent"].sendMsg(agents, ag["agent"].id, n)
+                for msg in msgs.values():
+                    data.sender = ag["agent"].id
+                    print(f'Sending from {data.sender}')
+                    data.recipient = n
+                    data.dims = msg["dims"]
+                    data.matrixDim = len(data.dims)
+                    data.infMat = msg["infMat"].flatten()
+                    data.infVec = msg["infVec"]
+                    pub.publish(data)
 
-        rospy.wait_for_message("boss", String)
-        ag["agent"].fuseMsg()
+            rospy.wait_for_message("boss", String)
+            ag["agent"].fuseMsg()
 
-        for key in ag["agent"].fusion.commonVars:
-            ag["agent"] = mergeFactors(ag["agent"], ag["agent"].fusion.commonVars[key])
+            for key in ag["agent"].fusion.commonVars:
+                ag["agent"] = mergeFactors(ag["agent"], ag["agent"].fusion.commonVars[key])
 
-        ag["agent"].build_semiclique_tree()
-        tmpGraph = dict()
+            ag["agent"].build_semiclique_tree()
+            tmpGraph = dict()
 
-        # inference
-        jointInfMat=buildJointMatrix(ag['agent'])
+            # inference
+            jointInfMat=buildJointMatrix(ag['agent'])
 
-        ag['results'][m]['FullCov']=np.append(ag['results'][m]['FullCov'], np.array(jointInfMat.factor.cov), axis = 1)
-        ag['results'][m]['FullMu']=np.append(ag['results'][m]['FullMu'], np.array(jointInfMat.factor.mean), axis=1)
-        ag['results'][m]['Lambda']=np.append(ag['results'][m]['Lambda'], np.array([ag['agent'].lamdaMin]), axis=0)
+            ag['results'][m]['FullCov']=np.append(ag['results'][m]['FullCov'], np.array(jointInfMat.factor.cov), axis = 1)
+            ag['results'][m]['FullMu']=np.append(ag['results'][m]['FullMu'], np.array(jointInfMat.factor.mean), axis=1)
+            ag['results'][m]['Lambda']=np.append(ag['results'][m]['Lambda'], np.array([ag['agent'].lamdaMin]), axis=0)
 
-    agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag, saveFlag = 1)
+        agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag, saveFlag = 1)
 
-    del tmpGraph
-    k += 1
+        del tmpGraph
+        k += 1
 
-    # Save data from current time step
-    for var in ag["agent"].varSet:
-        ag_tag = "X" + str(ag_idx + 1)
-        if var != ag_tag:
-            agent_results = Results()
-            agent_results.TimeStep = k-1
-            agent_results.Agent = ag_tag
-            agent_results.Bias = bias
-            agent_results.Target = var
-            agent_results.LambdaMin = ag["agent"].lamdaMin
-            agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
-            agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
-            agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
-            agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
-            agent_results.TMuDim = np.array(ag["results"][0][var + "_mu"].shape)
-            agent_results.TMu = ag["results"][0][var + "_mu"].flatten()
-            agent_results.TCovDim = np.array(ag["results"][0][var + "_cov"].shape)
-            agent_results.TCov = ag["results"][0][var +"_cov"].flatten()
-            agent_results.SMuDim = np.array(ag["results"][0][ag_tag + "_mu"].shape)
-            agent_results.SMu = ag["results"][0][ag_tag + "_mu"].flatten()
-            agent_results.SCovDim = np.array(ag["results"][0][ag_tag + "_cov"].shape)
-            agent_results.SCov = ag["results"][0][ag_tag + "_cov"].flatten()
+        # Save data from current time step
+        for var in ag["agent"].varSet:
+            ag_tag = "X" + str(ag_idx + 1)
+            if var != ag_tag:
+                agent_results = Results()
+                agent_results.TimeStep = k-1
+                agent_results.Agent = ag_tag
+                agent_results.Bias = bias
+                agent_results.Target = var
+                agent_results.LambdaMin = ag["agent"].lamdaMin
+                agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
+                agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
+                agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
+                agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
+                agent_results.TMuDim = np.array(ag["results"][0][var + "_mu"].shape)
+                agent_results.TMu = ag["results"][0][var + "_mu"].flatten()
+                agent_results.TCovDim = np.array(ag["results"][0][var + "_cov"].shape)
+                agent_results.TCov = ag["results"][0][var +"_cov"].flatten()
+                agent_results.SMuDim = np.array(ag["results"][0][ag_tag + "_mu"].shape)
+                agent_results.SMu = ag["results"][0][ag_tag + "_mu"].flatten()
+                agent_results.SCovDim = np.array(ag["results"][0][ag_tag + "_cov"].shape)
+                agent_results.SCov = ag["results"][0][ag_tag + "_cov"].flatten()
 
-            pub_results.publish(agent_results)
+                pub_results.publish(agent_results)
 
 # I think this saves the data --> replace with ROS code
 # for a in range(nAgents):
