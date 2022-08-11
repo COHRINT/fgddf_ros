@@ -21,11 +21,9 @@ import matplotlib.pyplot as plt
 # import scipy.linalg
 import scipy.io as sio
 from scipy.io import savemat
-from catkin_ws.src.fgddf_ros.src.fgDDF.factor_utils import mergeFactors
-from catkin_ws.src.fgddf_ros.src.fgDDF.rosFxn import ROSFxn
 
 import fgDDF
-from fgDDF.FG_KF import FG_EKF
+from fgDDF.FG_KF import *
 # import time
 from fgDDF.inputFile import *
 # from fusion import *
@@ -76,15 +74,16 @@ dt = 0.1
 nAgents = 2   # number of agents
 nMC = 1
 saveFlag = 1
-conservativeFlag =  0 # use conservative marginalization
+conservativeFlag =  1 # use conservative marginalization
 YData = dict()
-fusionFlag = 10000 # start fusing from time stp 5
+fusionFlag = 0 # start fusing from time stp 5
 #N = 1000 # Time steps
 uData = dict()
 
 # Find ROS package path
 rospack = rospkg.RosPack()
 p = rospack.get_path("fgddf_ros")
+# matFile = sio.loadmat(path.join(p, "trackingAndLocalization_2A_1T_MC.mat"))
 
 # matFile = sio.loadmat('testStatic.mat')
 #matFile = sio.loadmat('measurements_TRO_1T_2A_Dynamic_250.mat')

@@ -6,7 +6,7 @@ import networkx as nx
 import numpy as np
 import scipy.linalg
 from fgDDF.agent import agent
-from fgDDF.FG_KF import FG_KF
+# from fgDDF.FG_KF import FG_KF
 from fgDDF.fusionAlgo import *
 from fgDDF.measurementFxn import *
 from fgDDF.dynamicsFxn import *
@@ -28,7 +28,7 @@ nAgents = 2   # number of agents
 nTargets = 1   # number of targets
 nLM = 4      #number of landmarks
 
-matFile = sio.loadmat('trackingAndLocalization_2A_1T_MC.mat')
+matFile = sio.loadmat('~/tars/catkin_ws/src/fgddf_ros/src/fgDDF/trackingAndLocalization_2A_1T_MC.mat')
 
 N = matFile['tVec'].shape[1]
 
@@ -146,7 +146,7 @@ agents[0]['neighbors'] = [1]
 agents[1]['neighbors'] = [0]
 
 # Create factor nodes for prior:
-t0 = vector(-66, -73, -np.pi/2)
+t0 = vector(0, 0, -np.pi/2)
 T0 = np.diag(vector(55, 55, np.pi/30).T[0,:])
 
 x10 = vector( 10, 3, -np.pi/3)
