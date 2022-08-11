@@ -12,6 +12,7 @@ from std_msgs.msg import String
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from fgddf_ros.msg import ChannelFilter
 from fgddf_ros.msg import Results
+from tf.transformations import euler_from_quaternion # Quaternion conversions
 
 # FGDDF libraries
 from fgDDF.inputFile import *
@@ -69,8 +70,33 @@ class ROSFxn:
         if (target20 is not None):
             self.target20_sub = rospy.Subscriber("vrpn_client_node/"+target20+"/pose",PoseStamped,self.target20_callback)
 
+        # Create subscribers to store landmark positions
+        if (landmark1 is not None):
+            self.landmark1_sub = rospy.Subscriber("vrpn_client_node/"+landmark1+"/pose",PoseStamped,self.landmark1_callback)
+        if (landmark2 is not None):
+            self.landmark2_sub = rospy.Subscriber("vrpn_client_node/"+landmark2+"/pose",PoseStamped,self.landmark2_callback)
+        if (landmark3 is not None):
+            self.landmark3_sub = rospy.Subscriber("vrpn_client_node/"+landmark3+"/pose",PoseStamped,self.landmark3_callback)
+        if (landmark4 is not None):
+            self.landmark4_sub = rospy.Subscriber("vrpn_client_node/"+landmark4+"/pose",PoseStamped,self.landmark4_callback)
+        if (landmark5 is not None):
+            self.landmark5_sub = rospy.Subscriber("vrpn_client_node/"+landmark5+"/pose",PoseStamped,self.landmark5_callback)
+        if (landmark6 is not None):
+            self.landmark6_sub = rospy.Subscriber("vrpn_client_node/"+landmark6+"/pose",PoseStamped,self.landmark6_callback)
+        if (landmark7 is not None):
+            self.landmark7_sub = rospy.Subscriber("vrpn_client_node/"+landmark7+"/pose",PoseStamped,self.landmark7_callback)
+        if (landmark8 is not None):
+            self.landmark8_sub = rospy.Subscriber("vrpn_client_node/"+landmark8+"/pose",PoseStamped,self.landmark8_callback)
+        if (landmark9 is not None):
+            self.landmark9_sub = rospy.Subscriber("vrpn_client_node/"+landmark9+"/pose",PoseStamped,self.landmark9_callback)
+        if (landmark10 is not None):
+            self.landmark10_sub = rospy.Subscriber("vrpn_client_node/"+landmark10+"/pose",PoseStamped,self.landmark10_callback)
+
         # Create array to save target positions
         self.target_pos = np.empty([20,2])
+
+        # Create array to save landmark positions
+        self.landmark_pos = np.empty([10,2])
 
         # Run ROS functions
         self.run()
@@ -85,7 +111,9 @@ class ROSFxn:
     def agent_callback(self,msg):
         x = msg.pose.position.x
         y = msg.pose.position.y
-        self.agent_pos = np.array([x,y])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (psi,phi,theta) = euler_from_quaternion(orientation_q)
+        self.agent_pos = np.array([x,y,theta])
 
     # Define ROS callback functions to store target position
     def target1_callback(self,msg):
@@ -187,6 +215,56 @@ class ROSFxn:
         x = msg.pose.position.x
         y = msg.pose.position.y
         self.target_pos[19] = np.array([x,y])
+
+    def landmark1_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[0] = np.array([x,y])
+
+    def landmark2_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[1] = np.array([x,y])
+
+    def landmark3_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[2] = np.array([x,y])
+
+    def landmark4_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[3] = np.array([x,y])
+
+    def landmark5_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[4] = np.array([x,y])
+
+    def landmark6_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[5] = np.array([x,y])
+
+    def landmark7_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[6] = np.array([x,y])
+
+    def landmark8_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[7] = np.array([x,y])
+
+    def landmark9_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[8] = np.array([x,y])
+
+    def landmark10_callback(self,msg):
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        self.landmark_pos[9] = np.array([x,y])
 
 # NEEDS TO BE MOVVED TO MAIN.PY!!
 if __name__ == "__main__":

@@ -1,37 +1,40 @@
-"""
-Module for utilities.
+"""Module for utilities.
+
 This module contains auxiliary functions for factor graphs.
 Functions:
+
 """
 
 import numpy as np
 import math
 from fgDDF.factor_utils import *
-from fgDDF.rosFxn import *
 
 
-def rangeMeas(mData, agent_idx, target_idx):
+def rangeMeas(mData, ind):
+
     """
-    Computes the nonlinear range measurement functions
+    Computes the nonlinear range measurement function
+
+    input:
+    position vectors x1 and x2
     """
+    x1 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][0]]
+    x2 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][1]]
 
-    x1 = rf.agent_pos[agent_idx]
-    x2 = rf.target_pos[target_idx]
-
-    hx = math.dist(x1,x2)
+    hx = math.dist(x1[0:2], x2[0:2])
 
     return hx
 
 
-def rangeJacobian(mData, agent_idx, target_idx):
+def rangeJacobian(mData, ind):
+
     """
     Computes the range measurement Jacobian for a state vector of 2D position
     """
+    x1 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][0]]
+    x2 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][1]]
 
-    x1 = rf.agent_pos[agent_idx]
-    x2 = rf.target_pos[target_idx]
-
-    dist = math.dist(x1, x2)
+    dist = math.dist(x1[0:2], x2[0:2])
     dhdx1 = (x1[0]-x2[0])/dist
     dhdx2 = (x1[1]-x2[1])/dist
 
@@ -39,17 +42,17 @@ def rangeJacobian(mData, agent_idx, target_idx):
 
     return H
 
-def relativeRangeJacobian(mData, agent_idx, target_idx):
+def relativeRangeJacobian(mData, ind):
 
     """
     Computes the range measurement Jacobian for a state vector of 2D position and angle of two vehicle
     taking relative measurement from x1 to x2, as in Cooperative localization.
     returns a 6x1 H matrix
     """
-    x1 = rf.agent_pos[agent_idx]
-    x2 = rf.target_pos[target_idx]
+    x1 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][0]]
+    x2 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][1]]
 
-    dist = math.dist(x1, x2)
+    dist = math.dist(x1[0:2], x2[0:2])
     dhdx1 = (x1[0]-x2[0])/dist
     dhdx2 = (x1[1]-x2[1])/dist
     dhdx3 = 0
@@ -62,29 +65,30 @@ def relativeRangeJacobian(mData, agent_idx, target_idx):
     return H
 
 
-def azimuthMeas(mData, agent_idx, target_idx):
+def azimuthMeas(mData, ind):
+
     """
     Computes the nonlinear azimuth measurement function of x2 relative to x1
     x1, x2 are 2D vector of positions
     """
 
-    x1 = rf.agent_pos[agent_idx]
-    x2 = rf.target_pos[target_idx]
+    x1 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][0]]
+    x2 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][1]]
 
     hx = math.atan2(x2[1]-x1[1], x2[0]-x1[0])
 
     return wrapToPi(hx)
 
 
-def azimuthJacobian(mData, agent_idx, target_idx):
+def azimuthJacobian(mData, ind):
 
     """
     Computes the azimuth measurement Jacobian for a state vector of 2D position and angle of two vehicle
     taking relative measurement from x1 to x2, as in Cooperative localization.
     returns a 6x2 H matrix - encompassing 2 relative azimuth measurements - from vehicle 1 to 2 and from 2 to 1.
     """
-    x1 = rf.agent_pos[agent_idx]
-    x2 = rf.target_pos[target_idx]
+    x1 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][0]]
+    x2 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][1]]
 
     dist2 = (x1[0]-x2[0])**2+(x1[1]-x2[1])**2
 
@@ -95,27 +99,27 @@ def azimuthJacobian(mData, agent_idx, target_idx):
 
     return H
 
-def relativeAzimuthMeas(mData, agent_idx, target_idx):
+def relativeAzimuthMeas(mData, ind):
 
     """
     Computes the nonlinear azimuth measurement function of x2 relative to x1
     x1, x2 are 3x1 vectors of 2D position and heading angle
     """
-    x1 = rf.agent_pos[agent_idx]
-    x2 = rf.target_pos[target_idx]
+    x1 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][0]]
+    x2 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][1]]
 
     hx = math.atan2(x2[1]-x1[1], x2[0]-x1[0])-x1[2]
 
     return wrapToPi(hx)
 
-def relativeAzimuthJacobian(mData, agent_idx, target_idx):
+def relativeAzimuthJacobian(mData, ind):
 
     """
     Computes the relative azimuth measurement Jacobian
     """
 
-    x1 = rf.agent_pos[agent_idx]
-    x2 = rf.target_pos[target_idx]
+    x1 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][0]]
+    x2 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][1]]
 
     dist2 = (x1[0]-x2[0])**2+(x1[1]-x2[1])**2
 
@@ -154,3 +158,4 @@ def gpsJacobian(mData, ind):
          [0, 1, 0]])
 
     return H
+

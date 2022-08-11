@@ -4,6 +4,7 @@ from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped, TwistStamped
 import numpy as np
 from fgddf_ros.msg import ChannelFilter, TruthData
+from tf.transformations import euler_from_quaternion # Quaternion conversions
 
 TARGET1_NAME = "cohrint_tycho_bot_1"
 TARGET2_NAME = "cohrint_tycho_bot_2"
@@ -294,101 +295,161 @@ class Boss:
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target1_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target1_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_2(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target2_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target2_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_3(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target3_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target3_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_4(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target4_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target4_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_5(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target5_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target5_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_6(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target6_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target6_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_7(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target7_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target7_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_8(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target8_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target8_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_9(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target9_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target9_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_10(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target10_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target10_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_11(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target11_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target11_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_12(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target12_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target12_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_13(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target13_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target13_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_14(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target14_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target14_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_15(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target15_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target15_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_16(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target16_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target16_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_17(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target17_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target17_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_18(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target18_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target18_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_19(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target19_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target19_truth.orientation = np.array([x_rot,y_rot,z_rot])
     def callback_position_20(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
         self.target20_truth.position = np.array([x_pos,y_pos,z_pos])
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.target20_truth.orientation = np.array([x_rot,y_rot,z_rot])
 
     def callback_velocity_1(self,msg):
         x_vel = msg.twist.linear.x

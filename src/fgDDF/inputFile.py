@@ -10,6 +10,7 @@ from fgDDF.FG_KF import FG_KF
 from fgDDF.fusionAlgo import *
 from fgDDF.measurementFxn import *
 from fgDDF.dynamicsFxn import *
+from fgDDF.truthMeasurement import *
 import scipy.io as sio
 
 
@@ -73,8 +74,9 @@ for var in variables:
     else:
         variables[var]['Type']= 'common'
 
-for ll in range(1,nLM+1):
-    variables["l"+str(ll)] = vector(matFile['zeta_l'][ll-1].item(), matFile['eta_l'][ll-1].item())
+# # Replace this with vicon data
+# for ll in range(1,nLM+1):
+#     variables["l"+str(ll)] = vector(matFile['zeta_l'][ll-1].item(), matFile['eta_l'][ll-1].item())
 
 dynamicList = {"X1", "X2", "T1"}
 variables["dynamicList"] = dynamicList
@@ -94,6 +96,7 @@ for a in range(nAgents):
 # agent 1:
 agents[0]['measData'][1]['measFxn'] = relativeAzimuthMeas
 agents[0]['measData'][1]['measJacobian'] = relativeAzimuthJacobian
+agents[0]['measData'][1]['trueMeasFxn'] = truthRelativeAzimuthMeas
 agents[0]['measData'][1]['R'] = np.diag(vector(matFile['Rtrue'][0,0:1].item()[0,0]).T[0,:])
 agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[0]['measData'][1]['R'])
 agents[0]['measData'][1]['measuredVars'] = dict()
@@ -104,6 +107,7 @@ agents[0]['measData'][1]['measInd'] = {1: 0, 2: 2, 3: 4, 4: 6, 5: nLM*2}   # mea
 
 agents[0]['measData'][2]['measFxn'] = rangeMeas
 agents[0]['measData'][2]['measJacobian'] = relativeRangeJacobian
+agents[0]['measData'][2]['trueMeasFxn'] = truthRangeMeas
 agents[0]['measData'][2]['R'] = np.diag(vector(matFile['Rtrue'][0,0:1].item()[1,1]).T[0,:])
 agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[0]['measData'][2]['R'])
 agents[0]['measData'][2]['measuredVars'] = dict()
@@ -115,6 +119,7 @@ agents[0]['measData'][2]['measInd'] = {1: 1, 2: 3, 3: 5, 4: 7, 5: nLM*2+1}
 # agent 2:
 agents[1]['measData'][1]['measFxn'] = relativeAzimuthMeas
 agents[1]['measData'][1]['measJacobian'] = relativeAzimuthJacobian
+agents[1]['measData'][1]['trueMeasFxn'] = truthAzimuthMeas
 agents[1]['measData'][1]['R'] = np.diag(vector(matFile['Rtrue'][0,1:2].item()[0,0]).T[0,:])
 agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
 agents[1]['measData'][1]['measuredVars'] = dict()
@@ -127,6 +132,7 @@ agents[1]['measData'][1]['measInd'] = {1: 6, 2: 8, 3: 10, 4: nLM*2}   # measurem
 
 agents[1]['measData'][2]['measFxn'] = rangeMeas
 agents[1]['measData'][2]['measJacobian'] = relativeRangeJacobian
+agents[1]['measData'][2]['trueMeasFxn'] = truthRangeMeas
 agents[1]['measData'][2]['R'] = np.diag(vector(matFile['Rtrue'][0,1:2].item()[1,1]).T[0,:])
 agents[1]['measData'][2]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
 agents[1]['measData'][2]['measuredVars'] = dict()
@@ -198,3 +204,15 @@ target17 = None
 target18 = None
 target19 = None
 target20 = None
+
+# Landmark names
+landmark1 = None
+landmark2 = None
+landmark3 = None
+landmark4 = None
+landmark5 = None
+landmark6 = None
+landmark7 = None
+landmark8 = None
+landmark9 = None
+landmark10 = None

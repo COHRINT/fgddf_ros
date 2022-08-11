@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import scipy.io as sio
 from scipy.io import savemat
 from catkin_ws.src.fgddf_ros.src.fgDDF.factor_utils import mergeFactors
+from catkin_ws.src.fgddf_ros.src.fgDDF.rosFxn import ROSFxn
 
 import fgDDF
 from fgDDF.FG_KF import FG_EKF
@@ -107,7 +108,7 @@ pub_results = rospy.Publisher("results", Results, queue_size=10)
 # Create data variable
 data = ChannelFilter()
 
-# Wait for each target's position to be recorded at least onece
+# Wait for each target's and landmark's position to be recorded at least onece
 if (target1 is not None):
     rospy.wait_for_message("vrpn_client_node/"+target1+"/pose",PoseStamped)
 if (target2 is not None):
@@ -148,6 +149,33 @@ if (target19 is not None):
     rospy.wait_for_message("vrpn_client_node/"+target19+"/pose",PoseStamped)
 if (target20 is not None):
     rospy.wait_for_message("vrpn_client_node/"+target20+"/pose",PoseStamped)
+if (landmark1 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark1+"/pose",PoseStamped)
+if (landmark2 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark2+"/pose",PoseStamped)
+if (landmark3 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark3+"/pose",PoseStamped)
+if (landmark4 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark4+"/pose",PoseStamped)
+if (landmark5 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark5+"/pose",PoseStamped)
+if (landmark6 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark6+"/pose",PoseStamped)
+if (landmark7 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark7+"/pose",PoseStamped)
+if (landmark8 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark8+"/pose",PoseStamped)
+if (landmark9 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark9+"/pose",PoseStamped)
+if (landmark10 is not None):
+    rospy.wait_for_message("vrpn_client_node/"+landmark10+"/pose",PoseStamped)
+
+# Start ros functions
+rf = ROSFxn(agent_name)
+
+# Read landmark positions
+for ll in range(1,nLM+1):
+    variables["l"+str(ll)] = rf.landmark_pos(ll-1)
 
 #matFile = sio.loadmat('measurements_TRO_5T_4A_Dynamic_500.mat')
 # uData = []
