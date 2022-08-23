@@ -10,7 +10,7 @@ from fgDDF.agent import agent
 from fgDDF.fusionAlgo import *
 from fgDDF.measurementFxn import *
 from fgDDF.dynamicsFxn import *
-from fgDDF.truthMeasurement import *
+from fgDDF.truthFxn import *
 import scipy.io as sio
 
 

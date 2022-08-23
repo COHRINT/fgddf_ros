@@ -13,7 +13,7 @@ from fgDDF.factor_utils import *
 # from operator import itemgetter
 from fgDDF.measurementFxn import *
 from fgDDF.dynamicsFxn import *
-from fgDDF.truthMeasurement import *
+from fgDDF.truthFxn import *
 from scipy.integrate import solve_ivp
 
 class FG_KF(object):

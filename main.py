@@ -309,6 +309,8 @@ for m in range(nMC):
         agents[a]['results'][m]['Lambda']=np.array([1])
        # jointCovMat=jointInfMat.factor.cov
 
+    # TODO: HAVE THE ROBOT START DRIVING HERE
+
     k = 2
     rospy.sleep(1)
     while not rospy.is_shutdown() and (k < 200):
