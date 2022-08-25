@@ -18,12 +18,12 @@ class agent(object):
         priors - a dictionary containing prior definitions for each variable in varSet
     """
 
-    def __init__(self, varSet, dynamicList, filter, fusionAlgorithm, condVar = None , variables = None ):
+    def __init__(self, varSet, dynamicList, filter, fusionAlgorithm, ag_idx, condVar = None , variables = None ):
         self.fg = graphs.FactorGraph()
         self.varSet = varSet
         self.factorCounter = 0
         self.filter = filter
-        self.id = id(self)
+        self.id = ag_idx
         self.dynamicList = dynamicList
         self.fusionAlgorithm = fusionAlgorithm
         self.varList = dict()
@@ -87,7 +87,7 @@ class agent(object):
         if 'CF' in self.fusionAlgorithm:
             commonVars = self.fusion.commonVars[agent_j.id]
             dynamicList = self.dynamicList & commonVars
-            self.fusion.fusionLib[agent_j.id] = agent(commonVars, dynamicList, self.filter, self.fusionAlgorithm, None, variables )
+            self.fusion.fusionLib[agent_j.id] = agent(commonVars, dynamicList, self.filter, self.fusionAlgorithm, agent_j.id, None, variables )
             self.fusion.fusionLib[agent_j.id].set_prior(self.prior)
 
 

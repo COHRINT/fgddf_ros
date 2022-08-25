@@ -10,6 +10,8 @@ from pickletools import TAKEN_FROM_ARGUMENT4, TAKEN_FROM_ARGUMENT8U
 from typing import Counter
 import networkx as nx
 import numpy as np
+import math
+import time
 import scipy.linalg
 import itertools
 from copy import deepcopy
@@ -216,6 +218,9 @@ print("checkpoint")
 
 # Read landmark positions
 for ll in range(1,nLM+1):
+    while any(np.isnan(rf.landmark_pos[ll-1])):
+        time.sleep(0.1)
+        
     variables["l"+str(ll)] = rf.landmark_pos[ll-1]
 
 print("checkpoint")
@@ -237,7 +242,7 @@ for m in range(nMC):
         print('agent:', a)
 
         agents[a]['filter'] = FG_EKF(variables, varSet[a], agents[a]['measData'], uData, dt)
-        agents[a]['agent'] = agent(varSet[a], dynamicList, agents[a]['filter'], 'HS_CF', condVar[a], variables)
+        agents[a]['agent'] = agent(varSet[a], dynamicList, agents[a]['filter'], 'HS_CF', ag_idx, condVar[a], variables)
         agents[a]['agent'].set_prior(prior)
 
 
@@ -282,7 +287,7 @@ for m in range(nMC):
         for ll in landMarks:
             agents[a]['filter'].x_hat[ll] = variables[ll]
 
-        # print(agents[a])
+        print('adhadfa')
         agents[a]['agent'] = agents[a]['filter'].add_Measurement(agents[a]['agent'],rf)
 
         # plt.figure(1000+a)
@@ -302,10 +307,6 @@ for m in range(nMC):
                 if var in agents[a]['agent'].dynamicList:
                     tmpCFgraph.filter.filterPastState(tmpCFgraph, getattr(agents[a]['agent'], var+"_Past"))
 
-            # plt.figure(100+a)
-            # nx.draw(tmpCFgraph.fg, with_labels=True)
-            # plt.savefig("predictionCF_Graph_a"+str(a)+".png")
-
             del tmpCFgraph
     if fusionFlag<1:   # only fuse if starting fusion from time step 1
     # Receive messages, time step 1:
@@ -314,7 +315,7 @@ for m in range(nMC):
             for n in agents[a]['neighbors']:
                 # receive message (a dictionary of factors):
                 print('\n neighbor', n)
-                msg = agents[n]['agent'].sendMsg(agents, n, a)
+                msg = agents[n]['agent'].sendMsg(agents, a, n)
                 agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id].inMsg = msg
 
         # Fuse incoming messages, time step 1:
@@ -413,7 +414,7 @@ for m in range(nMC):
         # Receive messages, time step k:
         if k>=fusionFlag:
             for n in agents[a]['neighbors']:
-                msgs = ag["agent"].sendMsg(agents, n, a)
+                msgs = ag["agent"].sendMsg(agents, ag_idx, n)
                 for msg in msgs.values():
                     data = ChannelFilter()
                     print(ag["agent"].id)
