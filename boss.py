@@ -5,6 +5,7 @@ from geometry_msgs.msg import PoseStamped, TwistStamped
 import numpy as np
 from fgddf_ros.msg import ChannelFilter, TruthData
 from tf.transformations import euler_from_quaternion # Quaternion conversions
+from fgDDF.inputFile import *
 
 TARGET1_NAME = "cohrint_tycho_bot_1"
 TARGET2_NAME = "cohrint_tycho_bot_2"
