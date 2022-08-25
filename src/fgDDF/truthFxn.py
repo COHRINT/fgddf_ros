@@ -10,12 +10,12 @@ from fgDDF.factor_utils import *
 from fgDDF.rosFxn import *
 
 
-def truthRangeMeas(current_agent, agent_idx, target_idx, is_target):
+def truthRangeMeas(rf, current_agent, agent_idx, target_idx, is_target):
     """
     Computes the nonlinear range measurement functions
     """
 
-    x1 = rf.agent_pos[agent_idx]
+    x1 = rf.agent_pos
     if is_target:
         x2 = rf.target_pos[target_idx]
     else:
@@ -23,18 +23,18 @@ def truthRangeMeas(current_agent, agent_idx, target_idx, is_target):
 
     noise = np.random.normal(0,current_agent["R"])
 
-    y = math.dist(x1,x2)
+    y = math.dist(x1[0:2],x2)
     y = y + noise
 
     return y
 
-def truthAzimuthMeas(current_agent, agent_idx, target_idx, is_target):
+def truthAzimuthMeas(rf, current_agent, agent_idx, target_idx, is_target):
     """
     Computes the nonlinear azimuth measurement function of x2 relative to x1
     x1, x2 are 2D vector of positions
     """
 
-    x1 = rf.agent_pos[agent_idx]
+    x1 = rf.agent_pos
     if is_target:
         x2 = rf.target_pos[target_idx]
     else:
@@ -47,16 +47,22 @@ def truthAzimuthMeas(current_agent, agent_idx, target_idx, is_target):
 
     return wrapToPi(y)
 
-def truthRelativeAzimuthMeas(current_agent, agent_idx, target_idx, is_target):
+def truthRelativeAzimuthMeas(rf, current_agent, agent_idx, target_idx, is_target):
 
     """
     Computes the nonlinear azimuth measurement function of x2 relative to x1
     x1, x2 are 3x1 vectors of 2D position and heading angle
     """
-    x1 = rf.agent_pos[agent_idx]
+
+    # print(target_idx)
+    # print(is_target)
+    # print(dir(current_agent))
+
+    x1 = rf.agent_pos
     if is_target:
         x2 = rf.target_pos[target_idx]
     else:
+        # print(rf.landmark_pos)
         x2 = rf.landmark_pos[target_idx]
 
     noise = np.random.normal(0,current_agent["R"])
@@ -66,7 +72,7 @@ def truthRelativeAzimuthMeas(current_agent, agent_idx, target_idx, is_target):
 
     return wrapToPi(y)
 
-def truthGpsMeas(mData, ind):
+def truthGpsMeas(rf, mData, ind):
 
     """
     GPS measurement

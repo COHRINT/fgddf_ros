@@ -596,7 +596,7 @@ class FG_EKF(FG_KF):
 				agent.factorCounter=factorCounter
 		return agent
 
-	def add_Measurement(self, agent):
+	def add_Measurement(self, agent, rf):
 		""" Add linear Gaussian measurement factor
             works in canonical / information form
         Args:
@@ -620,11 +620,12 @@ class FG_EKF(FG_KF):
 			H = Htmp[0:1, 0:len(x_p)]
 			invR=self.measurementData[key2[0]]['invR']
 			# current_agent, agent_idx, target_idx, is_target
-			if self.measurementData[key2[0]]['measuredVars'][key2[1]][0] == 'T':
+			# print(self.measurementData[key2[0]]['measuredVars'][key2[1]][1][0])
+			if self.measurementData[key2[0]]['measuredVars'][key2[1]][1][0] == 'T':
 				is_target = True
 			else:
 				is_target = False
-			y=self.measurementData[key2[0]]['trueMeasFxn'](agent,agent.id,self.measurementData[key2[0]]['measuredVars'][key2[1]],is_target)
+			y=self.measurementData[key2[0]]['trueMeasFxn'](rf,self.measurementData[key2[0]],agent.id,int(self.measurementData[key2[0]]['measuredVars'][key2[1]][1][1])-1,is_target)
 			measMat=np.dot(np.dot(H.T, invR), H)
 			dy = y-hx+np.dot(H,x_p)
 			if key2[0]==1:

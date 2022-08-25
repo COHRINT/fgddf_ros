@@ -15,15 +15,57 @@ from fgddf_ros.msg import Results
 from tf.transformations import euler_from_quaternion # Quaternion conversions
 
 # FGDDF libraries
-from fgDDF.inputFile import *
+# from fgDDF.inputFile import *
 
 # Misc libraries
 import numpy as np
 
 class ROSFxn:
-    def __init__(self,agent_name):
+    def __init__(self,agent_name,targets,landmarks):
         rospack = rospkg.RosPack()
         p = rospack.get_path("fgddf_ros")
+
+        target1 = targets[0]
+        target2 = targets[1]
+        target3 = targets[2]
+        target4 = targets[3]
+        target5 = targets[4]
+        target6 = targets[5]
+        target7 = targets[6]
+        target8 = targets[7]
+        target9 = targets[8]
+        target10 = targets[9]
+        target11 = targets[10]
+        target12 = targets[11]
+        target13 = targets[12]
+        target14 = targets[13]
+        target15 = targets[14]
+        target16 = targets[15]
+        target17 = targets[16]
+        target18 = targets[17]
+        target19 = targets[18]
+        target20 = targets[19]
+
+        landmark1 = landmarks[0]
+        landmark2 = landmarks[1]
+        landmark3 = landmarks[2]
+        landmark4 = landmarks[3]
+        landmark5 = landmarks[4]
+        landmark6 = landmarks[5]
+        landmark7 = landmarks[6]
+        landmark8 = landmarks[7]
+        landmark9 = landmarks[8]
+        landmark10 = landmarks[9]
+
+        # Create array to save target positions
+        self.target_pos = np.empty([20,2])
+
+        # Create array to save landmark positions
+        self.landmark_pos = np.empty([10,2])
+
+        # Create array to store agent position
+        self.agent_pos = np.empty([1,3])
+
 
         # Create subscriber to save agent position
         self.agent_sub = rospy.Subscriber("vrpn_client_node/"+agent_name+"/pose",PoseStamped,self.agent_callback)
@@ -92,20 +134,14 @@ class ROSFxn:
         if (landmark10 is not None):
             self.landmark10_sub = rospy.Subscriber("vrpn_client_node/"+landmark10+"/pose",PoseStamped,self.landmark10_callback)
 
-        # Create array to save target positions
-        self.target_pos = np.empty([20,2])
-
-        # Create array to save landmark positions
-        self.landmark_pos = np.empty([10,2])
-
         # Run ROS functions
-        self.run()
+        # self.run()
     
-    # Run the ros functions
-    def run(self):
-        rate = rospy.Rate(10)
-        while not rospy.is_shutdown():
-            rate.sleep()
+    # # Run the ros functions
+    # def run(self):
+    #     rate = rospy.Rate(10)
+    #     while not rospy.is_shutdown():
+    #         rate.sleep()
 
     # Define ROS callback function to store agent position
     def agent_callback(self,msg):
@@ -266,7 +302,7 @@ class ROSFxn:
         y = msg.pose.position.y
         self.landmark_pos[9] = np.array([x,y])
 
-# NEEDS TO BE MOVVED TO MAIN.PY!!
-if __name__ == "__main__":
-    rospy.init_node("ros_functions")
-    rf = ROSFxn(agent_name)
+# # NEEDS TO BE MOVVED TO MAIN.PY!!
+# if __name__ == "__main__":
+#     rospy.init_node("ros_functions")
+#     rf = ROSFxn(agent_name)

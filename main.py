@@ -6,6 +6,7 @@ The agent has East and north bias (s) and the target has East and North position
 This example uses a linear observation model
 """
 
+from pickletools import TAKEN_FROM_ARGUMENT4, TAKEN_FROM_ARGUMENT8U
 from typing import Counter
 import networkx as nx
 import numpy as np
@@ -22,10 +23,9 @@ import matplotlib.pyplot as plt
 import scipy.io as sio
 from scipy.io import savemat
 
-import fgDDF
+# import fgDDF
 from fgDDF.FG_KF import *
 # import time
-from fgDDF.inputFile import *
 # from fusion import *
 from fgDDF.measurementFxn import *
 from fgDDF.dynamicsFxn import *
@@ -88,7 +88,7 @@ p = rospack.get_path("fgddf_ros")
 # matFile = sio.loadmat('testStatic.mat')
 #matFile = sio.loadmat('measurements_TRO_1T_2A_Dynamic_250.mat')
 # matFile = sio.loadmat('trackingAndLocalization_2A_1T.mat')
-matFile = sio.loadmat('/src/fgDDF/trackingAndLocalization_2A_1T_MC.mat')
+matFile = sio.loadmat("catkin_ws/src/fgddf_ros/src/fgDDF/trackingAndLocalization_2A_1T_MC.mat")
 
 # Initialize ROS node
 rospy.init_node("talker", anonymous=True)
@@ -106,6 +106,8 @@ pub_results = rospy.Publisher("results", Results, queue_size=10)
 
 # Create data variable
 data = ChannelFilter()
+
+print("checkpoint")
 
 # Wait for each target's and landmark's position to be recorded at least onece
 if (target1 is not None):
@@ -169,12 +171,54 @@ if (landmark9 is not None):
 if (landmark10 is not None):
     rospy.wait_for_message("vrpn_client_node/"+landmark10+"/pose",PoseStamped)
 
+print("checkpoint")
+
+# Assemble target array
+targets = ["" for x in range(20)]
+targets[0] = target1
+targets[1] = target2
+targets[2] = target3
+targets[3] = target4
+targets[4] = target5
+targets[5] = target6
+targets[6] = target7
+targets[7] = target8
+targets[8] = target9
+targets[9] = target10
+targets[10] = target11
+targets[11] = target12
+targets[12] = target13
+targets[13] = target14
+targets[14] = target15
+targets[15] = target16
+targets[16] = target17
+targets[17] = target18
+targets[18] = target19
+targets[19] = target20
+
+# Assemble landmark array
+landmarks = ["" for x in range(10)]
+landmarks[0] = landmark1
+landmarks[1] = landmark2
+landmarks[2] = landmark3
+landmarks[3] = landmark4
+landmarks[4] = landmark5
+landmarks[5] = landmark6
+landmarks[6] = landmark7
+landmarks[7] = landmark8
+landmarks[8] = landmark9
+landmarks[9] = landmark10
+
 # Start ros functions
-rf = ROSFxn(agent_name)
+rf = ROSFxn(agent_name,targets,landmarks)
+
+print("checkpoint")
 
 # Read landmark positions
 for ll in range(1,nLM+1):
-    variables["l"+str(ll)] = rf.landmark_pos(ll-1)
+    variables["l"+str(ll)] = rf.landmark_pos[ll-1]
+
+print("checkpoint")
 
 #matFile = sio.loadmat('measurements_TRO_5T_4A_Dynamic_500.mat')
 # uData = []
@@ -238,8 +282,8 @@ for m in range(nMC):
         for ll in landMarks:
             agents[a]['filter'].x_hat[ll] = variables[ll]
 
-
-        agents[a]['agent'] = agents[a]['filter'].add_Measurement(agents[a]['agent'])
+        # print(agents[a])
+        agents[a]['agent'] = agents[a]['filter'].add_Measurement(agents[a]['agent'],rf)
 
         # plt.figure(1000+a)
         # nx.draw(agents[a]['agent'].fg, with_labels=True)
@@ -324,9 +368,9 @@ for m in range(nMC):
 
         # Agent's CF graphs prediction step:
         for n in ag['neighbors']:
-
+            # print(ag['agent'].fusion.fusionLib)
             # Add prediction nodes to the agent's CF graph
-            tmpCFgraph = ag['agent'].fusion.fusionLib[n]
+            tmpCFgraph = ag['agent'].fusion.fusionLib[agents[n]['agent'].id]
             tmpCFgraph.filter.add_Prediction(tmpCFgraph)
 
             for var in tmpCFgraph.varSet:
@@ -350,7 +394,7 @@ for m in range(nMC):
             # Update CF graph due to conservative filtering
             lamdaMin=ag['agent'].lamdaMin
             for n in ag['neighbors']:
-                ag['agent'].fusion.updateGraph(n, lamdaMin)
+                ag['agent'].fusion.updateGraph(agents[n]['agent'].id, lamdaMin)
 
         else:
             # Marginalize out time k:
@@ -364,14 +408,17 @@ for m in range(nMC):
 
         agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag, saveFlag = 0)
 
-        ag['agent'] = ag['filter'].add_Measurement(ag['agent'])
+        ag['agent'] = ag['filter'].add_Measurement(ag['agent'],rf)
 
         # Receive messages, time step k:
         if k>=fusionFlag:
             for n in agents[a]['neighbors']:
-                msgs = ag["agent"].sendMsg(agents, ag["agent"].id, n)
+                msgs = ag["agent"].sendMsg(agents, n, a)
                 for msg in msgs.values():
-                    data.sender = ag["agent"].id
+                    data = ChannelFilter()
+                    print(ag["agent"].id)
+                    # data.sender = ag["agent"].id
+                    data.sender = ag_idx
                     print(f'Sending from {data.sender}')
                     data.recipient = n
                     data.dims = msg["dims"]

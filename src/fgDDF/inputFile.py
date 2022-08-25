@@ -10,7 +10,7 @@ from fgDDF.agent import agent
 from fgDDF.fusionAlgo import *
 from fgDDF.measurementFxn import *
 from fgDDF.dynamicsFxn import *
-from fgDDF.truthFxn import *
+from fgDDF.truthFxn import truthRelativeAzimuthMeas, truthRangeMeas, truthAzimuthMeas, truthGpsMeas
 import scipy.io as sio
 
 
@@ -28,7 +28,7 @@ nAgents = 2   # number of agents
 nTargets = 1   # number of targets
 nLM = 4      #number of landmarks
 
-matFile = sio.loadmat('~/tars/catkin_ws/src/fgddf_ros/src/fgDDF/trackingAndLocalization_2A_1T_MC.mat')
+matFile = sio.loadmat("catkin_ws/src/fgddf_ros/src/fgDDF/trackingAndLocalization_2A_1T_MC.mat")
 
 N = matFile['tVec'].shape[1]
 
@@ -113,7 +113,7 @@ agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[0]['measData'][2]['R'])
 agents[0]['measData'][2]['measuredVars'] = dict()
 agents[0]['measData'][2]['measInd'] = dict()
 agents[0]['measData'][2]['measuredVars'] = {1: ['X1', 'l1'], 2: ['X1', 'l2'] , 3: ['X1', 'l3'], 4: ['X1', 'l4'], 5: ['X1', 'T1']  }
-agents[0]['measData'][2]['measInd'] = {1: 1, 2: 3, 3: 5, 4: 7, 5: nLM*2+1}
+agents[0]['measData'][2]['measInd'] = {1: 0, 2: 2, 3: 4, 4: 6, 5: nLM*2}
 
 
 # agent 2:
@@ -124,8 +124,8 @@ agents[1]['measData'][1]['R'] = np.diag(vector(matFile['Rtrue'][0,1:2].item()[0,
 agents[1]['measData'][1]['invR'] = np.linalg.inv(agents[1]['measData'][1]['R'])
 agents[1]['measData'][1]['measuredVars'] = dict()
 agents[1]['measData'][1]['measInd'] = dict()
-agents[1]['measData'][1]['measuredVars'] = {1: ['X1', 'l1'], 2: ['X1', 'l2'] , 3: ['X1', 'l3'], 4: ['X1', 'l4'], 5: ['X2', 'T1'] }
-agents[1]['measData'][1]['measInd'] = {1: 6, 2: 8, 3: 10, 4: nLM*2}   # measurement indices in the measurement vector
+agents[1]['measData'][1]['measuredVars'] = {1: ['X2', 'l1'], 2: ['X2', 'l2'] , 3: ['X2', 'l3'], 4: ['X2', 'l4'], 5: ['X2', 'T1'] }
+agents[1]['measData'][1]['measInd'] = {1: 0, 2: 2, 3: 4, 4: 6, 5: nLM*2}   # measurement indices in the measurement vector
 # has to be in the order of the variable vector
 # agents[1]['currentMeas'][1] = np.array([YData[1][0:2,1]]).T
 
@@ -137,8 +137,8 @@ agents[1]['measData'][2]['R'] = np.diag(vector(matFile['Rtrue'][0,1:2].item()[1,
 agents[1]['measData'][2]['invR'] = np.linalg.inv(agents[1]['measData'][2]['R'])
 agents[1]['measData'][2]['measuredVars'] = dict()
 agents[1]['measData'][2]['measInd'] = dict()
-agents[1]['measData'][2]['measuredVars'] = {1: ['X1', 'l1'], 2: ['X1', 'l2'] , 3: ['X1', 'l3'], 4: ['X1', 'l4'], 5: ['X2', 'T1'] }
-agents[1]['measData'][2]['measInd'] = {1: 7, 2: 9, 3: 11, 4: nLM*2+1}
+agents[1]['measData'][2]['measuredVars'] = {1: ['X2', 'l1'], 2: ['X2', 'l2'] , 3: ['X2', 'l3'], 4: ['X2', 'l4'], 5: ['X2', 'T1'] }
+agents[1]['measData'][2]['measInd'] = {1: 0, 2: 2, 3: 4, 4: 6, 5: nLM*2}
 
 
 # Define neighbors:
@@ -181,11 +181,11 @@ for t in range(1, nTargets+1):
     variables["T"+str(t)]["u"] = vector(matFile['vT'][t-1].item(), matFile['w_t'][t-1].item())*np.ones((1,N), dtype=np.float64)
 
 # Agent name
-agent_name = "INSERT_NAME_HERE"
+agent_name = "cohrint_tars"
 
 # Target names
 target1 = "cohrint_tycho_bot_1"
-target2 = "cohrint_tycho_bot_2"
+target2 = None
 target3 = None
 target4 = None
 target5 = None
@@ -209,7 +209,7 @@ target20 = None
 landmark1 = "LandMark_blue"
 landmark2 = "LandMark_green"
 landmark3 = "LandMark_pink"
-landmark4 = "cohrint_case"
+landmark4 = "cohrint_tycho_bot_2"
 landmark5 = None
 landmark6 = None
 landmark7 = None
