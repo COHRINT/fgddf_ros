@@ -223,7 +223,6 @@ def wrapToPi(input_angle):
     '''
 
     #revolutions = int((input_angle + np.sign(input_angle) * pi) / (2 * pi))
-    print(type(input_angle))
     p1 = truncated_remainder(input_angle + np.sign(input_angle) * pi, 2 * pi)
     p2 = (np.sign(np.sign(input_angle)
                   + 2 * (np.sign(fabs((truncated_remainder(input_angle + pi, 2 * pi))

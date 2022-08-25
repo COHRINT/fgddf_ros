@@ -181,7 +181,7 @@ for t in range(1, nTargets+1):
     variables["T"+str(t)]["u"] = vector(matFile['vT'][t-1].item(), matFile['w_t'][t-1].item())*np.ones((1,N), dtype=np.float64)
 
 # Agent name
-agent_name = "cohrint_case"
+agent_name = "cohrint_tars"
 
 # Target names
 target1 = "cohrint_tycho_bot_1"

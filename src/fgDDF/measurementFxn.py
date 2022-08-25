@@ -108,10 +108,6 @@ def relativeAzimuthMeas(mData, ind):
     x1 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][0]]
     x2 = mData.x_hat[mData.measurementData[ind[0]]['measuredVars'][ind[1]][1]]
 
-    print(mData.measurementData[ind[0]]['measuredVars'][ind[1]])
-    print(x1)
-    print(x2)
-    print('---')
     hx = math.atan2(x2[1]-x1[1], x2[0]-x1[0])-x1[2]
 
     return wrapToPi(hx)
