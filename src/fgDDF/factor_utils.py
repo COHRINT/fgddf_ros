@@ -326,7 +326,7 @@ def dis_union(G, H, factorCounter):
 
     return factorCounter
 
-def inferState(agents, dynamicList, nAgents, m, firstRunFlag, saveFlag):
+def inferState(agents, dynamicList, nAgents, m , firstRunFlag, saveFlag):
     """
     This function infers all variable marginals
     """

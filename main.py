@@ -74,7 +74,6 @@ def vector(*args):
 DEBUG = 0
 dt = 0.1
 nAgents = 2   # number of agents
-nMC = 1
 saveFlag = 1
 conservativeFlag =  1 # use conservative marginalization
 YData = dict()
@@ -85,11 +84,7 @@ uData = dict()
 # Find ROS package path
 rospack = rospkg.RosPack()
 p = rospack.get_path("fgddf_ros")
-# matFile = sio.loadmat(path.join(p, "trackingAndLocalization_2A_1T_MC.mat"))
 
-# matFile = sio.loadmat('testStatic.mat')
-#matFile = sio.loadmat('measurements_TRO_1T_2A_Dynamic_250.mat')
-# matFile = sio.loadmat('trackingAndLocalization_2A_1T.mat')
 matFile = sio.loadmat("catkin_ws/src/fgddf_ros/src/fgDDF/trackingAndLocalization_2A_1T_MC.mat")
 
 # Initialize ROS node
@@ -225,268 +220,236 @@ for ll in range(1,nLM+1):
 
 print("checkpoint")
 
-#matFile = sio.loadmat('measurements_TRO_5T_4A_Dynamic_500.mat')
-# uData = []
-for m in range(nMC):
-
-    print('MC:', m)
-    for i in range(nAgents):
-        #YData[i] = matFile['ydata']   # [i-1,m:m+1].item() - needed when ydata is a cell array
-        YData[i] = matFile['yTruth'][i,m:m+1].item()
-        # uData = matFile['u']
-        # if uData.shape[1]==1:
-        #     uData = uData*np.ones((1,N+1), dtype=np.float64)
-
-    # instantiate filters and agents:
-    for a in range(nAgents):
-        print('agent:', a)
-
-        agents[a]['filter'] = FG_EKF(variables, varSet[a], agents[a]['measData'], uData, dt)
-        agents[a]['agent'] = agent(varSet[a], dynamicList, agents[a]['filter'], 'HS_CF', ag_idx, condVar[a], variables)
-        agents[a]['agent'].set_prior(prior)
-
-
-        for var in agents[a]['agent'].varSet:
-            if var in agents[a]['agent'].dynamicList:
-                agents[a]['filter'].x_hat[var] = agents[a]['agent'].prior[var+'_0']['x_hat']
-        # Add prediction nodes to the agent's graph
-        agents[a]['agent']=agents[a]['filter'].add_Prediction(agents[a]['agent'])
-
-        # Marginalize out time 0:
-        for var in agents[a]['agent'].varSet:
-            if var in agents[a]['agent'].dynamicList:
-                agents[a]['agent'] = agents[a]['filter'].filterPastState(agents[a]['agent'], getattr(agents[a]['agent'], var+"_Past"))
-
-        nS = len(agents[a]['measData'])  # number of sensors for agent a
-        for l in range(1, nS+1):
-            nM = len(agents[a]['measData'][l]['measuredVars'])  # number of measurements the sensor takes
-            for n in range(1, nM+1):
-                #agents[a]['currentMeas'][l,n] = np.array([YData[a][agents[a]['measData'][l]['measInd'][n],1]]).T
-                agents[a]['filter'].currentMeas[l,n] = np.array([YData[a][agents[a]['measData'][l]['measInd'][n],1]]).T  # 1st measurement
 
 
 
-        # Inference
-
-        for n in agents[a]['agent'].fg.get_vnodes():
-                    #print('agent', a)
-            varStr = str(n)
-            for v in list(dynamicList):
-                if varStr.find(v) != -1:
-                    varStr = v
-                    break
+for i in range(nAgents):
+    #YData[i] = matFile['ydata']   # [i-1,m:m+1].item() - needed when ydata is a cell array
+    YData[i] = matFile['yTruth'][i,m:m+1].item()
 
 
-            belief = inference.sum_product(agents[a]['agent'].fg, n)
-            myu = belief.mean
-            myu[2] = wrapToPi(myu[2]) # wrapping angle to [-pi pi]
+# instantiate filters and agents:
+for a in range(nAgents):
+    print('agent:', a)
 
-            agents[a]['filter'].x_hat[varStr] = myu
-
-        # add landmark data to x_hat
-        for ll in landMarks:
-            agents[a]['filter'].x_hat[ll] = variables[ll]
-
-        print('adhadfa')
-        agents[a]['agent'] = agents[a]['filter'].add_Measurement(agents[a]['agent'],rf)
-
-        # plt.figure(1000+a)
-        # nx.draw(agents[a]['agent'].fg, with_labels=True)
-        # plt.savefig("predictionGraph_a"+str(a)+".png")
-
-    # set initial fusion definitions:
-    for a in range(nAgents):
-        for n in agents[a]['neighbors']:
-            agents[a]['agent'].set_fusion(agents[n]['agent'], variables)
-
-            # Add prediction nodes to the agent's CF graph
-            tmpCFgraph = agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id]
-            tmpCFgraph.filter.add_Prediction(tmpCFgraph)
-
-            for var in tmpCFgraph.varSet:
-                if var in agents[a]['agent'].dynamicList:
-                    tmpCFgraph.filter.filterPastState(tmpCFgraph, getattr(agents[a]['agent'], var+"_Past"))
-
-            del tmpCFgraph
-    if fusionFlag<1:   # only fuse if starting fusion from time step 1
-    # Receive messages, time step 1:
-        for a in range(nAgents):
-            print('\n agent', a)
-            for n in agents[a]['neighbors']:
-                # receive message (a dictionary of factors):
-                print('\n neighbor', n)
-                msg = agents[n]['agent'].sendMsg(agents, a, n)
-                agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id].inMsg = msg
-
-        # Fuse incoming messages, time step 1:
-        for a in range(nAgents):
-
-            # if len(agents[a]['neighbors'])>0:
-            agents[a]['agent'].fuseMsg()
-
-            for key in agents[a]['agent'].fusion.commonVars:
-
-                agents[a]['agent'] = mergeFactors(agents[a]['agent'],agents[a]['agent'].fusion.commonVars[key])
-
-        # plt.figure(10000+a)
-        # nx.draw(agents[a]['agent'].fg, with_labels = True)
-        # plt.savefig("check_StaticTarget_a"+str(a)+".png")
+    agents[a]['filter'] = FG_EKF(variables, varSet[a], agents[a]['measData'], uData, dt)
+    agents[a]['agent'] = agent(varSet[a], dynamicList, agents[a]['filter'], 'HS_CF', ag_idx, condVar[a], variables)
+    agents[a]['agent'].set_prior(prior)
 
 
-    for a in range(nAgents):
-        agents[a]['agent'].build_semiclique_tree()
+    for var in agents[a]['agent'].varSet:
+        if var in agents[a]['agent'].dynamicList:
+            agents[a]['filter'].x_hat[var] = agents[a]['agent'].prior[var+'_0']['x_hat']
+    # Add prediction nodes to the agent's graph
+    agents[a]['agent']=agents[a]['filter'].add_Prediction(agents[a]['agent'])
 
-    tmpGraph = dict()
+    # Marginalize out time 0:
+    for var in agents[a]['agent'].varSet:
+        if var in agents[a]['agent'].dynamicList:
+            agents[a]['agent'] = agents[a]['filter'].filterPastState(agents[a]['agent'], getattr(agents[a]['agent'], var+"_Past"))
+
+    nS = len(agents[a]['measData'])  # number of sensors for agent a
+    for l in range(1, nS+1):
+        nM = len(agents[a]['measData'][l]['measuredVars'])  # number of measurements the sensor takes
+        for n in range(1, nM+1):
+            agents[a]['filter'].currentMeas[l,n] = np.array([YData[a][agents[a]['measData'][l]['measInd'][n],1]]).T  # 1st measurement
+
+
+
     # Inference
 
-    agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag = 1, saveFlag = 1)
-    firstRunFlag = 0
+    for n in agents[a]['agent'].fg.get_vnodes():
+                #print('agent', a)
+        varStr = str(n)
+        for v in list(dynamicList):
+            if varStr.find(v) != -1:
+                varStr = v
+                break
 
+
+        belief = inference.sum_product(agents[a]['agent'].fg, n)
+        myu = belief.mean
+        myu[2] = wrapToPi(myu[2]) # wrapping angle to [-pi pi]
+
+        agents[a]['filter'].x_hat[varStr] = myu
+
+    # add landmark data to x_hat
+    for ll in landMarks:
+        agents[a]['filter'].x_hat[ll] = variables[ll]
+
+    print('adhadfa')
+    agents[a]['agent'] = agents[a]['filter'].add_Measurement(agents[a]['agent'],rf)
+
+
+
+# set initial fusion definitions:
+for a in range(nAgents):
+    for n in agents[a]['neighbors']:
+        agents[a]['agent'].set_fusion(agents[n]['agent'], variables)
+
+        # Add prediction nodes to the agent's CF graph
+        tmpCFgraph = agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id]
+        tmpCFgraph.filter.add_Prediction(tmpCFgraph)
+
+        for var in tmpCFgraph.varSet:
+            if var in agents[a]['agent'].dynamicList:
+                tmpCFgraph.filter.filterPastState(tmpCFgraph, getattr(agents[a]['agent'], var+"_Past"))
+
+        del tmpCFgraph
+if fusionFlag<1:   # only fuse if starting fusion from time step 1
+# Receive messages, time step 1:
     for a in range(nAgents):
-        # tmpGraph[a] = agents[a]['agent'].add_factors_to_clique_fg()
+        print('\n agent', a)
+        for n in agents[a]['neighbors']:
+            # Send message from a to n
+            print('\n neighbor', n)
+            msg = agents[n]['agent'].sendMsg(agents, a, n)
+            # agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id].inMsg = msg
+            # I think this should be:
+            agents[n]['agent'].fusion.fusionLib[agents[a]['agent'].id].inMsg = msg
+            # b/c n receives a msg from a
 
-        # agents[a]['results'][m] = dict()    # m is the MC run number
+    # Fuse incoming messages, time step 1:
+    for a in range(nAgents):
 
-        # Calculate full covariance for NEES test
-        jointInfMat=buildJointMatrix(agents[a]['agent'])
-        agents[a]['results'][m]['FullCov'] = np.array(jointInfMat.factor.cov)
-        agents[a]['results'][m]['FullMu']=np.array(jointInfMat.factor.mean)
-        agents[a]['results'][m]['Lambda']=np.array([1])
-       # jointCovMat=jointInfMat.factor.cov
+        agents[a]['agent'].fuseMsg()
 
-    # TODO: HAVE THE ROBOT START DRIVING HERE
+        for key in agents[a]['agent'].fusion.commonVars:
 
-    k = 2
-    rospy.sleep(1)
-    while not rospy.is_shutdown() and (k < 200):
-        # T1["u"] = uData[:,k]
-        print('\nk=',k)
-
-        # Prediction step
-        ag['agent'] = ag['filter'].add_Prediction(ag['agent'])
+            agents[a]['agent'] = mergeFactors(agents[a]['agent'],agents[a]['agent'].fusion.commonVars[key])
 
 
+for a in range(nAgents):
+    agents[a]['agent'].build_semiclique_tree()
 
-        # Agent's CF graphs prediction step:
+tmpGraph = dict()
+# Inference
+
+agents = inferState(agents, dynamicList, nAgents, m = 0,  firstRunFlag = 1, saveFlag = 1)
+firstRunFlag = 0
+
+for a in range(nAgents):
+
+    # Calculate full covariance for NEES test
+    jointInfMat=buildJointMatrix(agents[a]['agent'])
+    agents[a]['results'][0]['FullCov'] = np.array(jointInfMat.factor.cov)
+    agents[a]['results'][0]['FullMu']=np.array(jointInfMat.factor.mean)
+    agents[a]['results'][0]['Lambda']=np.array([1])
+
+
+# TODO: HAVE THE ROBOT START DRIVING HERE
+
+k = 2
+rospy.sleep(1)
+while not rospy.is_shutdown() and (k < 200):
+
+    # Prediction step
+    ag['agent'] = ag['filter'].add_Prediction(ag['agent'])
+
+
+    # Agent's CF graphs prediction step:
+    for n in ag['neighbors']:
+        # print(ag['agent'].fusion.fusionLib)
+        # Add prediction nodes to the agent's CF graph
+        tmpCFgraph = ag['agent'].fusion.fusionLib[agents[n]['agent'].id]
+        tmpCFgraph.filter.add_Prediction(tmpCFgraph)
+
+        for var in tmpCFgraph.varSet:
+            if var in ag['agent'].dynamicList:
+                tmpCFgraph.filter.filterPastState(tmpCFgraph, getattr(ag['agent'], var+"_Past"))
+
+        del tmpCFgraph
+
+    # prepare information for measurement
+    nS = len(ag['measData'])  # number of sensors for agent a
+    for l in range(1, nS+1):
+        nM = len(ag['measData'][l]['measuredVars'])  # number of measurements the sensor takes
+        for n in range(1, nM+1):
+            ag['filter'].currentMeas[l,n] = np.array([YData[a][ag['measData'][l]['measInd'][n],k]]).T  # k measurement
+
+
+    # Conservative filtering
+    if conservativeFlag == 1 and k>=fusionFlag:
+        ag['agent']=ag['filter'].consMarginalizeNodes(ag['agent'])
+        # Update CF graph due to conservative filtering
+        lamdaMin=ag['agent'].lamdaMin
         for n in ag['neighbors']:
-            # print(ag['agent'].fusion.fusionLib)
-            # Add prediction nodes to the agent's CF graph
-            tmpCFgraph = ag['agent'].fusion.fusionLib[agents[n]['agent'].id]
-            tmpCFgraph.filter.add_Prediction(tmpCFgraph)
+            ag['agent'].fusion.updateGraph(agents[n]['agent'].id, lamdaMin)
 
-            for var in tmpCFgraph.varSet:
-                if var in ag['agent'].dynamicList:
-                    tmpCFgraph.filter.filterPastState(tmpCFgraph, getattr(ag['agent'], var+"_Past"))
+    else:
+        # Marginalize out time k:
+        for var in ag['agent'].varSet:
+            if var in ag['agent'].dynamicList:
+                ag['agent'] = ag['filter'].filterPastState(ag['agent'], getattr(ag['agent'], var+"_Past"))
 
-            del tmpCFgraph
+        ag['agent'].lamdaMin = 1
 
-        # prepare information for measurement
-        nS = len(ag['measData'])  # number of sensors for agent a
-        for l in range(1, nS+1):
-            nM = len(ag['measData'][l]['measuredVars'])  # number of measurements the sensor takes
-            for n in range(1, nM+1):
-                #agents[a]['currentMeas'][l,n] = np.array([YData[a][agents[a]['measData'][l]['measInd'][n],1]]).T
-                ag['filter'].currentMeas[l,n] = np.array([YData[a][ag['measData'][l]['measInd'][n],k]]).T  # k measurement
+    ag['agent'].build_semiclique_tree( )
 
+    agents = inferState(agents, dynamicList, nAgents, m = 0,  firstRunFlag, saveFlag = 0)
 
-        # Conservative filtering
-        if conservativeFlag == 1 and k>=fusionFlag:
-            ag['agent']=ag['filter'].consMarginalizeNodes(ag['agent'])
-            # Update CF graph due to conservative filtering
-            lamdaMin=ag['agent'].lamdaMin
-            for n in ag['neighbors']:
-                ag['agent'].fusion.updateGraph(agents[n]['agent'].id, lamdaMin)
+    ag['agent'] = ag['filter'].add_Measurement(ag['agent'],rf)
 
-        else:
-            # Marginalize out time k:
-            for var in ag['agent'].varSet:
-                if var in ag['agent'].dynamicList:
-                    ag['agent'] = ag['filter'].filterPastState(ag['agent'], getattr(ag['agent'], var+"_Past"))
+    # Receive messages, time step k:
+    if k>=fusionFlag:
+        for n in agents[a]['neighbors']:
+            msgs = ag["agent"].sendMsg(agents, ag_idx, n)
+            for msg in msgs.values():
+                data = ChannelFilter()
+                print(ag["agent"].id)
+                # data.sender = ag["agent"].id
+                data.sender = ag_idx
+                print(f'Sending from {data.sender}')
+                data.recipient = n
+                data.dims = msg["dims"]
+                data.matrixDim = len(data.dims)
+                data.infMat = msg["infMat"].flatten()
+                data.infVec = msg["infVec"]
+                pub.publish(data)
+        #TODO I think there is a problem here - where do the in-msg go?
+        rospy.wait_for_message("boss", String)
+        ag["agent"].fuseMsg()
 
-            ag['agent'].lamdaMin = 1
+        for key in ag["agent"].fusion.commonVars:
+            ag["agent"] = mergeFactors(ag["agent"], ag["agent"].fusion.commonVars[key])
 
-        ag['agent'].build_semiclique_tree( )
+        ag["agent"].build_semiclique_tree()
+        tmpGraph = dict()
 
-        agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag, saveFlag = 0)
+        # inference
+        jointInfMat=buildJointMatrix(ag['agent'])
 
-        ag['agent'] = ag['filter'].add_Measurement(ag['agent'],rf)
+        ag['results'][0]['FullCov']=np.append(ag['results'][0]['FullCov'], np.array(jointInfMat.factor.cov), axis = 1)
+        ag['results'][0]['FullMu']=np.append(ag['results'][0]['FullMu'], np.array(jointInfMat.factor.mean), axis=1)
+        ag['results'][0]['Lambda']=np.append(ag['results'][0]['Lambda'], np.array([ag['agent'].lamdaMin]), axis=0)
 
-        # Receive messages, time step k:
-        if k>=fusionFlag:
-            for n in agents[a]['neighbors']:
-                msgs = ag["agent"].sendMsg(agents, ag_idx, n)
-                for msg in msgs.values():
-                    data = ChannelFilter()
-                    print(ag["agent"].id)
-                    # data.sender = ag["agent"].id
-                    data.sender = ag_idx
-                    print(f'Sending from {data.sender}')
-                    data.recipient = n
-                    data.dims = msg["dims"]
-                    data.matrixDim = len(data.dims)
-                    data.infMat = msg["infMat"].flatten()
-                    data.infVec = msg["infVec"]
-                    pub.publish(data)
+    agents = inferState(agents, dynamicList, nAgents, m = 0,  firstRunFlag, saveFlag = 1)
 
-            rospy.wait_for_message("boss", String)
-            ag["agent"].fuseMsg()
+    del tmpGraph
+    k += 1
 
-            for key in ag["agent"].fusion.commonVars:
-                ag["agent"] = mergeFactors(ag["agent"], ag["agent"].fusion.commonVars[key])
+    # Save data from current time step
+    for var in ag["agent"].varSet:
+        ag_tag = "X" + str(ag_idx + 1)
+        if var != ag_tag:
+            agent_results = Results()
+            agent_results.TimeStep = k-1
+            agent_results.Agent = ag_tag
+            agent_results.Bias = bias
+            agent_results.Target = var
+            agent_results.LambdaMin = ag["agent"].lamdaMin
+            agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
+            agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
+            agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
+            agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
+            agent_results.TMuDim = np.array(ag["results"][0][var + "_mu"].shape)
+            agent_results.TMu = ag["results"][0][var + "_mu"].flatten()
+            agent_results.TCovDim = np.array(ag["results"][0][var + "_cov"].shape)
+            agent_results.TCov = ag["results"][0][var +"_cov"].flatten()
+            agent_results.SMuDim = np.array(ag["results"][0][ag_tag + "_mu"].shape)
+            agent_results.SMu = ag["results"][0][ag_tag + "_mu"].flatten()
+            agent_results.SCovDim = np.array(ag["results"][0][ag_tag + "_cov"].shape)
+            agent_results.SCov = ag["results"][0][ag_tag + "_cov"].flatten()
 
-            ag["agent"].build_semiclique_tree()
-            tmpGraph = dict()
+            pub_results.publish(agent_results)
 
-            # inference
-            jointInfMat=buildJointMatrix(ag['agent'])
-
-            ag['results'][m]['FullCov']=np.append(ag['results'][m]['FullCov'], np.array(jointInfMat.factor.cov), axis = 1)
-            ag['results'][m]['FullMu']=np.append(ag['results'][m]['FullMu'], np.array(jointInfMat.factor.mean), axis=1)
-            ag['results'][m]['Lambda']=np.append(ag['results'][m]['Lambda'], np.array([ag['agent'].lamdaMin]), axis=0)
-
-        agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag, saveFlag = 1)
-
-        del tmpGraph
-        k += 1
-
-        # Save data from current time step
-        for var in ag["agent"].varSet:
-            ag_tag = "X" + str(ag_idx + 1)
-            if var != ag_tag:
-                agent_results = Results()
-                agent_results.TimeStep = k-1
-                agent_results.Agent = ag_tag
-                agent_results.Bias = bias
-                agent_results.Target = var
-                agent_results.LambdaMin = ag["agent"].lamdaMin
-                agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
-                agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
-                agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
-                agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
-                agent_results.TMuDim = np.array(ag["results"][0][var + "_mu"].shape)
-                agent_results.TMu = ag["results"][0][var + "_mu"].flatten()
-                agent_results.TCovDim = np.array(ag["results"][0][var + "_cov"].shape)
-                agent_results.TCov = ag["results"][0][var +"_cov"].flatten()
-                agent_results.SMuDim = np.array(ag["results"][0][ag_tag + "_mu"].shape)
-                agent_results.SMu = ag["results"][0][ag_tag + "_mu"].flatten()
-                agent_results.SCovDim = np.array(ag["results"][0][ag_tag + "_cov"].shape)
-                agent_results.SCov = ag["results"][0][ag_tag + "_cov"].flatten()
-
-                pub_results.publish(agent_results)
-
-# I think this saves the data --> replace with ROS code
-# for a in range(nAgents):
-#     # plt.figure(100+a)
-#     # nx.draw(agents[a]['agent'].fg, with_labels = True)
-#     # plt.savefig("MC_StaticTarget_a"+str(a)+".png")
-
-#     if saveFlag == 1:
-#         mdict = agents[a]['results'][0]
-#         for m in range(1,nMC):
-#             for key in mdict:
-#                 mdict[key] = np.append(mdict[key], agents[a]['results'][m][key],axis = 0)
-#               # savemat(('NL_Filtering_2agents_1Target_agent_'+str(a)+'.mat'), mdict,appendmat=True, format='5', long_field_names=False, do_compression=False, oned_as='column' )
-#         #savemat(('NL_Filtering_2agents_1Target_agent_'+str(a)+'_MC.mat'), mdict,appendmat=True, format='5', long_field_names=False, do_compression=False, oned_as='column' )
-#         savemat(('NL_Filtering_2agents_1Target_agent_'+str(a)+'_MC.mat'), mdict,appendmat=True, format='5', long_field_names=False, do_compression=False, oned_as='column' )
-
-#         #savemat(('CoopLocTest_MC.mat'), mdict,appendmat=True, format='5', long_field_names=False, do_compression=False, oned_as='column' )
