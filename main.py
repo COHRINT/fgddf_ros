@@ -51,11 +51,11 @@ def callback(data, agent):
     # print("Sender id: " + str(data.sender))
     # print('-----')
     if data.recipient == agent["agent"].id:
-        print("sender: " + str(data.sender))
-        print('---')
-        print(agent["agent"])
-        print('---')
-        print(agent["agent"].fusion.fusionLib)
+        # print("sender: " + str(data.sender))
+        # print('---')
+        # print(agent["agent"])
+        # print('---')
+        # print(agent["agent"].fusion.fusionLib)
         agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
 
 def boss_callback(msg):
@@ -115,7 +115,7 @@ pub_results = rospy.Publisher("results", Results, queue_size=10)
 # Create data variable
 data = ChannelFilter()
 
-print("checkpoint")
+# print("checkpoint")
 
 # Wait for each target's and landmark's position to be recorded at least onece
 if (target1 is not None):
@@ -179,7 +179,7 @@ if (landmark9 is not None):
 if (landmark10 is not None):
     rospy.wait_for_message("vrpn_client_node/"+landmark10+"/pose",PoseStamped)
 
-print("checkpoint")
+# print("checkpoint")
 
 # Assemble target array
 targets = ["" for x in range(20)]
@@ -220,7 +220,7 @@ landmarks[9] = landmark10
 # Start ros functions
 rf = ROSFxn(agent_name,targets,landmarks)
 
-print("checkpoint")
+# print("checkpoint")
 
 # Read landmark positions
 for ll in range(1,nLM+1):
@@ -229,7 +229,7 @@ for ll in range(1,nLM+1):
         
     variables["l"+str(ll)] = rf.landmark_pos[ll-1]
 
-print("checkpoint")
+# print("checkpoint")
 
 
 
@@ -241,7 +241,7 @@ for i in range(nAgents):
 
 # instantiate filters and agents:
 for a in range(nAgents):
-    print('agent:', a)
+    # print('agent:', a)
 
     agents[a]['filter'] = FG_EKF(variables, varSet[a], agents[a]['measData'], uData, dt)
     agents[a]['agent'] = agent(varSet[a], dynamicList, agents[a]['filter'], 'HS_CF', a, condVar[a], variables)
@@ -288,22 +288,21 @@ for a in range(nAgents):
     for ll in landMarks:
         agents[a]['filter'].x_hat[ll] = variables[ll]
 
-    print('adhadfa')
     agents[a]['agent'] = agents[a]['filter'].add_Measurement(agents[a]['agent'],rf)
 
 
 
 # set initial fusion definitions:
 for a in range(nAgents):
-    print("Agent: "+str(a)+" neighbors:")
-    print(agents[a]['neighbors'])
+    # print("Agent: "+str(a)+" neighbors:")
+    # print(agents[a]['neighbors'])
     for n in agents[a]['neighbors']:
-        print(n)
-        print("in main:")
-        print(agents[n]['agent'].id)
+        # print(n)
+        # print("in main:")
+        # print(agents[n]['agent'].id)
         agents[a]['agent'].set_fusion(agents[n]['agent'], variables)
-        print("Initial configuration of fusion:")
-        print(agents[a]['agent'].fusion.fusionLib)
+        # print("Initial configuration of fusion:")
+        # print(agents[a]['agent'].fusion.fusionLib)
 
         # Add prediction nodes to the agent's CF graph
         tmpCFgraph = agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id]

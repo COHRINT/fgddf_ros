@@ -23,8 +23,8 @@ class agent(object):
         self.varSet = varSet
         self.factorCounter = 0
         self.filter = filter
-        print("in agent():")
-        print(ag_idx)
+        # print("in agent():")
+        # print(ag_idx)
         self.id = ag_idx
         self.dynamicList = dynamicList
         self.fusionAlgorithm = fusionAlgorithm
@@ -84,8 +84,8 @@ class agent(object):
                 print('No prior defined for variable ', str(list_vnodes[i]))
 
     def set_fusion(self, agent_j, variables):
-        print("in set_fusion:")
-        print(agent_j.id)
+        # print("in set_fusion:")
+        # print(agent_j.id)
         self.fusion.set_channel(self, agent_j)
 
         if 'CF' in self.fusionAlgorithm:
@@ -93,7 +93,7 @@ class agent(object):
             dynamicList = self.dynamicList & commonVars
             self.fusion.fusionLib[agent_j.id] = agent(commonVars, dynamicList, self.filter, self.fusionAlgorithm, agent_j.id, None, variables )
             self.fusion.fusionLib[agent_j.id].set_prior(self.prior)
-            print(self.fusion.commonVars)
+            # print(self.fusion.commonVars)
 
 
     def sendMsg(self, agents, agent_i, agent_j):
@@ -101,9 +101,9 @@ class agent(object):
             returns a dictionary of with keys: dims, infMat, infVec
             dims is a list of names of variables
         """
-        print("in sendMsg:")
-        print(self.fusion.commonVars)
-        print(agents[agent_j]['agent'].id)
+        # print("in sendMsg:")
+        # print(self.fusion.commonVars)
+        # print(agents[agent_j]['agent'].id)
         commonVars = self.fusion.commonVars[agents[agent_j]['agent'].id]
         msg = self.fusion.prepare_msg(agents[agent_i]['agent'], agents[agent_i]['filter'], commonVars, agents[agent_j]['agent'].id)
 
