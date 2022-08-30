@@ -46,7 +46,16 @@ from fgddf_ros.msg import Results
 
 # ROS callback functions
 def callback(data, agent):
+    print("Current agent id: " + str(agent["agent"].id))
+    print("Desired recipieint id: " + str(data.recipient))
+    print("Sender id: " + str(data.sender))
+    print('-----')
     if data.recipient == agent["agent"].id:
+        print("sender: " + str(data.sender))
+        print('---')
+        print(agent["agent"])
+        print('---')
+        print(agent["agent"].fusion.fusionLib)
         agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
 
 def boss_callback(msg):
@@ -286,6 +295,8 @@ for a in range(nAgents):
 
 # set initial fusion definitions:
 for a in range(nAgents):
+    # print("Agen"+str(a)+"neighbors:")
+    # print(agents[a]['neighbors'])
     for n in agents[a]['neighbors']:
         agents[a]['agent'].set_fusion(agents[n]['agent'], variables)
 
@@ -394,7 +405,7 @@ while not rospy.is_shutdown() and (k < 200):
 
     # Receive messages, time step k:
     if k>=fusionFlag:
-        for n in agents[a]['neighbors']:
+        for n in ag['neighbors']:
             msgs = ag["agent"].sendMsg(agents, ag_idx, n)
             for msg in msgs.values():
                 data = ChannelFilter()
