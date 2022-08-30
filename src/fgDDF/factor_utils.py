@@ -356,12 +356,8 @@ def inferState(agents, dynamicList, nAgents, m , firstRunFlag, saveFlag):
                 agents[a]['filter'].x_hat[varStr] = myu
 
                 if saveFlag:
-                    if firstRunFlag:
-                        agents[a]['results'][m][(varStr+'_mu')] = myu
-                        agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)
-                    else:
-                        agents[a]['results'][m][(varStr+'_mu')] = np.append(agents[a]['results'][m][(varStr+'_mu')], myu, axis = 1)
-                        agents[a]['results'][m][(varStr+'_cov')] = np.append(agents[a]['results'][m][(varStr+'_cov')], np.array(belief.cov), axis = 1)
+                    agents[a]['results'][m][(varStr+'_mu')] = myu
+                    agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)
 
 
 
@@ -404,12 +400,9 @@ def inferState(agents, dynamicList, nAgents, m , firstRunFlag, saveFlag):
 
                     agents[a]['filter'].x_hat[varStr] = myu
 
-                    if firstRunFlag:
-                        agents[a]['results'][m][(varStr+'_mu')] = myu
-                        agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)
-                    else:
-                        agents[a]['results'][m][(varStr+'_mu')] = np.append(agents[a]['results'][m][(varStr+'_mu')], myu, axis = 1)
-                        agents[a]['results'][m][(varStr+'_cov')] = np.append(agents[a]['results'][m][(varStr+'_cov')], np.array(belief.cov), axis = 1)
+                    
+                    agents[a]['results'][m][(varStr+'_mu')] = myu
+                    agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)
 
 
 

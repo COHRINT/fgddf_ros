@@ -115,7 +115,7 @@ pub_results = rospy.Publisher("results", Results, queue_size=10)
 # Create data variable
 data = ChannelFilter()
 
-# print("checkpoint")
+print("checkpoint 1")
 
 # Wait for each target's and landmark's position to be recorded at least onece
 if (target1 is not None):
@@ -179,7 +179,7 @@ if (landmark9 is not None):
 if (landmark10 is not None):
     rospy.wait_for_message("vrpn_client_node/"+landmark10+"/pose",PoseStamped)
 
-# print("checkpoint")
+print("checkpoint 2")
 
 # Assemble target array
 targets = ["" for x in range(20)]
@@ -220,7 +220,7 @@ landmarks[9] = landmark10
 # Start ros functions
 rf = ROSFxn(agent_name,targets,landmarks)
 
-# print("checkpoint")
+print("checkpoint 3")
 
 # Read landmark positions
 for ll in range(1,nLM+1):
@@ -229,7 +229,7 @@ for ll in range(1,nLM+1):
         
     variables["l"+str(ll)] = rf.landmark_pos[ll-1]
 
-# print("checkpoint")
+print("checkpoint 4")
 
 
 
@@ -436,9 +436,9 @@ while not rospy.is_shutdown() and (k < 200):
         # inference
         jointInfMat=buildJointMatrix(ag['agent'])
 
-        ag['results'][0]['FullCov']=np.append(ag['results'][0]['FullCov'], np.array(jointInfMat.factor.cov), axis = 1)
-        ag['results'][0]['FullMu']=np.append(ag['results'][0]['FullMu'], np.array(jointInfMat.factor.mean), axis=1)
-        ag['results'][0]['Lambda']=np.append(ag['results'][0]['Lambda'], np.array([ag['agent'].lamdaMin]), axis=0)
+        ag['results'][0]['FullCov']= np.array(jointInfMat.factor.cov)
+        ag['results'][0]['FullMu']=np.array(jointInfMat.factor.mean)
+        ag['results'][0]['Lambda']=np.array([ag['agent'].lamdaMin])
 
     agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag, saveFlag = 1)
 
@@ -447,6 +447,7 @@ while not rospy.is_shutdown() and (k < 200):
 
     # Save data from current time step
     for var in ag["agent"].varSet:
+        print("Data logging debuggin:")
         ag_tag = "X" + str(ag_idx + 1)
         if var != ag_tag:
             agent_results = Results()
@@ -454,14 +455,26 @@ while not rospy.is_shutdown() and (k < 200):
             agent_results.Agent = ag_tag
             agent_results.Target = var
             agent_results.LambdaMin = ag["agent"].lamdaMin
+
+            # print("Full variables:")
+            # print(ag["results"][0]["FullMu"])
+            # print(ag["results"][0]["FullCov"])
             agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
             agent_results.FullMu = ag["results"][0]["FullMu"].flatten()
             agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
             agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
+
+            print("Target data")
+            print(ag["results"][0][var + "_mu"])
+            print(ag["results"][0][var + "_cov"])
             agent_results.TMuDim = np.array(ag["results"][0][var + "_mu"].shape)
             agent_results.TMu = ag["results"][0][var + "_mu"].flatten()
             agent_results.TCovDim = np.array(ag["results"][0][var + "_cov"].shape)
             agent_results.TCov = ag["results"][0][var +"_cov"].flatten()
+
+            print("agent data")
+            print(ag["results"][0][ag_tag + "_mu"])
+            print(ag["results"][0][ag_tag + "_cov"])
             agent_results.SMuDim = np.array(ag["results"][0][ag_tag + "_mu"].shape)
             agent_results.SMu = ag["results"][0][ag_tag + "_mu"].flatten()
             agent_results.SCovDim = np.array(ag["results"][0][ag_tag + "_cov"].shape)
