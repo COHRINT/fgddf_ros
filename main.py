@@ -80,6 +80,8 @@ YData = dict()
 fusionFlag = 0 # start fusing from time stp 5
 #N = 1000 # Time steps
 uData = dict()
+m = 0 # Monte-Carlo
+
 
 # Find ROS package path
 rospack = rospkg.RosPack()
@@ -386,7 +388,7 @@ while not rospy.is_shutdown() and (k < 200):
 
     ag['agent'].build_semiclique_tree( )
 
-    agents = inferState(agents, dynamicList, nAgents, m = 0,  firstRunFlag, saveFlag = 0)
+    agents = inferState(agents, dynamicList, nAgents, m, firstRunFlag, saveFlag = 0)
 
     ag['agent'] = ag['filter'].add_Measurement(ag['agent'],rf)
 
@@ -423,7 +425,7 @@ while not rospy.is_shutdown() and (k < 200):
         ag['results'][0]['FullMu']=np.append(ag['results'][0]['FullMu'], np.array(jointInfMat.factor.mean), axis=1)
         ag['results'][0]['Lambda']=np.append(ag['results'][0]['Lambda'], np.array([ag['agent'].lamdaMin]), axis=0)
 
-    agents = inferState(agents, dynamicList, nAgents, m = 0,  firstRunFlag, saveFlag = 1)
+    agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag, saveFlag = 1)
 
     del tmpGraph
     k += 1
