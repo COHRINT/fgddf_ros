@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e0598f4a-3cc4-46a1-a3fe-92094cc8829c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fgDDF/factor_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/fgDDF/factor_utils.py" afterDir="false" />
-    </list>
+    <list default="true" id="e0598f4a-3cc4-46a1-a3fe-92094cc8829c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,7 +34,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1661805325314</updated>
-      <workItem from="1661805329052" duration="4479000" />
+      <workItem from="1661805329052" duration="5143000" />
     </task>
     <servers />
   </component>
