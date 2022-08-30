@@ -437,7 +437,6 @@ while not rospy.is_shutdown() and (k < 200):
             agent_results = Results()
             agent_results.TimeStep = k-1
             agent_results.Agent = ag_tag
-            agent_results.Bias = bias
             agent_results.Target = var
             agent_results.LambdaMin = ag["agent"].lamdaMin
             agent_results.FullMuDim = np.array(ag["results"][0]["FullMu"].shape)
