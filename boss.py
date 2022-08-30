@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from httplib2 import FailedToDecompressContent
 import rospy
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped, TwistStamped
@@ -8,10 +9,10 @@ from tf.transformations import euler_from_quaternion # Quaternion conversions
 from fgDDF.inputFile import *
 
 TARGET1_NAME = "cohrint_tycho_bot_1"
-TARGET2_NAME = "cohrint_tycho_bot_2"
-TARGET3_NAME = "cohrint_tycho_bot_3"
-TARGET4_NAME = "cohrint_tycho_bot_4"
-TARGET5_NAME = "cohrint_tycho_bot_5"
+TARGET2_NAME = None
+TARGET3_NAME = None
+TARGET4_NAME = None
+TARGET5_NAME = None
 TARGET6_NAME = None
 TARGET7_NAME = None
 TARGET8_NAME = None
@@ -27,6 +28,10 @@ TARGET17_NAME = None
 TARGET18_NAME = None
 TARGET19_NAME = None
 TARGET20_NAME = None
+
+AGENT1_NAME = "cohrint_tars"
+AGENT2_NAME = "cohrint_kipp"
+AGENT3_NAME = None
 
 class Boss:
     def __init__(self, nAgents, rate, targets):
@@ -55,6 +60,10 @@ class Boss:
         self.target18_exists = False
         self.target19_exists = False
         self.target20_exists = False
+
+        self.agent1_exists = False
+        self.agent2_exists = False
+        self.agent3_exists = False
 
         for t in targets:
             if t == "T1":
@@ -137,6 +146,20 @@ class Boss:
                 self.target20_truth = TruthData()
                 self.target20_truth.target = TARGET20_NAME
                 self.target20_exists = True
+        
+        for a in agents:
+            if a == "X1":
+                self.agent1_truth = TruthData()
+                self.agent1_truth.target = AGENT1_NAME
+                self.agent1_exists = True
+            if a == "X2":
+                self.agent2_truth = TruthData()
+                self.agent2_truth.target = AGENT2_NAME
+                self.agent2_exists = True
+            if a == "X3":
+                self.agent3_truth = TruthData()
+                self.agent3_truth.target = AGENT1_NAME
+                self.agent3_exists = True
 
         # self.current_truth = TruthData()
         # self.current_truth.bias0 = np.array([[2], [3]])
@@ -155,85 +178,75 @@ class Boss:
         # truth_pos_sub = rospy.Subscriber("/vrpn_client_node/"+TARGET_NAME+"/pose",PoseStamped,self.callback_position)
         # truth_vel_sub = rospy.Subscriber("/vrpn_client_node/"+TARGET_NAME+"/twist",TwistStamped,self.callback_velocity)
         if self.target1_exists:
-            truth_pos_sub_1 = rospy.Subscriber("/vrpn_client_node/"+TARGET1_NAME+"/pose",PoseStamped,self.callback_position_1)
-            truth_vel_sub_1 = rospy.Subscriber("/vrpn_client_node/"+TARGET1_NAME+"/twist",TwistStamped,self.callback_velocity_1)
+            truth_pos_sub_1 = rospy.Subscriber("/vrpn_client_node/"+TARGET1_NAME+"/pose",PoseStamped,self.callback_target_truth_1)
             truth_pub.publish(self.target1_truth)
         if self.target2_exists:
-            truth_pos_sub_2 = rospy.Subscriber("/vrpn_client_node/"+TARGET2_NAME+"/pose",PoseStamped,self.callback_position_2)
-            truth_vel_sub_2 = rospy.Subscriber("/vrpn_client_node/"+TARGET2_NAME+"/twist",TwistStamped,self.callback_velocity_2)
+            truth_pos_sub_2 = rospy.Subscriber("/vrpn_client_node/"+TARGET2_NAME+"/pose",PoseStamped,self.callback_target_truth_2)
             truth_pub.publish(self.target2_truth)
         if self.target3_exists:
-            truth_pos_sub_3 = rospy.Subscriber("/vrpn_client_node/"+TARGET3_NAME+"/pose",PoseStamped,self.callback_position_3)
-            truth_vel_sub_3 = rospy.Subscriber("/vrpn_client_node/"+TARGET3_NAME+"/twist",TwistStamped,self.callback_velocity_3)
+            truth_pos_sub_3 = rospy.Subscriber("/vrpn_client_node/"+TARGET3_NAME+"/pose",PoseStamped,self.callback_target_truth_3)
             truth_pub.publish(self.target3_truth)
         if self.target4_exists:
-            truth_pos_sub_4 = rospy.Subscriber("/vrpn_client_node/"+TARGET4_NAME+"/pose",PoseStamped,self.callback_position_4)
-            truth_vel_sub_4 = rospy.Subscriber("/vrpn_client_node/"+TARGET4_NAME+"/twist",TwistStamped,self.callback_velocity_4)
+            truth_pos_sub_4 = rospy.Subscriber("/vrpn_client_node/"+TARGET4_NAME+"/pose",PoseStamped,self.callback_target_truth_4)
             truth_pub.publish(self.target4_truth)
         if self.target5_exists:
-            truth_pos_sub_5 = rospy.Subscriber("/vrpn_client_node/"+TARGET5_NAME+"/pose",PoseStamped,self.callback_position_5)
-            truth_vel_sub_5 = rospy.Subscriber("/vrpn_client_node/"+TARGET5_NAME+"/twist",TwistStamped,self.callback_velocity_5)
+            truth_pos_sub_5 = rospy.Subscriber("/vrpn_client_node/"+TARGET5_NAME+"/pose",PoseStamped,self.callback_target_truth_5)
             truth_pub.publish(self.target5_truth)
         if self.target6_exists:
-            truth_pos_sub_6 = rospy.Subscriber("/vrpn_client_node/"+TARGET6_NAME+"/pose",PoseStamped,self.callback_position_6)
-            truth_vel_sub_6 = rospy.Subscriber("/vrpn_client_node/"+TARGET6_NAME+"/twist",TwistStamped,self.callback_velocity_6)
+            truth_pos_sub_6 = rospy.Subscriber("/vrpn_client_node/"+TARGET6_NAME+"/pose",PoseStamped,self.callback_target_truth_6)
             truth_pub.publish(self.target6_truth)
         if self.target7_exists:
-            truth_pos_sub_7 = rospy.Subscriber("/vrpn_client_node/"+TARGET7_NAME+"/pose",PoseStamped,self.callback_position_7)
-            truth_vel_sub_7 = rospy.Subscriber("/vrpn_client_node/"+TARGET7_NAME+"/twist",TwistStamped,self.callback_velocity_7)
+            truth_pos_sub_7 = rospy.Subscriber("/vrpn_client_node/"+TARGET7_NAME+"/pose",PoseStamped,self.callback_target_truth_7)
             truth_pub.publish(self.target7_truth)
         if self.target8_exists:
-            truth_pos_sub_8 = rospy.Subscriber("/vrpn_client_node/"+TARGET8_NAME+"/pose",PoseStamped,self.callback_position_8)
-            truth_vel_sub_8 = rospy.Subscriber("/vrpn_client_node/"+TARGET8_NAME+"/twist",TwistStamped,self.callback_velocity_8)
+            truth_pos_sub_8 = rospy.Subscriber("/vrpn_client_node/"+TARGET8_NAME+"/pose",PoseStamped,self.callback_target_truth_8)
             truth_pub.publish(self.target8_truth)
         if self.target9_exists:
-            truth_pos_sub_9 = rospy.Subscriber("/vrpn_client_node/"+TARGET9_NAME+"/pose",PoseStamped,self.callback_position_9)
-            truth_vel_sub_9 = rospy.Subscriber("/vrpn_client_node/"+TARGET9_NAME+"/twist",TwistStamped,self.callback_velocity_9)
+            truth_pos_sub_9 = rospy.Subscriber("/vrpn_client_node/"+TARGET9_NAME+"/pose",PoseStamped,self.callback_target_truth_9)
             truth_pub.publish(self.target9_truth)
         if self.target10_exists:
-            truth_pos_sub_10 = rospy.Subscriber("/vrpn_client_node/"+TARGET10_NAME+"/pose",PoseStamped,self.callback_position_10)
-            truth_vel_sub_10 = rospy.Subscriber("/vrpn_client_node/"+TARGET10_NAME+"/twist",TwistStamped,self.callback_velocity_10)
+            truth_pos_sub_10 = rospy.Subscriber("/vrpn_client_node/"+TARGET10_NAME+"/pose",PoseStamped,self.callback_target_truth_10)
             truth_pub.publish(self.target10_truth)
         if self.target11_exists:
-            truth_pos_sub_11 = rospy.Subscriber("/vrpn_client_node/"+TARGET11_NAME+"/pose",PoseStamped,self.callback_position_11)
-            truth_vel_sub_11 = rospy.Subscriber("/vrpn_client_node/"+TARGET11_NAME+"/twist",TwistStamped,self.callback_velocity_11)
+            truth_pos_sub_11 = rospy.Subscriber("/vrpn_client_node/"+TARGET11_NAME+"/pose",PoseStamped,self.callback_target_truth_11)
             truth_pub.publish(self.target11_truth)
         if self.target12_exists:
-            truth_pos_sub_12 = rospy.Subscriber("/vrpn_client_node/"+TARGET12_NAME+"/pose",PoseStamped,self.callback_position_12)
-            truth_vel_sub_12 = rospy.Subscriber("/vrpn_client_node/"+TARGET12_NAME+"/twist",TwistStamped,self.callback_velocity_12)
+            truth_pos_sub_12 = rospy.Subscriber("/vrpn_client_node/"+TARGET12_NAME+"/pose",PoseStamped,self.callback_target_truth_12)
             truth_pub.publish(self.target12_truth)
         if self.target13_exists:
-            truth_pos_sub_13 = rospy.Subscriber("/vrpn_client_node/"+TARGET13_NAME+"/pose",PoseStamped,self.callback_position_13)
-            truth_vel_sub_13 = rospy.Subscriber("/vrpn_client_node/"+TARGET13_NAME+"/twist",TwistStamped,self.callback_velocity_13)
+            truth_pos_sub_13 = rospy.Subscriber("/vrpn_client_node/"+TARGET13_NAME+"/pose",PoseStamped,self.callback_target_truth_13)
             truth_pub.publish(self.target13_truth)
         if self.target14_exists:
-            truth_pos_sub_14 = rospy.Subscriber("/vrpn_client_node/"+TARGET14_NAME+"/pose",PoseStamped,self.callback_position_14)
-            truth_vel_sub_14 = rospy.Subscriber("/vrpn_client_node/"+TARGET14_NAME+"/twist",TwistStamped,self.callback_velocity_14)
+            truth_pos_sub_14 = rospy.Subscriber("/vrpn_client_node/"+TARGET14_NAME+"/pose",PoseStamped,self.callback_target_truth_14)
             truth_pub.publish(self.target14_truth)
         if self.target15_exists:
-            truth_pos_sub_15 = rospy.Subscriber("/vrpn_client_node/"+TARGET15_NAME+"/pose",PoseStamped,self.callback_position_15)
-            truth_vel_sub_15 = rospy.Subscriber("/vrpn_client_node/"+TARGET15_NAME+"/twist",TwistStamped,self.callback_velocity_15)
+            truth_pos_sub_15 = rospy.Subscriber("/vrpn_client_node/"+TARGET15_NAME+"/pose",PoseStamped,self.callback_target_truth_15)
             truth_pub.publish(self.target15_truth)
         if self.target16_exists:
-            truth_pos_sub_16 = rospy.Subscriber("/vrpn_client_node/"+TARGET16_NAME+"/pose",PoseStamped,self.callback_position_16)
-            truth_vel_sub_16 = rospy.Subscriber("/vrpn_client_node/"+TARGET16_NAME+"/twist",TwistStamped,self.callback_velocity_16)
+            truth_pos_sub_16 = rospy.Subscriber("/vrpn_client_node/"+TARGET16_NAME+"/pose",PoseStamped,self.callback_target_truth_16)
             truth_pub.publish(self.target16_truth)
         if self.target17_exists:
-            truth_pos_sub_17 = rospy.Subscriber("/vrpn_client_node/"+TARGET17_NAME+"/pose",PoseStamped,self.callback_position_17)
-            truth_vel_sub_17 = rospy.Subscriber("/vrpn_client_node/"+TARGET17_NAME+"/twist",TwistStamped,self.callback_velocity_17)
+            truth_pos_sub_17 = rospy.Subscriber("/vrpn_client_node/"+TARGET17_NAME+"/pose",PoseStamped,self.callback_target_truth_17)
             truth_pub.publish(self.target17_truth)
         if self.target18_exists:
-            truth_pos_sub_18 = rospy.Subscriber("/vrpn_client_node/"+TARGET18_NAME+"/pose",PoseStamped,self.callback_position_18)
-            truth_vel_sub_18 = rospy.Subscriber("/vrpn_client_node/"+TARGET18_NAME+"/twist",TwistStamped,self.callback_velocity_18)
+            truth_pos_sub_18 = rospy.Subscriber("/vrpn_client_node/"+TARGET18_NAME+"/pose",PoseStamped,self.callback_target_truth_18)
             truth_pub.publish(self.target18_truth)
         if self.target19_exists:
-            truth_pos_sub_19 = rospy.Subscriber("/vrpn_client_node/"+TARGET19_NAME+"/pose",PoseStamped,self.callback_position_19)
-            truth_vel_sub_19 = rospy.Subscriber("/vrpn_client_node/"+TARGET19_NAME+"/twist",TwistStamped,self.callback_velocity_19)
+            truth_pos_sub_19 = rospy.Subscriber("/vrpn_client_node/"+TARGET19_NAME+"/pose",PoseStamped,self.callback_target_truth_19)
             truth_pub.publish(self.target19_truth)
         if self.target20_exists:
-            truth_pos_sub_20 = rospy.Subscriber("/vrpn_client_node/"+TARGET20_NAME+"/pose",PoseStamped,self.callback_position_20)
-            truth_vel_sub_20 = rospy.Subscriber("/vrpn_client_node/"+TARGET20_NAME+"/twist",TwistStamped,self.callback_velocity_20)
+            truth_pos_sub_20 = rospy.Subscriber("/vrpn_client_node/"+TARGET20_NAME+"/pose",PoseStamped,self.callback_target_truth_20)
             truth_pub.publish(self.target20_truth)
+
+        if self.agent1_exists:
+            truth_agent_sub_1 = rospy.Subscriber("/vrpn_client_node/"+AGENT1_NAME+"/pose",PoseStamped,self.callback_agent_truth_1)
+            truth_pub.publish(self.agent1_truth)
+        if self.agent2_exists:
+            truth_agent_sub_2 = rospy.Subscriber("/vrpn_client_node/"+AGENT2_NAME+"/pose",PoseStamped,self.callback_agent_truth_2)
+            truth_pub.publish(self.agent2_truth)
+        if self.agent3_exists:
+            truth_agent_sub_3 = rospy.Subscriber("/vrpn_client_node/"+AGENT3_NAME+"/pose",PoseStamped,self.callback_agent_truth_3)
+            truth_pub.publish(self.agent3_truth)
 
         # truth_pub.publish(self.current_truth)
         while not rospy.is_shutdown():
@@ -285,279 +298,187 @@ class Boss:
                     truth_pub.publish(self.target19_truth)
                 if self.target20_exists:
                     truth_pub.publish(self.target20_truth)
-                # truth_pub.publish(self.current_truth)
+                
+                if self.agent1_exists:
+                    truth_pub.publish(self.agent1_truth)
+                if self.agent2_exists:
+                    truth_pub.publish(self.agent2_truth)
+                if self.agent3_exists:
+                    truth_pub.publish(self.agent3_truth)
             rate.sleep()
 
     def callback(self, data):
         self.has_msg[data.sender] += 1
 
-    def callback_position_1(self,msg):
+    def callback_target_truth_1(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target1_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target1_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_2(self,msg):
+        self.target1_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_2(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target2_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target2_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_3(self,msg):
+        self.target2_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_3(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target3_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target3_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_4(self,msg):
+        self.target3_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_4(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target4_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target4_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_5(self,msg):
+        self.target4_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_5(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target5_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target5_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_6(self,msg):
+        self.target5_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_6(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target6_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target6_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_7(self,msg):
+        self.target6_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_7(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target7_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target7_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_8(self,msg):
+        self.target7_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_8(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target8_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target8_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_9(self,msg):
+        self.target8_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_9(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target9_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target9_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_10(self,msg):
+        self.target9_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_10(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target10_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target10_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_11(self,msg):
+        self.target10_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_11(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target11_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target11_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_12(self,msg):
+        self.target11_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_12(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target12_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target12_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_13(self,msg):
+        self.target12_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_13(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target13_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target13_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_14(self,msg):
+        self.target13_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_14(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target14_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target14_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_15(self,msg):
+        self.target14_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_15(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target15_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target15_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_16(self,msg):
+        self.target15_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_16(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target16_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target16_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_17(self,msg):
+        self.target16_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_17(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target17_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target17_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_18(self,msg):
+        self.target17_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_18(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target18_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target18_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_19(self,msg):
+        self.target18_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_19(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target19_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target19_truth.orientation = np.array([x_rot,y_rot,z_rot])
-    def callback_position_20(self,msg):
+        self.target19_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_target_truth_20(self,msg):
         x_pos = msg.pose.position.x
         y_pos = msg.pose.position.y
         z_pos = msg.pose.position.z
-        self.target20_truth.position = np.array([x_pos,y_pos,z_pos])
         orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
         (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
-        self.target20_truth.orientation = np.array([x_rot,y_rot,z_rot])
+        self.target20_truth.position_angle = np.array([x_pos,y_pos,z_rot])
 
-    def callback_velocity_1(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target1_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_2(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target2_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_3(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target3_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_4(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target4_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_5(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target5_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_6(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target6_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_7(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target7_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_8(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target8_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_9(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target9_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_10(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target10_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_11(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target11_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_12(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target12_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_13(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target13_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_14(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target14_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_15(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target15_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_16(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target16_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_17(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target17_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_18(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target18_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_19(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target19_truth.velocity = np.array([x_vel,y_vel,z_vel])
-    def callback_velocity_20(self,msg):
-        x_vel = msg.twist.linear.x
-        y_vel = msg.twist.linear.y
-        z_vel = msg.twist.linear.z
-        self.target20_truth.velocity = np.array([x_vel,y_vel,z_vel])
+    def callback_agent_truth_1(self,msg):
+        x_pos = msg.pose.position.x
+        y_pos = msg.pose.position.y
+        z_pos = msg.pose.position.z
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.agent1_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_agent_truth_2(self,msg):
+        x_pos = msg.pose.position.x
+        y_pos = msg.pose.position.y
+        z_pos = msg.pose.position.z
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.agent2_truth.position_angle = np.array([x_pos,y_pos,z_rot])
+    def callback_agent_truth_3(self,msg):
+        x_pos = msg.pose.position.x
+        y_pos = msg.pose.position.y
+        z_pos = msg.pose.position.z
+        orientation_q = [msg.pose.orientation.x, msg.pose.orientation.y, msg.pose.orientation.z, msg.pose.orientation.w]
+        (y_rot, x_rot, z_rot) = euler_from_quaternion(orientation_q)
+        self.agent3_truth.position_angle = np.array([x_pos,y_pos,z_rot])
 
 if __name__ == "__main__":
     try:
         rate = 10  # Hz
         nAgents = 2  # Number of agents
-        targets = ["T1","T2"]
+        targets = ["T1"]
+        agents = ["X1","X2"]
         B = Boss(nAgents, rate, targets)
         B.talker()
     except rospy.ROSInterruptException:
