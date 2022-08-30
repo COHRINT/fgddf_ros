@@ -46,10 +46,10 @@ from fgddf_ros.msg import Results
 
 # ROS callback functions
 def callback(data, agent):
-    print("Current agent id: " + str(agent["agent"].id))
-    print("Desired recipieint id: " + str(data.recipient))
-    print("Sender id: " + str(data.sender))
-    print('-----')
+    # print("Current agent id: " + str(agent["agent"].id))
+    # print("Desired recipieint id: " + str(data.recipient))
+    # print("Sender id: " + str(data.sender))
+    # print('-----')
     if data.recipient == agent["agent"].id:
         print("sender: " + str(data.sender))
         print('---')
@@ -244,7 +244,7 @@ for a in range(nAgents):
     print('agent:', a)
 
     agents[a]['filter'] = FG_EKF(variables, varSet[a], agents[a]['measData'], uData, dt)
-    agents[a]['agent'] = agent(varSet[a], dynamicList, agents[a]['filter'], 'HS_CF', ag_idx, condVar[a], variables)
+    agents[a]['agent'] = agent(varSet[a], dynamicList, agents[a]['filter'], 'HS_CF', a, condVar[a], variables)
     agents[a]['agent'].set_prior(prior)
 
 
@@ -295,10 +295,15 @@ for a in range(nAgents):
 
 # set initial fusion definitions:
 for a in range(nAgents):
-    # print("Agen"+str(a)+"neighbors:")
-    # print(agents[a]['neighbors'])
+    print("Agent: "+str(a)+" neighbors:")
+    print(agents[a]['neighbors'])
     for n in agents[a]['neighbors']:
+        print(n)
+        print("in main:")
+        print(agents[n]['agent'].id)
         agents[a]['agent'].set_fusion(agents[n]['agent'], variables)
+        print("Initial configuration of fusion:")
+        print(agents[a]['agent'].fusion.fusionLib)
 
         # Add prediction nodes to the agent's CF graph
         tmpCFgraph = agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id]
@@ -316,10 +321,10 @@ if fusionFlag<1:   # only fuse if starting fusion from time step 1
         for n in agents[a]['neighbors']:
             # Send message from a to n
             print('\n neighbor', n)
-            msg = agents[n]['agent'].sendMsg(agents, a, n)
-            # agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id].inMsg = msg
+            msg = agents[n]['agent'].sendMsg(agents, n, a)
+            agents[a]['agent'].fusion.fusionLib[agents[n]['agent'].id].inMsg = msg
             # I think this should be:
-            agents[n]['agent'].fusion.fusionLib[agents[a]['agent'].id].inMsg = msg
+            # agents[n]['agent'].fusion.fusionLib[agents[a]['agent'].id].inMsg = msg
             # b/c n receives a msg from a
 
     # Fuse incoming messages, time step 1:
