@@ -30,7 +30,7 @@ TARGET19_NAME = None
 TARGET20_NAME = None
 
 AGENT1_NAME = "cohrint_tars"
-AGENT2_NAME = "cohrint_kipp"
+AGENT2_NAME = "cohrint_case"
 AGENT3_NAME = None
 
 class Boss:

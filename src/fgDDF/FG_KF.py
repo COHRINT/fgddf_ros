@@ -506,7 +506,7 @@ class FG_EKF(FG_KF):
 				X=getattr(self, var)
 				u=np.reshape(X['u'][:, predNum-1], (len(X['u']), 1))
 				F = X['dynJacobian'](x_m, u, dt)
-				sol = solve_ivp(lambda t, x_m: X['dynFxn'](t, x_m, u, 0.6), (0, dt), x_m.reshape(-1), method = 'RK45', t_eval = None, rtol=1e-9, atol=1e-12)
+				sol = solve_ivp(lambda t, x_m: X['dynFxn'](t, x_m, u, 0.4), (0, dt), x_m.reshape(-1), method = 'RK45', t_eval = None, rtol=1e-9, atol=1e-12)
 
 				fx = sol.y[:,-1].reshape((sol.y.shape[0],1))
 				Qinv=X['Qinv']

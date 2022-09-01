@@ -84,7 +84,7 @@ DEBUG = 0
 dt = 0.1
 nAgents = 2   # number of agents
 saveFlag = 1
-conservativeFlag =  1 # use conservative marginalization
+conservativeFlag =  0 # use conservative marginalization
 YData = dict()
 fusionFlag = 0 # start fusing from time stp 5
 #N = 1000 # Time steps
@@ -431,7 +431,7 @@ while not rospy.is_shutdown() and (k < 200):
             ag["agent"] = mergeFactors(ag["agent"], ag["agent"].fusion.commonVars[key])
 
         ag["agent"].build_semiclique_tree()
-        tmpGraph = dict()
+        # tmpGraph = dict()
 
         # inference
         jointInfMat=buildJointMatrix(ag['agent'])
@@ -442,12 +442,12 @@ while not rospy.is_shutdown() and (k < 200):
 
     agents = inferState(agents, dynamicList, nAgents, m,  firstRunFlag, saveFlag = 1)
 
-    del tmpGraph
+    # del tmpGraph
     k += 1
 
     # Save data from current time step
     for var in ag["agent"].varSet:
-        print("Data logging debuggin:")
+        # print("Data logging debuggin:")
         ag_tag = "X" + str(ag_idx + 1)
         if var != ag_tag:
             agent_results = Results()
@@ -464,17 +464,17 @@ while not rospy.is_shutdown() and (k < 200):
             agent_results.FullCovDim = np.array(ag["results"][0]["FullCov"].shape)
             agent_results.FullCov = ag["results"][0]["FullCov"].flatten()
 
-            print("Target data")
-            print(ag["results"][0][var + "_mu"])
-            print(ag["results"][0][var + "_cov"])
+            # print("Target data")
+            # print(ag["results"][0][var + "_mu"])
+            # print(ag["results"][0][var + "_cov"])
             agent_results.TMuDim = np.array(ag["results"][0][var + "_mu"].shape)
             agent_results.TMu = ag["results"][0][var + "_mu"].flatten()
             agent_results.TCovDim = np.array(ag["results"][0][var + "_cov"].shape)
             agent_results.TCov = ag["results"][0][var +"_cov"].flatten()
 
-            print("agent data")
-            print(ag["results"][0][ag_tag + "_mu"])
-            print(ag["results"][0][ag_tag + "_cov"])
+            # print("agent data")
+            # print(ag["results"][0][ag_tag + "_mu"])
+            # print(ag["results"][0][ag_tag + "_cov"])
             agent_results.SMuDim = np.array(ag["results"][0][ag_tag + "_mu"].shape)
             agent_results.SMu = ag["results"][0][ag_tag + "_mu"].flatten()
             agent_results.SCovDim = np.array(ag["results"][0][ag_tag + "_cov"].shape)

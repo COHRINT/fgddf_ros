@@ -21,7 +21,7 @@ def truthRangeMeas(rf, current_agent, agent_idx, target_idx, is_target):
     else:
         x2 = rf.landmark_pos[target_idx]
 
-    noise = np.random.normal(0,current_agent["R"])
+    noise = np.random.normal(0,np.sqrt(current_agent["R"]))
 
     y = math.dist(x1[0:2],x2)
     y = y + noise
@@ -40,7 +40,7 @@ def truthAzimuthMeas(rf, current_agent, agent_idx, target_idx, is_target):
     else:
         x2 = rf.landmark_pos[target_idx]
 
-    noise = np.random.normal(0,current_agent["R"])
+    noise = np.random.normal(0,np.sqrt(current_agent["R"]))
 
     y = math.atan2(x2[1]-x1[1], x2[0]-x1[0])
     y = y + noise
@@ -65,7 +65,7 @@ def truthRelativeAzimuthMeas(rf, current_agent, agent_idx, target_idx, is_target
         # print(rf.landmark_pos)
         x2 = rf.landmark_pos[target_idx]
 
-    noise = np.random.normal(0,current_agent["R"])
+    noise = np.random.normal(0,np.sqrt(current_agent["R"]))
 
     y = math.atan2(x2[1]-x1[1], x2[0]-x1[0])-x1[2]
     y = y + noise
