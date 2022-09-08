@@ -217,10 +217,29 @@ landmarks[7] = landmark8
 landmarks[8] = landmark9
 landmarks[9] = landmark10
 
+# # PROPOSED TARGET CODE
+# sim_targets = ['sim_target_1','sin_target_2','...'] # pass this into ROSFxn below
+
 # Start ros functions
 rf = ROSFxn(agent_name,targets,landmarks)
 
 print("checkpoint 3")
+
+# # PROPOSED TARGET CODE
+# time.sleep(1) # may have to increase this time
+# sim_idx = 0
+# for st in sim_targets:
+#     if st == target1:
+#         pub_sim_target1_pose = rospy.Publisher("vrpn_client_node/"+target1+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target1_pose[sim_idx,0]
+#         msg.pose.position.y = rf.sim_target1_pose[sim_idx,1]
+#         q = quaternion_from_euler(0,0,rf.sim_target1_pose[sim_idx,2]) # have to: from tf.transformations import quaternion_from_euler
+#         msg.pose.orientation.x = q[0]
+#         msg.pose.orientation.y = q[1]
+#         msg.pose.orientation.z = q[2]
+#         msg.pose.orientation.w = q[3]
+#         pub_sim_target1_pose.publish(msg)
 
 # Read landmark positions
 for ll in range(1,nLM+1):
@@ -359,6 +378,19 @@ for a in range(nAgents):
 k = 2
 rospy.sleep(1)
 while not rospy.is_shutdown() and (k < 200):
+    # # PROPOSED TARGET CODE
+    # sim_idx = sim_idx + 1
+    # for st in sim_targets:
+    #     if st == target1:
+    #         msg = PoseStamped()
+    #         msg.pose.position.x = rf.sim_target1_pose[sim_idx,0]
+    #         msg.pose.position.y = rf.sim_target1_pose[sim_idx,1]
+    #         q = quaternion_from_euler(0,0,rf.sim_target1_pose[sim_idx,2]) # have to: from tf.transformations import quaternion_from_euler
+    #         msg.pose.orientation.x = q[0]
+    #         msg.pose.orientation.y = q[1]
+    #         msg.pose.orientation.z = q[2]
+    #         msg.pose.orientation.w = q[3]
+    #         pub_sim_target1_pose.publish(msg)
 
     # Prediction step
     ag['agent'] = ag['filter'].add_Prediction(ag['agent'])

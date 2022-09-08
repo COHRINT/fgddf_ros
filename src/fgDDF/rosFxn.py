@@ -16,6 +16,7 @@ from tf.transformations import euler_from_quaternion # Quaternion conversions
 
 # FGDDF libraries
 # from fgDDF.inputFile import *
+# from fgddf_ros.msg import TruthData
 
 # Misc libraries
 import numpy as np
@@ -67,6 +68,16 @@ class ROSFxn:
         # Create array to store agent position
         self.agent_pos = np.empty([1,3])
 
+        # # PROPOSED TARGET CODE
+        # if len(sim_targets): # edit function call above to pass in sim_targets
+        #     # Create subscribers to save sim_target position + orientation
+        #     for st in sim_targets:
+        #         if st == target1:
+        #             self.sim_target1_sub = rospy.Subscriber("truth_data",TruthData,self.sim_target1_callback)
+        #             self.sim_target1_pose = np.empty([200,3])
+        #         if st == target2:
+        #             self.sim_target2_sub = rospy.Subscriber("truth_data",TruthData,self.sim_target2_callback)
+        #             self.sim_target2_pose = np.empty([200,3])
 
         # Create subscriber to save agent position
         self.agent_sub = rospy.Subscriber("vrpn_client_node/"+agent_name+"/pose",PoseStamped,self.agent_callback)
@@ -302,6 +313,11 @@ class ROSFxn:
         x = msg.pose.position.x
         y = msg.pose.position.y
         self.landmark_pos[9] = np.array([x,y])
+
+    # # PROPOSED TARGET CODE
+    # def sim_target1_callback(self,msg):
+    #     if msg.target == target1: # may have to pass this into this function
+    #         self.sim_target1_pose[msg.time_step - 1] = msg.position_angle # add time_step to TruthData message file AND to location where TruthData is recorded in boss
 
 # # NEEDS TO BE MOVVED TO MAIN.PY!!
 # if __name__ == "__main__":
