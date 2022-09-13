@@ -279,6 +279,7 @@ if (target20 is not None):
 # instanciate filters and agents:
 for i, a in enumerate(agents):
     print("Initializing agent:", i)
+    # a = agents[i]
     a["filter"] = FG_KF(variables, varSet[i], a["measData"], uData)
     a["agent"] = agent(
         varSet[i], dynamicList, a["filter"], "HS_CF", i, condVar[i], variables
@@ -313,6 +314,7 @@ for i, a in enumerate(agents):
 
 # set initial fusion defenitions:
 for i, a in enumerate(agents):
+    # a = agents[i]
     for n in a["neighbors"]:
         a["agent"].set_fusion(agents[n]["agent"], variables)
         # Add prediction nodes to the agent's CF graph
@@ -329,6 +331,7 @@ for i, a in enumerate(agents):
 
 # Recive messages, time step 1:
 for i, a in enumerate(agents):
+    # a = agents[i]
     print("agent", i)
     for n in a["neighbors"]:
         # recieve message (a dictionary of factors):
@@ -338,6 +341,7 @@ for i, a in enumerate(agents):
 
 # Fuse incoming messages, time step 1:
 for a in agents:
+    # a = agents[a]
     # if len(agents[a]['neighbors'])>0:
     a["agent"].fuseMsg()
     for key in a["agent"].fusion.commonVars:
@@ -345,12 +349,14 @@ for a in agents:
         # TODO check if mergeFactors works with dynamic variables
 
 for a in agents:
+    # a = agents[a]
     a["agent"].build_semiclique_tree()
 
 
 tmpGraph = dict()
 # Inference
 for i, a in enumerate(agents):
+    # a = agents[i]
     tmpGraph[i] = a["agent"].add_factors_to_clique_fg()
 
     a["results"][0] = dict()  # m is the MC run number
@@ -379,6 +385,7 @@ for i, a in enumerate(agents):
     else:
         for n in tmpGraph[i].get_vnodes():
             varCount = 0
+            print(tmpGraph[i].nodes[n]["dims"])
             belief = inference.sum_product(tmpGraph[i], n)
             try:
                 vNames = tmpGraph[i].nodes[n]["dims"]
