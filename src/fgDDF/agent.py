@@ -111,6 +111,10 @@ class agent(object):
                 variables,
             )
             self.fusion.fusionLib[agent_j.id].set_prior(self.prior)
+        elif 'CI' in self.fusionAlgorithm:
+            commonVars = self.fusion.commonVars[agent_j.id]
+            dynamicList = self.dynamicList & commonVars
+            self.fusion.fusionLib[agent_j.id] = agent(commonVars, dynamicList, self.filter, self.fusionAlgorithm, None, variables )
 
     def sendMsg(self, agents, agent_i, agent_j_id):
         """

@@ -325,6 +325,62 @@ data = ChannelFilter()
 #         msg.pose.position.y = rf.sim_target2_pos[sim_idx+1,1]
 #         msg.pose.position.z = rf.sim_target2_pos[sim_idx+1,2]
 #         pub_sim_target2_pose.publish(msg)
+#     if st == target3:
+#         pub_sim_target3_pose = rospy.Publisher("vrpn_client_node/"+target3+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target3_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target3_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target3_pos[sim_idx+1,2]
+#         pub_sim_target3_pose.publish(msg)
+#     if st == target4:
+#         pub_sim_target4_pose = rospy.Publisher("vrpn_client_node/"+target4+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target4_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target4_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target4_pos[sim_idx+1,2]
+#         pub_sim_target4_pose.publish(msg)
+#     if st == target5:
+#         pub_sim_target5_pose = rospy.Publisher("vrpn_client_node/"+target5+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target5_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target5_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target5_pos[sim_idx+1,2]
+#         pub_sim_target5_pose.publish(msg)
+#     if st == target6:
+#         pub_sim_target6_pose = rospy.Publisher("vrpn_client_node/"+target6+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target6_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target6_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target6_pos[sim_idx+1,2]
+#         pub_sim_target6_pose.publish(msg)
+#     if st == target7:
+#         pub_sim_target7_pose = rospy.Publisher("vrpn_client_node/"+target7+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target7_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target7_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target7_pos[sim_idx+1,2]
+#         pub_sim_target7_pose.publish(msg)
+#     if st == target8:
+#         pub_sim_target8_pose = rospy.Publisher("vrpn_client_node/"+target8+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target8_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target8_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target8_pos[sim_idx+1,2]
+#         pub_sim_target8_pose.publish(msg)
+#     if st == target9:
+#         pub_sim_target9_pose = rospy.Publisher("vrpn_client_node/"+target9+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target9_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target9_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target9_pos[sim_idx+1,2]
+#         pub_sim_target9_pose.publish(msg)
+#     if st == target10:
+#         pub_sim_target10_pose = rospy.Publisher("vrpn_client_node/"+target10+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target10_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target10_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target10_pos[sim_idx+1,2]
+#         pub_sim_target8_pose.publish(msg)
 
 for i in range(nAgents):
     # YData[i] = matFile["yTruth"][i, 0:1].item()

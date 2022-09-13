@@ -326,3 +326,35 @@ def dis_union(G, H, factorCounter):
 
 
     return factorCounter
+
+def union(G, H, factorCounter):
+    ''' Union of factor graphs G and H
+        This function adds all factors and edges of factor graph H to factor graph G
+        assuming variable nodes in H already exist in G
+    '''
+
+    v_list = G.get_vnodes()
+    f_list = H.get_fnodes()
+    e_list = H.edges()
+
+    node_dict = dict()
+
+
+    for v in v_list:
+        node_dict[str(v)] = v
+
+
+    for f in f_list:
+        newDims = []
+        for d in f.factor._dim:
+            newDims.append((node_dict[str(d)]))
+        node_dict[str(f)] = nodes.FNode("f_"+str(factorCounter),rv.Gaussian.inf_form(f.factor._W, f.factor._Wm, *newDims))
+        G.set_node(node_dict[str(f)])
+        factorCounter += 1
+
+
+    for e in e_list:
+        G.set_edge(node_dict[str(e[0])], node_dict[str(e[1])])
+
+
+    return factorCounter

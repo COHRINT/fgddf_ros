@@ -2,12 +2,18 @@
 fusion class for decentralized data fusion (DDF)
 agent is the base class for all agents in the network
 """
-# from fglib import graphs, nodes, inference, rv, utils
+import networkx as nx
+
+from fglib import graphs, nodes, inference, rv
 # from copy import deepcopy
 # import networkx as nx
 # import matplotlib.pyplot as plt
-# import numpy as np
-from fgDDF.factor_utils import *
+import numpy as np
+import scipy.optimize
+from factor_utils import *
+
+
+
 
 class fusionAlgo(object):
     """docstring for fusion class.
@@ -22,11 +28,11 @@ class fusionAlgo(object):
 
     def set_channel(self, agent_i, agent_j ):
         self.commonVars[agent_j.id] = agent_i.varSet & agent_j.varSet
-        if 'CF' in self.fusionAlgorithm:
-            try:
-                self.fusionLib
-            except:
-                self.fusionLib = dict()
+        #if 'CF' in self.fusionAlgorithm:
+        try:
+            self.fusionLib
+        except:
+            self.fusionLib = dict()
 
 
 
@@ -66,7 +72,6 @@ class HS_CF(fusionAlgo):
         diff = strVnodes
 
         # marginalized graph:
-        #TODO: fix deepcopy recursion problem. tried to copy only the fg graph, but it didn't solve the problem
         #
         tmpGraph = deepcopy(agent_i)
         tmpGraph.fg = filter.marginalizeNodes(tmpGraph, diff )
@@ -248,3 +253,232 @@ class HS_CF(fusionAlgo):
         # newSparseJointInfMat=buildJointMatrix(tmpCFagent)
         del tmpCFagent
         return
+
+class HS_CI(fusionAlgo):
+    """Covariance Intersection Class"""
+
+
+    def __init__(self, fusionAlgorithm):
+        super(HS_CI, self).__init__(fusionAlgorithm)
+
+
+    def prepare_msg(self, agent_i, filter, commonVars, agent_j_id):
+        """ prepare a message to send to neighbor
+		   In general that means marginalizing common variables
+		   It accounts for common information by removing it using the CF
+		   input:
+		   commonVars
+	   """
+
+        list_vnodes = agent_i.fg.get_vnodes()
+        # find nodes to marginalize out
+        strVnodes = []
+        for v in list_vnodes:
+            strVnodes.append(str(v))
+        diff = []
+
+        vToRemove = []
+        varDict = {}
+        for var in strVnodes:
+            for c in commonVars:
+                if var.find(c) != -1:
+                    vToRemove.append(var)
+                    varDict[var] = self.fusionLib[agent_j_id].varList[c]
+                    break
+
+        for r in vToRemove:
+            strVnodes.remove(r)
+        diff = strVnodes
+
+        # marginalized graph:
+        #
+        tmpGraph = deepcopy(agent_i)
+        tmpGraph.fg = filter.marginalizeNodes(tmpGraph, diff )
+
+        tmpGraph = mergeFactors(tmpGraph, vToRemove)
+        msgGraph = tmpGraph.fg
+
+        del tmpGraph
+
+
+        f_dict = dict()   # dictionary for factors to send to agent j
+        counter = 1
+        list_fnodes_msgGraph = msgGraph.get_fnodes()
+
+        for F1 in list_fnodes_msgGraph:
+            matchFlag = 0
+            f1_dims = F1.factor.dim
+            f1_dim_list = []
+            flag = 0
+
+            for i in f1_dims:
+                f1_dim_list.append(str(i))
+
+
+            if flag == 0:  # first  factor
+                f_dict[counter] = dict()
+                f_dict[counter]['dims'] = f1_dim_list
+                f_dict[counter]['infMat'] = F1.factor._W
+                f_dict[counter]['infVec'] = F1.factor._Wm
+                flag=1
+
+            else:
+
+                f_dict[counter]['infMat'] = f_dict[counter]['infMat']
+                f_dict[counter]['infVec'] = f_dict[counter]['infVec']
+
+            counter+=1
+
+        return f_dict
+
+
+    def fuse(self, agent_i):
+        """ Fuse all incoming messages into the agents factor graph"""
+        factorCounter = agent_i.factorCounter
+
+        # loop on all communication channels:
+        for key in self.fusionLib:
+            inMsg = self.fusionLib[key].inMsg
+            if inMsg is not None:
+                outMsg = self.fusionLib[key].outMsg
+
+                omega_optimal = scipy.optimize.minimize_scalar(HS_CI.computeCIweight, bounds=(0,1), method="bounded", args=(inMsg, outMsg), options={'xatol': 1e-4}).x
+
+                # build a graph of minus (-) the approximated `common' pdf - p_ij=(1-w)*p_i+w*p_j
+                # this is so when we add this graph to the agent, factors are removed
+                commonInfoGraph = HS_CI.CIfxn(1-omega_optimal, inMsg, outMsg, negSign = -1)
+
+                # add p_j(common) to agent i's graph
+                for f_key in inMsg:
+                    varList=[]
+                    instances=[]
+
+                    for d in inMsg[f_key]['dims']:
+                        for v in agent_i.varList:
+                            if str(d).find(v) !=-1:
+                                var = v
+                                break
+                        instances.append(agent_i.varList[var])
+
+                        if agent_i.varList[var] not in varList:
+                            varList.append(agent_i.varList[var])
+
+                    f = nodes.FNode('f_'+str(factorCounter), rv.Gaussian.inf_form(inMsg[f_key]['infMat'],
+                                                                                  inMsg[f_key]['infVec'], *instances))
+
+                    factorCounter+=1
+
+
+                    agent_i.fg.set_node(f)
+
+                    for n in varList:
+                        agent_i.fg.set_edge(n, f)
+
+                # Delete message after fusion
+                self.fusionLib[key].inMsg = None
+
+                factorCounter = union(agent_i.fg, commonInfoGraph, factorCounter)
+                del commonInfoGraph
+
+        agent_i.factorCounter = factorCounter
+
+        return agent_i
+
+    def updateGraph(self, agent_j_id, lamdaMin):
+        pass
+
+
+    @staticmethod
+    def CIweight(infMatA, infMatB):
+        """Computes the optimal weight for covariance intersection
+        Arguments:
+            infMatA {np.ndarray} -- information matrix of agent i
+            infMatB {np.ndarray} -- information matrix of agent j
+        Returns:
+            omega_optimal -- optimal weight
+        """
+
+
+        fxn = lambda omega: -np.linalg.det(omega*infMatA + (1-omega)*infMatB)
+        omega_optimal = scipy.optimize.minimize_scalar(fxn, bounds=(0,1), method="bounded").x
+
+        return omega_optimal
+
+    @staticmethod
+    def computeCIweight(omega, inMsg, outMsg):
+        """optimize omega   """
+
+        CIgraph = HS_CI.CIfxn(omega, inMsg, outMsg, 1)
+        CIinfMat = buildJointMatrix(CIgraph)
+        return np.linalg.det(CIinfMat.factor.cov)
+
+
+
+
+    @staticmethod
+    def CIfxn(omega, inMsg, outMsg, negSign):
+        """Computes the optimal weight for covariance intersection
+        Arguments:
+            inMsg {dictionary} -- message in from agent j
+            outMsg {dictionary} -- message out from agent i
+            negSign -- negation sign - should be +1 to build p_f and -1 to allow p_ij removal from the graph at fusion
+        Returns:
+            omega_optimal -- optimal weight
+        """
+        factorCounter = 0
+        # initialize graph
+        CIgraph = graphs.FactorGraph()
+
+        # Build joint factor graph as function of omega:
+        # fusing agent:
+        varDict = dict()
+        for key in outMsg:
+            varList = []
+            instances = []
+
+            for var in outMsg[key]['dims']:
+                if var not in varDict.keys():
+                    x = nodes.VNode(var, rv.Gaussian.inf_form(None, None))
+                    CIgraph.set_node(x)
+                    varDict[var] = x
+
+                if var not in varList:
+                    varList.append(var)
+
+                instances.append(varDict[var])
+            # add factor node to graph
+            f = nodes.FNode('f_'+str(factorCounter), rv.Gaussian.inf_form(outMsg[key]['infMat']*omega*negSign,
+                                                                          outMsg[key]['infVec']*omega*negSign, *instances))
+            CIgraph.set_node(f)
+            for v in varList:
+                CIgraph.set_edge(varDict[v],f)
+
+            factorCounter +=1
+
+
+        # Sending agent:
+        for key in inMsg:
+            varList = []
+            instances = []
+
+            for var in inMsg[key]['dims']:
+                if var not in varDict.keys():
+                    x = nodes.VNode(var, rv.Gaussian.inf_form(None, None))
+                    CIgraph.set_node(x)
+                    varDict[var] = x
+
+                if var not in varList:
+                    varList.append(var)
+
+                instances.append(varDict[var])
+            # add factor node to graph
+            f = nodes.FNode('f_'+str(factorCounter), rv.Gaussian.inf_form(inMsg[key]['infMat']*(1-omega)*negSign,
+                                                                          inMsg[key]['infVec']*(1-omega)*negSign, *instances))
+            CIgraph.set_node(f)
+            for v in varList:
+                CIgraph.set_edge(varDict[v],f)
+
+            factorCounter +=1
+
+
+        return CIgraph
