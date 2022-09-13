@@ -15,7 +15,7 @@ DEBUG = 0
 dt = 0.1
 nAgents = 2   # number of agents
 conservativeFlag = 1
-pMsg = 0.9
+pMsg = 1
 
 
 prior = dict()

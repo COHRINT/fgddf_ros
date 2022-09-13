@@ -434,7 +434,7 @@ for i, a in enumerate(agents):
     # a = agents[i]
     a["filter"] = FG_KF(variables, varSet[i], a["measData"], uData)
     a["agent"] = agent(
-        varSet[i], dynamicList, a["filter"], "HS_CF", i, condVar[i], variables
+        varSet[i], dynamicList, a["filter"], "HS_CI", i, condVar[i], variables
     )
     a["agent"].set_prior(prior)
 
