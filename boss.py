@@ -10,7 +10,7 @@ TARGET2_NAME = "cohrint_tycho_bot_2"
 TARGET3_NAME = "cohrint_tycho_bot_3"
 TARGET4_NAME = "cohrint_tycho_bot_4"
 TARGET5_NAME = "cohrint_tycho_bot_5"
-TARGET6_NAME = "cohrint_zhora"
+TARGET6_NAME = None
 TARGET7_NAME = None
 TARGET8_NAME = None
 TARGET9_NAME = None
@@ -536,7 +536,7 @@ if __name__ == "__main__":
     try:
         rate = 10  # Hz
         nAgents = 2  # Number of agents
-        targets = ["T1","T2","T3","T4","T5","T6"]
+        targets = ["T1","T2","T3","T4","T5"]
         B = Boss(nAgents, rate, targets)
         B.talker()
     except rospy.ROSInterruptException:
