@@ -318,6 +318,13 @@ data = ChannelFilter()
 #         msg.pose.position.y = rf.sim_target1_pos[sim_idx+1,1]
 #         msg.pose.position.z = rf.sim_target1_pos[sim_idx+1,2]
 #         pub_sim_target1_pose.publish(msg)
+#     if st == target2:
+#         pub_sim_target2_pose = rospy.Publisher("vrpn_client_node/"+target2+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target2_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target2_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target2_pos[sim_idx+1,2]
+#         pub_sim_target2_pose.publish(msg)
 
 for i in range(nAgents):
     # YData[i] = matFile["yTruth"][i, 0:1].item()
