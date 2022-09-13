@@ -25,7 +25,7 @@ agents = []
 
 # define local agent variable sets in dictionaries:
 localVars = {"S1", "S2", "T1"}
-varSet = [set({"T1", "T2", "T3", "S1"}), set({"T2","T3" "S2"})]
+varSet = [set({"T1", "T2", "T3", "S1"}), set({"T2","T3","S2"})]
 condVar = [{"S1"},{"S2"}]
 
 S1 = {'n' : 2}
@@ -68,7 +68,7 @@ agents[0]['measData'][0]['measuredVars'] = ['T1','S1']   # has to be in the orde
 agents[0]["measData"][0]["measType"] = "targetPos"
 
 # agent 1:
-agents[0]['measData'][1]['H'] = p.array([[1, 0, 0, 0, 1, 0],
+agents[0]['measData'][1]['H'] = np.array([[1, 0, 0, 0, 1, 0],
                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
 agents[0]['measData'][1]['R'] = np.diag([1.0, 10.0])
 agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[0]['measData'][1]['R'])
@@ -82,7 +82,7 @@ agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[0]['measData'][2]['R'])
 agents[0]['measData'][2]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
 agents[0]["measData"][2]["measType"] = "agentBias"
 
-agents[0]['measData'][3]['H'] = p.array([[1, 0, 0, 0, 1, 0],
+agents[0]['measData'][3]['H'] = np.array([[1, 0, 0, 0, 1, 0],
                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
 agents[0]['measData'][3]['R'] = np.diag([1.0, 10.0])
 agents[0]['measData'][3]['invR'] = np.linalg.inv(agents[0]['measData'][3]['R'])
