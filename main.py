@@ -9,6 +9,7 @@ import scipy.io as sio
 from scipy.io import savemat
 import itertools
 from copy import deepcopy
+import time
 
 import fgDDF
 
@@ -16,7 +17,7 @@ from fgDDF.agent import *
 from fgDDF.factor_utils import *
 from fgDDF.FG_KF import *
 from fgDDF.fusionAlgo import *
-from fgDDF.inputFile_6T_2A import *
+from fgDDF.inputFile_2T_2A import *
 
 import rospy
 import rospkg
@@ -225,10 +226,29 @@ if (target19 is not None):
 if (target20 is not None):
     target20_sub = rospy.Subscriber("vrpn_client_node/"+target20+"/pose",PoseStamped,target20_callback)
 
+# # PROPOSED SIM TARGET CODE
+# sim_targets = ["cohrint_tycho_bot_1","cohrint_tycho_bot_2","cohrint_tycho_bot_3","cohrint_tycho_bot_4","cohrint_tycho_bot_5","cohrint_zhora"]
+
 sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
 pub = rospy.Publisher("chatter", ChannelFilter, queue_size=10)
 data = ChannelFilter()
+
+# # PROPOSED TARGET CODE
+# time.sleep(1) # may have to increase this time
+# sim_idx = 0
+# for st in sim_targets:
+#     if st == target1:
+#         pub_sim_target1_pose = rospy.Publisher("vrpn_client_node/"+target1+"/pose", PoseStamped, queue_size=10)
+#         msg = PoseStamped()
+#         msg.pose.position.x = rf.sim_target1_pose[sim_idx,0]
+#         msg.pose.position.y = rf.sim_target1_pose[sim_idx,1]
+#         q = quaternion_from_euler(0,0,rf.sim_target1_pose[sim_idx,2]) # have to: from tf.transformations import quaternion_from_euler
+#         msg.pose.orientation.x = q[0]
+#         msg.pose.orientation.y = q[1]
+#         msg.pose.orientation.z = q[2]
+#         msg.pose.orientation.w = q[3]
+#         pub_sim_target1_pose.publish(msg)
 
 for i in range(nAgents):
     # YData[i] = matFile["yTruth"][i, 0:1].item()

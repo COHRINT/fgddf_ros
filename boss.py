@@ -536,7 +536,8 @@ if __name__ == "__main__":
     try:
         rate = 10  # Hz
         nAgents = 2  # Number of agents
-        targets = ["T1","T2","T3","T4","T5","T6"]
+        # targets = ["T1","T2","T3","T4","T5","T6"]
+        targets = ["T2","T3"]
         B = Boss(nAgents, rate, targets)
         B.talker()
     except rospy.ROSInterruptException:
