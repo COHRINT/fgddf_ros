@@ -236,13 +236,15 @@ data = ChannelFilter()
 
 # # PROPOSED TARGET CODE
 # time.sleep(1) # may have to increase this time
+# # Maybe don't do this step b/c we only have data for time steps 2-199?
 # sim_idx = 0
 # for st in sim_targets:
 #     if st == target1:
 #         pub_sim_target1_pose = rospy.Publisher("vrpn_client_node/"+target1+"/pose", PoseStamped, queue_size=10)
 #         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target1_pose[sim_idx,0]
-#         msg.pose.position.y = rf.sim_target1_pose[sim_idx,1]
+#         msg.pose.position.x = rf.sim_target1_pos[sim_idx,0]
+#         msg.pose.position.y = rf.sim_target1_pos[sim_idx,1]
+#         msg.pose.position.z = rf.sim_target1_pos[sim_idx,2]
 #         q = quaternion_from_euler(0,0,rf.sim_target1_pose[sim_idx,2]) # have to: from tf.transformations import quaternion_from_euler
 #         msg.pose.orientation.x = q[0]
 #         msg.pose.orientation.y = q[1]

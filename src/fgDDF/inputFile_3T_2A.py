@@ -25,7 +25,7 @@ agents = []
 
 # define local agent variable sets in dictionaries:
 localVars = {"S1", "S2", "T1"}
-varSet = [set({"T1", "T2", "T3", "S1"}), set({"T2","T3","S2"})]
+varSet = [set({"T1", "T2", "S1"}), set({"T2","T3","S2"})]
 condVar = [{"S1"},{"S2"}]
 
 S1 = {'n' : 2}
@@ -57,7 +57,7 @@ for _ in range(nAgents):
     ag["results"] = dict()
     agents.append(ag)
 
-agents[0]['measData'][3]=dict()
+# agents[0]['measData'][3]=dict()
 
 # agent 1:
 agents[0]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
@@ -82,12 +82,12 @@ agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[0]['measData'][2]['R'])
 agents[0]['measData'][2]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
 agents[0]["measData"][2]["measType"] = "agentBias"
 
-agents[0]['measData'][3]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
-agents[0]['measData'][3]['R'] = np.diag([1.0, 10.0])
-agents[0]['measData'][3]['invR'] = np.linalg.inv(agents[0]['measData'][3]['R'])
-agents[0]['measData'][3]['measuredVars'] = ['T3','S1']   # has to be in the order of the variable vector
-agents[0]["measData"][3]["measType"] = "targetPos"
+# agents[0]['measData'][3]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+#                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+# agents[0]['measData'][3]['R'] = np.diag([1.0, 10.0])
+# agents[0]['measData'][3]['invR'] = np.linalg.inv(agents[0]['measData'][3]['R'])
+# agents[0]['measData'][3]['measuredVars'] = ['T3','S1']   # has to be in the order of the variable vector
+# agents[0]["measData"][3]["measType"] = "targetPos"
 
 # agent 2:
 agents[1]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
