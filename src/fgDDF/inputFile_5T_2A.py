@@ -29,7 +29,7 @@ localVars = dict()
 
 # define local agent variable sets in dictionaries:
 varList[0] = {"T1", "T2", "T3", "S1"}
-varList[1] = {"T3", "T4", "T5" "S2"}
+varList[1] = {"T3", "T4", "T5", "S2"}
 
 
 localVars = {"S1", "S2", "T1", "T2","T4","T5"} 
@@ -51,7 +51,7 @@ T5 = {'n' : 4}
 
 
 
-variables["T1"], variables["T2"], variables["T3"], variables["T4"], variables["T5"], variables["T6"]= T1, T2, T3, T4, T5, T6
+variables["T1"], variables["T2"], variables["T3"], variables["T4"], variables["T5"] = T1, T2, T3, T4, T5
 
 variables["S1"], variables["S2"]  = S1, S2
 
