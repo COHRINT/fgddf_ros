@@ -17,7 +17,7 @@ from fgDDF.agent import *
 from fgDDF.factor_utils import *
 from fgDDF.FG_KF import *
 from fgDDF.fusionAlgo import *
-from fgDDF.inputFile_3T_2A import *
+from fgDDF.inputFile_6T_2A import *
 
 import rospy
 import rospkg
@@ -26,6 +26,7 @@ from std_msgs.msg import String
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from fgddf_ros.msg import ChannelFilter
 from fgddf_ros.msg import Results
+from fgddf_ros.msg import TruthData
 
 # Function definitions
 def get_target_pos(current_agent):
@@ -165,6 +166,11 @@ def target20_callback(msg):
     y = msg.pose.position.y
     target_pos[19] = np.array([x,y])
 
+# # PROPOSED TARGET CODE
+# def sim_target1_callback(self,msg):
+#     if msg.target == target1: # may have to pass this into this function
+#         self.sim_target1_pose[msg.time_step - 1] = msg.position_angle
+
 np.set_printoptions(precision=3)
 
 rospack = rospkg.RosPack()
@@ -180,6 +186,19 @@ meas_data = MeasData()
 print("Enter agent number: ")
 ag_idx = int(input())
 ag = agents[ag_idx]
+
+# # PROPOSED SIM TARGET CODE
+# sim_targets = ["cohrint_tycho_bot_1","cohrint_tycho_bot_2","cohrint_tycho_bot_3","cohrint_tycho_bot_4","cohrint_tycho_bot_5","cohrint_zhora"]
+
+# if len(sim_targets): # edit function call above to pass in sim_targets
+#     # Create subscribers to save sim_target position + orientation
+#     for st in sim_targets:
+#         if st == target1:
+#             sim_target1_sub = rospy.Subscriber("truth_data",TruthData,sim_target1_callback)
+#             sim_target1_pos = np.empty([200,3])
+#         if st == target2:
+#             sim_target2_sub = rospy.Subscriber("truth_data",TruthData,sim_target2_callback)
+#             sim_target2_pos = np.empty([200,3])
 
 # Create array to save target positions
 target_pos = np.empty([20,2])
@@ -226,9 +245,6 @@ if (target19 is not None):
 if (target20 is not None):
     target20_sub = rospy.Subscriber("vrpn_client_node/"+target20+"/pose",PoseStamped,target20_callback)
 
-# # PROPOSED SIM TARGET CODE
-# sim_targets = ["cohrint_tycho_bot_1","cohrint_tycho_bot_2","cohrint_tycho_bot_3","cohrint_tycho_bot_4","cohrint_tycho_bot_5","cohrint_zhora"]
-
 sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
 pub = rospy.Publisher("chatter", ChannelFilter, queue_size=10)
@@ -242,14 +258,9 @@ data = ChannelFilter()
 #     if st == target1:
 #         pub_sim_target1_pose = rospy.Publisher("vrpn_client_node/"+target1+"/pose", PoseStamped, queue_size=10)
 #         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target1_pos[sim_idx,0]
-#         msg.pose.position.y = rf.sim_target1_pos[sim_idx,1]
-#         msg.pose.position.z = rf.sim_target1_pos[sim_idx,2]
-#         q = quaternion_from_euler(0,0,rf.sim_target1_pose[sim_idx,2]) # have to: from tf.transformations import quaternion_from_euler
-#         msg.pose.orientation.x = q[0]
-#         msg.pose.orientation.y = q[1]
-#         msg.pose.orientation.z = q[2]
-#         msg.pose.orientation.w = q[3]
+#         msg.pose.position.x = rf.sim_target1_pos[sim_idx+1,0]
+#         msg.pose.position.y = rf.sim_target1_pos[sim_idx+1,1]
+#         msg.pose.position.z = rf.sim_target1_pos[sim_idx+1,2]
 #         pub_sim_target1_pose.publish(msg)
 
 for i in range(nAgents):
