@@ -59,10 +59,14 @@ def convertMsgToDict(msg):
     msgs[1] = data
     return msgs
 
-# # ROS callback functions
-# def callback(data, agent):
-#     if data.recipient == agent["agent"].id:
-#         agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
+# ROS callback functions
+def callback(data, agent):
+    if data.recipient == agent["agent"].id:
+        agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
+
+        receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
+        if receive == 0:
+            agent["agent"].fusion.fusionLib[data.sender].inMsg = None
 
 def boss_callback(msg):
     pass
@@ -578,10 +582,10 @@ while not rospy.is_shutdown() and (k < 200):
 
     rospy.wait_for_message("boss", String)  # Wait for go ahead
 
-    for n in ag["neighbors"]:
-        receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
-        if receive == 0:
-            ag["agent"].fusion.fusionLib[n].inMsg = None
+    # for n in ag["neighbors"]:
+    #     receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
+    #     if receive == 0:
+    #         ag["agent"].fusion.fusionLib[n].inMsg = None
 
     ag["agent"].fuseMsg()
 
