@@ -42,7 +42,7 @@ for var in variables:
     else:
         variables[var]['Type']= 'common'
 
-dynamicList = {"T1", "T2"}
+dynamicList = {"T1"}
 variables["dynamicList"] = dynamicList
 
 # Define Linear observations:
@@ -67,8 +67,8 @@ agents[0]['measData'][0]['measuredVars'] = ['T1','S1']   # has to be in the orde
 agents[0]["measData"][0]["measType"] = "targetPos"
 
 # agent 1:
-agents[0]['measData'][1]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[0]['measData'][1]['H'] = np.array([[1, 0, 1, 0],
+                                          [0, 1, 0, 1]], dtype=np.float64)
 agents[0]['measData'][1]['R'] = np.diag([1.0, 10.0])
 agents[0]['measData'][1]['invR'] = np.linalg.inv(agents[0]['measData'][1]['R'])
 agents[0]['measData'][1]['measuredVars'] = ['T2','S1']   # has to be in the order of the variable vector
@@ -82,8 +82,8 @@ agents[0]['measData'][2]['measuredVars'] = ['S1']   # has to be in the order of 
 agents[0]["measData"][2]["measType"] = "agentBias"
 
 # agent 2:
-agents[1]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],
-                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[1]['measData'][0]['H'] = np.array([[1, 0, 1, 0],
+                                          [0, 1, 0, 1]], dtype=np.float64)
 agents[1]['measData'][0]['R'] = np.diag([3.0, 3.0])
 agents[1]['measData'][0]['invR'] = np.linalg.inv(agents[1]['measData'][0]['R'])
 agents[1]['measData'][0]['measuredVars'] = ['T2','S2']   # has to be in the order of the variable vector
@@ -104,14 +104,20 @@ agents[1]['neighbors'] = [0]
 
 
 # Create factor nodes for prior:
-x0 = np.array([[0], [0], [0], [0]])
-X0 = np.diag([100.0, 100.0, 100.0, 100.0])
+x0d = np.array([[0], [0], [0], [0]])
+X0d = np.diag([100.0, 100.0, 100.0, 100.0])
+
+# Static target initial conditions
+x0s = np.array([[0], [0]])
+X0s = np.diag([100.0, 100.0])
 
 s0 = np.array([[5], [5]])
 S0 = np.diag([10.0, 10.0])
 
-prior['T1_0'] = prior['T2_0']   \
-    = {'infMat': np.linalg.inv(X0), 'infVec': np.dot(np.linalg.inv(X0), x0), 'dim': X0.shape[0]  }
+prior['T1_0']    \
+    = {'infMat': np.linalg.inv(X0d), 'infVec': np.dot(np.linalg.inv(X0d), x0d), 'dim': X0d.shape[0]  }
+prior['T2_0']   \
+    = {'infMat': np.linalg.inv(X0s), 'infVec': np.dot(np.linalg.inv(X0s), x0s), 'dim': X0s.shape[0]  }
 prior['S1'] = prior['S2']   \
     = {'infMat': np.linalg.inv(S0), 'infVec': np.dot(np.linalg.inv(S0), s0), 'dim': S0.shape[0]  }
 
@@ -121,20 +127,20 @@ variables["T1"]["Q"] = np.diag([0.08, 0.08, 0.08, 0.08])
 variables["T1"]["F"] = np.array([[ 1, dt, 0, 0], [ 0, 1,0 ,0 ], [ 0, 0, 1, dt], [ 0, 0, 0, 1]] ,  dtype=np.float64)
 variables["T1"]["G"] = np.array([[ 0.5*dt**2, 0], [dt,0 ], [ 0, 0.5*dt**2], [ 0, dt]] ,  dtype=np.float64)
 
-variables["T2"]["Q"] = np.diag([0.08, 0.08, 0.08, 0.08])
-variables["T2"]["F"] = np.array([[ 1, dt, 0, 0], [ 0, 1,0 ,0 ], [ 0, 0, 1, dt], [ 0, 0, 0, 1]] ,  dtype=np.float64)
-variables["T2"]["G"] = np.array([[ 0.5*dt**2, 0], [dt,0 ], [ 0, 0.5*dt**2], [ 0, dt]] ,  dtype=np.float64)
+# variables["T2"]["Q"] = np.diag([0.08, 0.08, 0.08, 0.08])
+# variables["T2"]["F"] = np.array([[ 1, dt, 0, 0], [ 0, 1,0 ,0 ], [ 0, 0, 1, dt], [ 0, 0, 0, 1]] ,  dtype=np.float64)
+# variables["T2"]["G"] = np.array([[ 0.5*dt**2, 0], [dt,0 ], [ 0, 0.5*dt**2], [ 0, dt]] ,  dtype=np.float64)
 
 # Set [0,1] for all the targets
 variables["T1"]["uInd"] = [0,1]
-variables["T2"]["uInd"] = [0,1] 
+# variables["T2"]["uInd"] = [0,1] 
 
 # Agent bias
 bias = np.array([3,4])
 
 # Target names
-target1 = "cohrint_tycho_bot_2"
-target2 = "cohrint_tycho_bot_3"
+target1 = "cohrint_tycho_bot_3"
+target2 = "cohrint_tycho_bot_5"
 target3 = None
 target4 = None
 target5 = None
