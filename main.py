@@ -491,8 +491,8 @@ for i, a in enumerate(agents):
         msg = agents[n]["agent"].sendMsg(agents, n, i)
         a["agent"].fusion.fusionLib[n].inMsg = msg
 
-        outMsg = a["agent"].sendMsg(agents, i, n)
-        a["agent"].fusion.fusionLib[n].outMsg = outMsg
+        outMsg = agents[i]["agent"].sendMsg(agents, i, n)
+        agents[i]["agent"].fusion.fusionLib[n].outMsg = outMsg
 
         receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
         if receive == 0:
@@ -647,8 +647,8 @@ while not rospy.is_shutdown() and (k < 200):
             data.infVec = msg["infVec"]
             pub.publish(data)
 
-        outMsg = a["agent"].sendMsg(agents, i, n)
-        a["agent"].fusion.fusionLib[n].outMsg = outMsg
+        outMsg = agents[i]["agent"].sendMsg(agents, i, n)
+        agents[i]["agent"].fusion.fusionLib[n].outMsg = outMsg
 
     rospy.wait_for_message("boss", String)  # Wait for go ahead
 
