@@ -647,8 +647,8 @@ while not rospy.is_shutdown() and (k < 200):
             data.infVec = msg["infVec"]
             pub.publish(data)
 
-        outMsg = agents[i]["agent"].sendMsg(agents, i, n)
-        agents[i]["agent"].fusion.fusionLib[n].outMsg = outMsg
+        outMsg = ag["agent"].sendMsg(agents, ag_idx, n)
+        ag["agent"].fusion.fusionLib[n].outMsg = outMsg
 
     rospy.wait_for_message("boss", String)  # Wait for go ahead
 
