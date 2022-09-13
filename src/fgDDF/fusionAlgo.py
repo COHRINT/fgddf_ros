@@ -10,7 +10,7 @@ from fglib import graphs, nodes, inference, rv
 # import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize
-from factor_utils import *
+from fgDDF.factor_utils import *
 
 
 
