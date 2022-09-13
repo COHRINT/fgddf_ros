@@ -163,9 +163,10 @@ def findVNode(fg, nodeName):
 
 def buildJointMatrix(agent):
     """ This function builds the full information matrix"""
-
-    fList = list(agent.fg.get_fnodes())
-
+    try:
+        fList = list(agent.fg.get_fnodes())
+    except:
+        fList = list(agent.get_fnodes())
 
 
     # infMat = deepcopy(fList[0])
