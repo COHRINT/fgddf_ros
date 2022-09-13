@@ -385,7 +385,7 @@ for i, a in enumerate(agents):
     else:
         for n in tmpGraph[i].get_vnodes():
             varCount = 0
-            print(tmpGraph[i].nodes[n]["dims"])
+            # print(tmpGraph[i].nodes[n]["dims"])
             belief = inference.sum_product(tmpGraph[i], n)
             try:
                 vNames = tmpGraph[i].nodes[n]["dims"]
