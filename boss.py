@@ -260,8 +260,6 @@ class Boss:
             if all(self.has_msg):
                 pub.publish(hello_str)
                 self.has_msg = np.zeros(self.nAgents)
-                self.k += 1
-                print(f"Time step k = {self.k}")
 
                 if self.target1_exists:
                     self.target1_truth.time_step = self.k
@@ -273,7 +271,7 @@ class Boss:
                     self.target3_truth.time_step = self.k
                     truth_pub.publish(self.target3_truth)
                 if self.target4_exists:
-                    self.target14_truth.time_step = self.k
+                    self.target4_truth.time_step = self.k
                     truth_pub.publish(self.target4_truth)
                 if self.target5_exists:
                     self.target5_truth.time_step = self.k
@@ -324,6 +322,9 @@ class Boss:
                     self.target20_truth.time_step = self.k
                     truth_pub.publish(self.target20_truth)
                 # truth_pub.publish(self.current_truth)
+
+                self.k += 1
+                print(f"Time step k = {self.k}")
             rate.sleep()
 
     def callback(self, data):
