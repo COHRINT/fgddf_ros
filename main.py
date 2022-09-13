@@ -4,6 +4,7 @@ from typing import Counter
 from fglib import graphs, nodes, inference, rv, utils
 import networkx as nx
 import numpy as np
+import random
 import scipy.linalg
 import scipy.io as sio
 from scipy.io import savemat
@@ -58,10 +59,10 @@ def convertMsgToDict(msg):
     msgs[1] = data
     return msgs
 
-# ROS callback functions
-def callback(data, agent):
-    if data.recipient == agent["agent"].id:
-        agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
+# # ROS callback functions
+# def callback(data, agent):
+#     if data.recipient == agent["agent"].id:
+#         agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
 
 def boss_callback(msg):
     pass
@@ -166,10 +167,37 @@ def target20_callback(msg):
     y = msg.pose.position.y
     target_pos[19] = np.array([x,y])
 
-# # PROPOSED TARGET CODE
+# # SIMULATED TARGET CODE
 # def sim_target1_callback(self,msg):
 #     if msg.target == target1: # may have to pass this into this function
-#         self.sim_target1_pose[msg.time_step - 1] = msg.position_angle
+#         sim_target1_pos[msg.time_step - 1] = msg.position
+# def sim_target2_callback(self,msg):
+#     if msg.target == target2: # may have to pass this into this function
+#         sim_target2_pos[msg.time_step - 1] = msg.position
+# def sim_target3_callback(self,msg):
+#     if msg.target == target3: # may have to pass this into this function
+#         sim_target3_pos[msg.time_step - 1] = msg.position
+# def sim_target4_callback(self,msg):
+#     if msg.target == target4: # may have to pass this into this function
+#         sim_target4_pos[msg.time_step - 1] = msg.position
+# def sim_target5_callback(self,msg):
+#     if msg.target == target5: # may have to pass this into this function
+#         sim_target5_pos[msg.time_step - 1] = msg.position
+# def sim_target6_callback(self,msg):
+#     if msg.target == target6: # may have to pass this into this function
+#         sim_target6_pos[msg.time_step - 1] = msg.position
+# def sim_target7_callback(self,msg):
+#     if msg.target == target7: # may have to pass this into this function
+#         sim_target7_pos[msg.time_step - 1] = msg.position
+# def sim_target8_callback(self,msg):
+#     if msg.target == target8: # may have to pass this into this function
+#         sim_target8_pos[msg.time_step - 1] = msg.position
+# def sim_target9_callback(self,msg):
+#     if msg.target == target9: # may have to pass this into this function
+#         sim_target9_pos[msg.time_step - 1] = msg.position
+# def sim_target10_callback(self,msg):
+#     if msg.target == target10: # may have to pass this into this function
+#         sim_target10_pos[msg.time_step - 1] = msg.position
 
 np.set_printoptions(precision=3)
 
@@ -199,6 +227,30 @@ ag = agents[ag_idx]
 #         if st == target2:
 #             sim_target2_sub = rospy.Subscriber("truth_data",TruthData,sim_target2_callback)
 #             sim_target2_pos = np.empty([200,3])
+#         if st == target3:
+#             sim_target3_sub = rospy.Subscriber("truth_data",TruthData,sim_target3_callback)
+#             sim_target3_pos = np.empty([200,3])
+#         if st == target4:
+#             sim_target4_sub = rospy.Subscriber("truth_data",TruthData,sim_target4_callback)
+#             sim_target4_pos = np.empty([200,3])
+#         if st == target5:
+#             sim_target5_sub = rospy.Subscriber("truth_data",TruthData,sim_target5_callback)
+#             sim_target5_pos = np.empty([200,3])
+#         if st == target6:
+#             sim_target6_sub = rospy.Subscriber("truth_data",TruthData,sim_target6_callback)
+#             sim_target6_pos = np.empty([200,3])
+#         if st == target7:
+#             sim_target7_sub = rospy.Subscriber("truth_data",TruthData,sim_target7_callback)
+#             sim_target7_pos = np.empty([200,3])
+#         if st == target8:
+#             sim_target8_sub = rospy.Subscriber("truth_data",TruthData,sim_target8_callback)
+#             sim_target8_pos = np.empty([200,3])
+#         if st == target9:
+#             sim_target9_sub = rospy.Subscriber("truth_data",TruthData,sim_target9_callback)
+#             sim_target9_pos = np.empty([200,3])
+#         if st == target10:
+#             sim_target10_sub = rospy.Subscriber("truth_data",TruthData,sim_target10_callback)
+#             sim_target10_pos = np.empty([200,3])
 
 # Create array to save target positions
 target_pos = np.empty([20,2])
@@ -250,7 +302,7 @@ boss_sub = rospy.Subscriber("boss", String, boss_callback)
 pub = rospy.Publisher("chatter", ChannelFilter, queue_size=10)
 data = ChannelFilter()
 
-# # PROPOSED TARGET CODE
+# # SIMULATED TARGET CODE
 # time.sleep(1) # may have to increase this time
 # # Maybe don't do this step b/c we only have data for time steps 2-199?
 # sim_idx = 0
@@ -371,6 +423,9 @@ for i, a in enumerate(agents):
         print("neighbor", n)
         msg = agents[n]["agent"].sendMsg(agents, n, i)
         a["agent"].fusion.fusionLib[n].inMsg = msg
+        receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
+        if receive == 0:
+            a["agent"].fusion.fusionLib[n].inMsg = None
 
 # Fuse incoming messages, time step 1:
 for a in agents:
@@ -522,6 +577,12 @@ while not rospy.is_shutdown() and (k < 200):
             pub.publish(data)
 
     rospy.wait_for_message("boss", String)  # Wait for go ahead
+
+    for n in ag["neighbors"]:
+        receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
+        if receive == 0:
+            ag["agent"].fusion.fusionLib[n].inMsg = None
+
     ag["agent"].fuseMsg()
 
     for key in ag["agent"].fusion.commonVars:
