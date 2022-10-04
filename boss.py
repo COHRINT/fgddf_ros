@@ -26,6 +26,10 @@ TARGET18_NAME = None
 TARGET19_NAME = None
 TARGET20_NAME = None
 
+AGENT1_NAME = None
+AGENT2_NAME = None
+AGENT3_NAME = None
+
 class Boss:
     def __init__(self, nAgents, rate, targets):
         self.nAgents = nAgents
@@ -53,6 +57,10 @@ class Boss:
         self.target18_exists = False
         self.target19_exists = False
         self.target20_exists = False
+
+        self.agent1_exists = False
+        self.agent2_exists = False
+        self.agent3_exists = False
 
         for t in targets:
             if t == "T1":
@@ -136,11 +144,19 @@ class Boss:
                 self.target20_truth.target = TARGET20_NAME
                 self.target20_exists = True
 
-        # self.current_truth = TruthData()
-        # self.current_truth.bias0 = np.array([[2], [3]])
-        # self.current_truth.bias1 = np.array([[3], [2]])
-        # self.current_truth.bias2 = np.array([[5], [5]])
-        # self.current_truth.target = TARGET_NAME
+        for a in agents:
+            if a == "S1":
+                self.agent1_truth = TruthData()
+                self.agent1_truth.target = AGENT1_NAME
+                self.agent1_exists = True
+            if a == "S2":
+                self.agent2_truth = TruthData()
+                self.agent2_truth.target = AGENT2_NAME
+                self.agent2_exists = True
+            if a == "S3":
+                self.agent3_truth = TruthData()
+                self.agent3_truth.target = AGENT3_NAME
+                self.agent3_exists = True
 
     def talker(self):
         rospy.init_node("talker", anonymous=True)
@@ -150,8 +166,6 @@ class Boss:
         sub = rospy.Subscriber("chatter", ChannelFilter, self.callback)
         truth_pub = rospy.Publisher("/truth_data",TruthData,queue_size=10)
 
-        # truth_pos_sub = rospy.Subscriber("/vrpn_client_node/"+TARGET_NAME+"/pose",PoseStamped,self.callback_position)
-        # truth_vel_sub = rospy.Subscriber("/vrpn_client_node/"+TARGET_NAME+"/twist",TwistStamped,self.callback_velocity)
         if self.target1_exists:
             truth_pos_sub_1 = rospy.Subscriber("/vrpn_client_node/"+TARGET1_NAME+"/pose",PoseStamped,self.callback_position_1)
             truth_vel_sub_1 = rospy.Subscriber("/vrpn_client_node/"+TARGET1_NAME+"/twist",TwistStamped,self.callback_velocity_1)
@@ -253,6 +267,22 @@ class Boss:
             self.target20_truth.time_step = self.k
             truth_pub.publish(self.target20_truth)
 
+        if self.agent1_exists:
+            agent_truth_pos_sub_1 = rospy.Subscriber("/vrpn_client_node/"+AGENT1_NAME+"/pose",PoseStamped,self.callback_agent_position_1)
+            agent_truth_vel_sub_1 = rospy.Subscriber("/vrpn_client_node/"+AGENT1_NAME+"/twist",TwistStamped,self.callback_agent_velocity_1)
+            self.agent1_truth.time_step = self.k
+            truth_pub.publish(self.agent1_truth)
+        if self.agent2_exists:
+            agent_truth_pos_sub_2 = rospy.Subscriber("/vrpn_client_node/"+AGENT2_NAME+"/pose",PoseStamped,self.callback_agent_position_2)
+            agent_truth_vel_sub_2 = rospy.Subscriber("/vrpn_client_node/"+AGENT2_NAME+"/twist",TwistStamped,self.callback_agent_velocity_2)
+            self.agent2_truth.time_step = self.k
+            truth_pub.publish(self.agent2_truth)
+        if self.agent3_exists:
+            agent_truth_pos_sub_3 = rospy.Subscriber("/vrpn_client_node/"+AGENT3_NAME+"/pose",PoseStamped,self.callback_agent_position_3)
+            agent_truth_vel_sub_3 = rospy.Subscriber("/vrpn_client_node/"+AGENT3_NAME+"/twist",TwistStamped,self.callback_agent_velocity_3)
+            self.agent3_truth.time_step = self.k
+            truth_pub.publish(self.agent3_truth)
+
         # truth_pub.publish(self.current_truth)
         while not rospy.is_shutdown():
             hello_str = "hello world %s" % rospy.get_time()
@@ -321,7 +351,16 @@ class Boss:
                 if self.target20_exists:
                     self.target20_truth.time_step = self.k
                     truth_pub.publish(self.target20_truth)
-                # truth_pub.publish(self.current_truth)
+               
+                if self.agent1_exists:
+                    self.agent1_truth.time_step = self.k
+                    truth_pub.publish(self.agent1_truth)
+                if self.agent2_exists:
+                    self.agent2_truth.time_step = self.k
+                    truth_pub.publish(self.agent2_truth)
+                if self.agent3_exists:
+                    self.agent3_truth.time_step = self.k
+                    truth_pub.publish(self.agent3_truth)
 
                 self.k += 1
                 print(f"Time step k = {self.k}")
@@ -431,6 +470,22 @@ class Boss:
         z_pos = msg.pose.position.z
         self.target20_truth.position = np.array([x_pos,y_pos,z_pos])
 
+    def callback_agent_position_1(self,msg):
+        x_pos = msg.pose.position.x
+        y_pos = msg.pose.position.y
+        z_pos = msg.pose.position.z
+        self.agent1_truth.position = np.array([x_pos,y_pos,z_pos])
+    def callback_agent_position_2(self,msg):
+        x_pos = msg.pose.position.x
+        y_pos = msg.pose.position.y
+        z_pos = msg.pose.position.z
+        self.agent2_truth.position = np.array([x_pos,y_pos,z_pos])
+    def callback_agent_position_3(self,msg):
+        x_pos = msg.pose.position.x
+        y_pos = msg.pose.position.y
+        z_pos = msg.pose.position.z
+        self.agent3_truth.position = np.array([x_pos,y_pos,z_pos])
+
     def callback_velocity_1(self,msg):
         x_vel = msg.twist.linear.x
         y_vel = msg.twist.linear.y
@@ -532,11 +587,28 @@ class Boss:
         z_vel = msg.twist.linear.z
         self.target20_truth.velocity = np.array([x_vel,y_vel,z_vel])
 
+    def callback_agent_velocity_1(self,msg):
+        x_vel = msg.twist.linear.x
+        y_vel = msg.twist.linear.y
+        z_vel = msg.twist.lienar.z
+        self.agent1_truth.velocity = np.array([x_vel,y_vel,z_vel])
+    def callback_agent_velocity_2(self,msg):
+        x_vel = msg.twist.linear.x
+        y_vel = msg.twist.linear.y
+        z_vel = msg.twist.lienar.z
+        self.agent2_truth.velocity = np.array([x_vel,y_vel,z_vel])
+    def callback_agent_velocity_3(self,msg):
+        x_vel = msg.twist.linear.x
+        y_vel = msg.twist.linear.y
+        z_vel = msg.twist.lienar.z
+        self.agent3_truth.velocity = np.array([x_vel,y_vel,z_vel])
+
 if __name__ == "__main__":
     try:
         rate = 10  # Hz
         nAgents = 2  # Number of agents
         targets = ["T1","T2","T3","T4","T5"]
+        agents = []
         B = Boss(nAgents, rate, targets)
         B.talker()
     except rospy.ROSInterruptException:

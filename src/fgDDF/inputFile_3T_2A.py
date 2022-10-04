@@ -175,3 +175,8 @@ target17 = None
 target18 = None
 target19 = None
 target20 = None
+
+# Agent names
+agent1 = None
+agent2 = None
+agent3 = None
