@@ -29,11 +29,11 @@ commonVars = dict()
 localVars = dict()
 
 # define local agent variable sets in dictionaries:
-varList[0] = {"T1", "T2", "T3", "S1"}
+varList[0] = {"T1", "T2", "T3", "T4" , "S1"}
 varList[1] = {"T3", "T4", "T5", "S2"}
 
 
-localVars = {"S1", "S2", "T1", "T2","T4","T5"} 
+localVars = {"S1", "S2", "T1", "T2","T5"}
 
 varSet[0] = set(varList[0])
 varSet[1] = set(varList[1])
@@ -121,6 +121,13 @@ agents[0]['measData'][3]['R'] = np.diag([1.0, 10.0])
 agents[0]['measData'][3]['invR'] = np.linalg.inv(agents[0]['measData'][3]['R'])
 agents[0]['measData'][3]['measuredVars'] = ['T3','S1']   # has to be in the order of the variable vector
 agents[0]["measData"][3]["measType"] = "targetPos"
+
+agents[0]['measData'][4]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[0]['measData'][4]['R'] = np.diag([1.0, 10.0])
+agents[0]['measData'][4]['invR'] = np.linalg.inv(agents[0]['measData'][4]['R'])
+agents[0]['measData'][4]['measuredVars'] = ['T4','S1']   # has to be in the order of the variable vector
+agents[0]["measData"][4]["measType"] = "targetPos"
 
 # agents[0]['measData'][4]['H'] = np.array([[1, 0, 0, 0, 1, 0],
 #                                           [0, 0,  1, 0,  0, 1]], dtype=np.float64)
