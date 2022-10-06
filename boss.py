@@ -136,12 +136,6 @@ class Boss:
                 self.target20_truth.target = TARGET20_NAME
                 self.target20_exists = True
 
-        # self.current_truth = TruthData()
-        # self.current_truth.bias0 = np.array([[2], [3]])
-        # self.current_truth.bias1 = np.array([[3], [2]])
-        # self.current_truth.bias2 = np.array([[5], [5]])
-        # self.current_truth.target = TARGET_NAME
-
     def talker(self):
         rospy.init_node("talker", anonymous=True)
         rate = rospy.Rate(self.rate)
@@ -150,8 +144,6 @@ class Boss:
         sub = rospy.Subscriber("chatter", ChannelFilter, self.callback)
         truth_pub = rospy.Publisher("/truth_data",TruthData,queue_size=10)
 
-        # truth_pos_sub = rospy.Subscriber("/vrpn_client_node/"+TARGET_NAME+"/pose",PoseStamped,self.callback_position)
-        # truth_vel_sub = rospy.Subscriber("/vrpn_client_node/"+TARGET_NAME+"/twist",TwistStamped,self.callback_velocity)
         if self.target1_exists:
             truth_pos_sub_1 = rospy.Subscriber("/vrpn_client_node/"+TARGET1_NAME+"/pose",PoseStamped,self.callback_position_1)
             truth_vel_sub_1 = rospy.Subscriber("/vrpn_client_node/"+TARGET1_NAME+"/twist",TwistStamped,self.callback_velocity_1)

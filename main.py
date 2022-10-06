@@ -171,38 +171,6 @@ def target20_callback(msg):
     y = msg.pose.position.y
     target_pos[19] = np.array([x,y])
 
-# # SIMULATED TARGET CODE
-# def sim_target1_callback(self,msg):
-#     if msg.target == target1: # may have to pass this into this function
-#         sim_target1_pos[msg.time_step - 1] = msg.position
-# def sim_target2_callback(self,msg):
-#     if msg.target == target2: # may have to pass this into this function
-#         sim_target2_pos[msg.time_step - 1] = msg.position
-# def sim_target3_callback(self,msg):
-#     if msg.target == target3: # may have to pass this into this function
-#         sim_target3_pos[msg.time_step - 1] = msg.position
-# def sim_target4_callback(self,msg):
-#     if msg.target == target4: # may have to pass this into this function
-#         sim_target4_pos[msg.time_step - 1] = msg.position
-# def sim_target5_callback(self,msg):
-#     if msg.target == target5: # may have to pass this into this function
-#         sim_target5_pos[msg.time_step - 1] = msg.position
-# def sim_target6_callback(self,msg):
-#     if msg.target == target6: # may have to pass this into this function
-#         sim_target6_pos[msg.time_step - 1] = msg.position
-# def sim_target7_callback(self,msg):
-#     if msg.target == target7: # may have to pass this into this function
-#         sim_target7_pos[msg.time_step - 1] = msg.position
-# def sim_target8_callback(self,msg):
-#     if msg.target == target8: # may have to pass this into this function
-#         sim_target8_pos[msg.time_step - 1] = msg.position
-# def sim_target9_callback(self,msg):
-#     if msg.target == target9: # may have to pass this into this function
-#         sim_target9_pos[msg.time_step - 1] = msg.position
-# def sim_target10_callback(self,msg):
-#     if msg.target == target10: # may have to pass this into this function
-#         sim_target10_pos[msg.time_step - 1] = msg.position
-
 np.set_printoptions(precision=3)
 
 rospack = rospkg.RosPack()
@@ -218,43 +186,6 @@ meas_data = MeasData()
 print("Enter agent number: ")
 ag_idx = int(input())
 ag = agents[ag_idx]
-
-# # PROPOSED SIM TARGET CODE
-# sim_targets = ["cohrint_tycho_bot_1","cohrint_tycho_bot_2","cohrint_tycho_bot_3","cohrint_tycho_bot_4","cohrint_tycho_bot_5","cohrint_zhora"]
-
-# if len(sim_targets): # edit function call above to pass in sim_targets
-#     # Create subscribers to save sim_target position + orientation
-#     for st in sim_targets:
-#         if st == target1:
-#             sim_target1_sub = rospy.Subscriber("truth_data",TruthData,sim_target1_callback)
-#             sim_target1_pos = np.empty([200,3])
-#         if st == target2:
-#             sim_target2_sub = rospy.Subscriber("truth_data",TruthData,sim_target2_callback)
-#             sim_target2_pos = np.empty([200,3])
-#         if st == target3:
-#             sim_target3_sub = rospy.Subscriber("truth_data",TruthData,sim_target3_callback)
-#             sim_target3_pos = np.empty([200,3])
-#         if st == target4:
-#             sim_target4_sub = rospy.Subscriber("truth_data",TruthData,sim_target4_callback)
-#             sim_target4_pos = np.empty([200,3])
-#         if st == target5:
-#             sim_target5_sub = rospy.Subscriber("truth_data",TruthData,sim_target5_callback)
-#             sim_target5_pos = np.empty([200,3])
-#         if st == target6:
-#             sim_target6_sub = rospy.Subscriber("truth_data",TruthData,sim_target6_callback)
-#             sim_target6_pos = np.empty([200,3])
-#         if st == target7:
-#             sim_target7_sub = rospy.Subscriber("truth_data",TruthData,sim_target7_callback)
-#             sim_target7_pos = np.empty([200,3])
-#         if st == target8:
-#             sim_target8_sub = rospy.Subscriber("truth_data",TruthData,sim_target8_callback)
-#             sim_target8_pos = np.empty([200,3])
-#         if st == target9:
-#             sim_target9_sub = rospy.Subscriber("truth_data",TruthData,sim_target9_callback)
-#             sim_target9_pos = np.empty([200,3])
-#         if st == target10:
-#             sim_target10_sub = rospy.Subscriber("truth_data",TruthData,sim_target10_callback)
-#             sim_target10_pos = np.empty([200,3])
 
 # Create array to save target positions
 target_pos = np.empty([20,2])
@@ -305,82 +236,6 @@ sub = rospy.Subscriber("chatter", ChannelFilter, callback, (ag))
 boss_sub = rospy.Subscriber("boss", String, boss_callback)
 pub = rospy.Publisher("chatter", ChannelFilter, queue_size=10)
 data = ChannelFilter()
-
-# # SIMULATED TARGET CODE
-# time.sleep(1) # may have to increase this time
-# # Maybe don't do this step b/c we only have data for time steps 2-199?
-# sim_idx = 0
-# for st in sim_targets:
-#     if st == target1:
-#         pub_sim_target1_pose = rospy.Publisher("vrpn_client_node/"+target1+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target1_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target1_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target1_pos[sim_idx+1,2]
-#         pub_sim_target1_pose.publish(msg)
-#     if st == target2:
-#         pub_sim_target2_pose = rospy.Publisher("vrpn_client_node/"+target2+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target2_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target2_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target2_pos[sim_idx+1,2]
-#         pub_sim_target2_pose.publish(msg)
-#     if st == target3:
-#         pub_sim_target3_pose = rospy.Publisher("vrpn_client_node/"+target3+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target3_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target3_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target3_pos[sim_idx+1,2]
-#         pub_sim_target3_pose.publish(msg)
-#     if st == target4:
-#         pub_sim_target4_pose = rospy.Publisher("vrpn_client_node/"+target4+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target4_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target4_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target4_pos[sim_idx+1,2]
-#         pub_sim_target4_pose.publish(msg)
-#     if st == target5:
-#         pub_sim_target5_pose = rospy.Publisher("vrpn_client_node/"+target5+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target5_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target5_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target5_pos[sim_idx+1,2]
-#         pub_sim_target5_pose.publish(msg)
-#     if st == target6:
-#         pub_sim_target6_pose = rospy.Publisher("vrpn_client_node/"+target6+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target6_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target6_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target6_pos[sim_idx+1,2]
-#         pub_sim_target6_pose.publish(msg)
-#     if st == target7:
-#         pub_sim_target7_pose = rospy.Publisher("vrpn_client_node/"+target7+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target7_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target7_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target7_pos[sim_idx+1,2]
-#         pub_sim_target7_pose.publish(msg)
-#     if st == target8:
-#         pub_sim_target8_pose = rospy.Publisher("vrpn_client_node/"+target8+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target8_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target8_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target8_pos[sim_idx+1,2]
-#         pub_sim_target8_pose.publish(msg)
-#     if st == target9:
-#         pub_sim_target9_pose = rospy.Publisher("vrpn_client_node/"+target9+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target9_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target9_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target9_pos[sim_idx+1,2]
-#         pub_sim_target9_pose.publish(msg)
-#     if st == target10:
-#         pub_sim_target10_pose = rospy.Publisher("vrpn_client_node/"+target10+"/pose", PoseStamped, queue_size=10)
-#         msg = PoseStamped()
-#         msg.pose.position.x = rf.sim_target10_pos[sim_idx+1,0]
-#         msg.pose.position.y = rf.sim_target10_pos[sim_idx+1,1]
-#         msg.pose.position.z = rf.sim_target10_pos[sim_idx+1,2]
-#         pub_sim_target8_pose.publish(msg)
 
 for i in range(nAgents):
     # YData[i] = matFile["yTruth"][i, 0:1].item()
