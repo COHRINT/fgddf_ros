@@ -90,6 +90,7 @@ for _ in range(nAgents):
     agents.append(ag)
 
 # ag["measData"][4] = dict()
+agents[0]['measData'][4] = dict()
 
 # agent 0:
 agents[0]['measData'][0]['H'] = np.array([[1, 0, 0, 0, 1, 0],

@@ -28,6 +28,7 @@ from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from fgddf_ros.msg import ChannelFilter
 from fgddf_ros.msg import Results
 from fgddf_ros.msg import TruthData
+from fgddf_ros.msg import CurrentMeasData
 
 # Function definitions
 def get_target_pos(current_agent):
@@ -440,6 +441,7 @@ for i, a in enumerate(agents):
 del tmpGraph
 
 pub_results = rospy.Publisher("results", Results, queue_size=10)
+pub_current_meas_data = rospy.Publisher("current_meas_data", CurrentMeasData, queue_size=10)
 
 k = 2
 rospy.sleep(1)
@@ -486,6 +488,8 @@ while not rospy.is_shutdown() and (k < 200):
             ag["currentMeas"][l] = get_agent_bias(ag["measData"][l])
 
     ag["agent"] = ag["filter"].add_Measurement(ag["agent"], ag["currentMeas"])
+
+    print(ag["currentMeas"])
 
     # Recive messages, time step k:
     # TODO: This requires sending data between agents
@@ -573,6 +577,15 @@ while not rospy.is_shutdown() and (k < 200):
         ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
     del tmpGraph
     k += 1
+
+    for md in len(ag["measData"]):
+        current_meas_data = CurrentMeasData()
+        current_meas_data.TimeStep = k-1
+        current_meas_data.Agent = ag_tag
+        current_meas_data.MeasuredVars = ag["measData"][md]["measuredVars"]
+        current_meas_data.Data = ag["currentMeas"][md]
+
+        pub_current_meas_data.publish(current_meas_data)
 
     for var in ag["agent"].varSet:
         ag_tag = "S" + str(ag_idx + 1)
