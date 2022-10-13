@@ -578,10 +578,10 @@ while not rospy.is_shutdown() and (k < 200):
     del tmpGraph
     k += 1
 
-    for md in len(ag["measData"]):
+    for md in range(len(ag["measData"])):
         current_meas_data = CurrentMeasData()
         current_meas_data.TimeStep = k-1
-        current_meas_data.Agent = ag_tag
+        current_meas_data.Agent = "S" + str(ag_idx + 1)
         current_meas_data.MeasuredVars = ag["measData"][md]["measuredVars"]
         current_meas_data.Data = ag["currentMeas"][md]
 
