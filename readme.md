@@ -5,24 +5,39 @@
     - Alternatively, install from source included in this repository
     - Run ```python setup.py install``` in the fglib directory
 
-## Network Setup
-For the following steps, let XX be the IP address of the master computer and YY be the IP address of the robots
-- On master computer:
+## Running an Experiment
+Follow the following steps to run a fgddf_ros experiment. Each number should be executed on a separate, new terminal. In all of the following steps, XXX denotes the IP address of the master computer and YYY denotes the IP address of the robot
+1. On master computer:
     ```
-    export ROS_MASTER_URI=http://192.168.1.XX:11311
-    export ROS_IP=192.168.1.XX
+    source <ros_path>/setup.bash
+    source ./network.sh XXX XXX
     roscore
     ```
-    Open a new tab and run the boss script:
+2. On master computer:
     ```
-    export ROS_MASTER_URI=http://192.168.1.XX:11311
-    export ROS_IP=192.168.1.XX
+    source <ros_path>/setup.bash
+    source ./network.sh XXX XXX
+    roslaunch vrpn_client_ros sample.launch server:=192.168.20.100
+    ```
+3. On master computer:
+    ```
+    source <ros_path>/setup.bash
+    source ./network.sh XXX XXX
     rosrun fgddf_ros boss.py
     ```
-- On each robot:
+4. On master computer:
     ```
-    export ROS_MASTER_URI=http://192.168.1.XX:11311
-    export ROS_IP=192.168.1.YY
+    source <ros_path>/setup.bash
+    source ./network.sh XXX XXX
+    rosbag record /truth_data /results
+    ```
+5. On EACH robot:
+    ```
+    source ./network.sh XXX YYY
+    ./startup.sh aspen
+    ```
+6. On EACH robot:
+    ```
+    source ./network.sh XXX YYY
     rosrun fgddf_ros main.py
     ```
-
