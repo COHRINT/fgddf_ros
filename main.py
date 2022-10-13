@@ -489,8 +489,6 @@ while not rospy.is_shutdown() and (k < 200):
 
     ag["agent"] = ag["filter"].add_Measurement(ag["agent"], ag["currentMeas"])
 
-    print(ag["currentMeas"])
-
     # Recive messages, time step k:
     # TODO: This requires sending data between agents
     for n in ag["neighbors"]:
