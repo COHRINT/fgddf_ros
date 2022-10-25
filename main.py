@@ -230,8 +230,8 @@ ag_idx = int(input())
 ag = agents[ag_idx]
 
 # SIM TARGET CODE
-sim_targets = ["sim_target_1","sim_target_2"]
-sim_agents = ["sim_agent_1","sim_agent_2"]
+sim_targets = []
+sim_agents = []
 
 if len(sim_targets):
     # Create subscribers to save sim_target position + orientation
