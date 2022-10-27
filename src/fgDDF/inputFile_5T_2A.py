@@ -227,11 +227,11 @@ variables["T5"]["uInd"] = [0,1]
 bias = np.array([3,4])
 
 # Target names
-target1 = "cohrint_tycho_bot_1"
-target2 = "cohrint_tycho_bot_2"
-target3 = "cohrint_tycho_bot_3"
-target4 = "cohrint_tycho_bot_4"
-target5 = "cohrint_tycho_bot_5"
+target1 = "cohrint_tycho_bot_6"
+target2 = "cohrint_tycho_bot_7"
+target3 = "cohrint_tycho_bot_8"
+target4 = "cohrint_tycho_bot_9"
+target5 = "cohrint_tycho_bot_10"
 target6 = None
 target7 = None
 target8 = None
