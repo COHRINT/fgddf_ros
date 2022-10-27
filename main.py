@@ -230,6 +230,7 @@ ag_idx = int(input())
 ag = agents[ag_idx]
 
 # SIM TARGET CODE
+rospy.wait_for_message("sim_truth_data",TruthData)
 sim_targets = ["cohrint_tycho_bot_6","cohrint_tycho_bot_7","cohrint_tycho_bot_8","cohrint_tycho_bot_9","cohrint_tycho_bot_10"]
 sim_agents = []
 
