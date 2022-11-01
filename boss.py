@@ -283,6 +283,11 @@ class Boss:
             self.agent3_truth.time_step = self.k
             truth_pub.publish(self.agent3_truth)
 
+        # SIM TARGET CODE
+        rospy.wait_for_message("sim_truth_data",TruthData)
+        print("Sim target and agent data received, beginning experiment")
+        pub.publish("sim data received")
+
         # truth_pub.publish(self.current_truth)
         while not rospy.is_shutdown():
             hello_str = "hello world %s" % rospy.get_time()
