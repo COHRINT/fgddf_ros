@@ -70,8 +70,6 @@ def callback(data, agent):
             agent["agent"].fusion.fusionLib[data.sender].inMsg[counter] = convertMsgToDict(data)[1]
         except:# inMsg doesn't already exist
             agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
-        
-        print(agent["agent"].fusion.fusionLib[data.sender].inMsg)
 
         receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
         if receive == 0:
@@ -357,8 +355,6 @@ for i, a in enumerate(agents):
 
         outMsg = agents[i]["agent"].sendMsg(agents, i, n)
         agents[i]["agent"].fusion.fusionLib[n].outMsg = outMsg
-        print("\n out message, time step 1:")
-        print(outMsg)
 
         receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
         if receive == 0:
@@ -505,8 +501,6 @@ while not rospy.is_shutdown() and (k < 200):
         # Send message (a dictionary of factors):
         msgs = ag["agent"].sendMsg(agents, ag["agent"].id, n)
         for msg in msgs.values():
-            # print("\n")
-            # print(msg)
             data.sender = ag["agent"].id
             print(f'Sending from {data.sender}')
             data.recipient = n
@@ -515,12 +509,9 @@ while not rospy.is_shutdown() and (k < 200):
             data.infMat = msg["infMat"].flatten()
             data.infVec = msg["infVec"]
             pub.publish(data)
-            # print(data)
 
         # outMsg = ag["agent"].sendMsg(agents, ag_idx, n)
         ag["agent"].fusion.fusionLib[n].outMsg = msgs
-        # print("\n out message, time step " + str(k))
-        # print(msgs)
 
     rospy.wait_for_message("boss", String)  # Wait for go ahead
 
