@@ -550,6 +550,8 @@ while not rospy.is_shutdown() and (k < 200):
     else:
         print("in else")
         for n in tmpGraph[ag["agent"].id].get_vnodes():
+            print("\n n:")
+            print(n)
             varCount = 0
             belief = inference.sum_product(tmpGraph[ag["agent"].id], n)
             try:
@@ -565,8 +567,6 @@ while not rospy.is_shutdown() and (k < 200):
                         if varStr.find(v) != -1:
                             varStr = v
                             break
-                    print("\nvarStr:")
-                    print(varStr)
                     ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)[currentDims[0] : currentDims[-1] + 1]
                     ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)[
                             currentDims[0] : currentDims[-1] + 1,
@@ -579,8 +579,6 @@ while not rospy.is_shutdown() and (k < 200):
                     if varStr.find(v) != -1:
                         varStr = v
                         break
-                print("\nvarStr:")
-                print(varStr)
                 ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)
                 ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)
 
