@@ -580,6 +580,9 @@ while not rospy.is_shutdown() and (k < 200):
                 ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)
                 ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)
 
+            print("\nvarStr:")
+            print(varStr)
+
         ag["results"][0]["FullCov"] = np.array(jointInfMat.factor.cov)
         ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
     del tmpGraph
