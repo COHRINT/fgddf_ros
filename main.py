@@ -509,7 +509,7 @@ while not rospy.is_shutdown() and (k < 200):
         outMsg = ag["agent"].sendMsg(agents, ag_idx, n)
         ag["agent"].fusion.fusionLib[n].outMsg = outMsg
         print("\n out message, time step " + str(k))
-        print(outMsg)
+        print(msgs)
 
     rospy.wait_for_message("boss", String)  # Wait for go ahead
 
