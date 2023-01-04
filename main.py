@@ -380,6 +380,9 @@ for i, a in enumerate(agents):
     jointInfMat = buildJointMatrix(a["agent"])
     # jointCovMat=jointInfMat.factor.cov
 
+    print("in main; time step 1")
+    print(a["agent"])
+    print(a["agent"].clique_fg.graph["cliqueFlag"])
     if a["agent"].clique_fg.graph["cliqueFlag"] == 0:
         # for n in agents[a]['agent'].fg.get_vnodes():
         for n in tmpGraph[i].get_vnodes():
@@ -398,6 +401,7 @@ for i, a in enumerate(agents):
         a["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
         # agents[a]['results'][m]['Lamda']=np.array(int(1))
     else:
+        print("in else")
         for n in tmpGraph[i].get_vnodes():
             varCount = 0
             # print(tmpGraph[i].nodes[n]["dims"])
@@ -524,6 +528,10 @@ while not rospy.is_shutdown() and (k < 200):
     # inference
     jointInfMat = buildJointMatrix(ag["agent"])
     tmpGraph[ag["agent"].id] = ag["agent"].add_factors_to_clique_fg()
+
+    print("in main; time step " + str(k))
+    print(a["agent"])
+    print(a["agent"].clique_fg.graph["cliqueFlag"])
     if ag["agent"].clique_fg.graph["cliqueFlag"] == 0:
         for n in tmpGraph[ag["agent"].id].get_vnodes():
             varStr = str(n)
@@ -540,6 +548,7 @@ while not rospy.is_shutdown() and (k < 200):
         ag["results"][0]["FullMu"] = np.array(jointInfMat.factor.mean)
 
     else:
+        print("in else")
         for n in tmpGraph[ag["agent"].id].get_vnodes():
             varCount = 0
             belief = inference.sum_product(tmpGraph[ag["agent"].id], n)
