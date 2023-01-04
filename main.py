@@ -565,8 +565,8 @@ while not rospy.is_shutdown() and (k < 200):
                         if varStr.find(v) != -1:
                             varStr = v
                             break
-                        print("\nvarStr:")
-                        print(varStr)
+                    print("\nvarStr:")
+                    print(varStr)
                     ag["results"][0][(varStr + "_mu")] = np.array(belief.mean)[currentDims[0] : currentDims[-1] + 1]
                     ag["results"][0][(varStr + "_cov")] = np.array(belief.cov)[
                             currentDims[0] : currentDims[-1] + 1,
