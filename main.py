@@ -496,9 +496,9 @@ while not rospy.is_shutdown() and (k < 200):
     for n in ag["neighbors"]:
         # Send message (a dictionary of factors):
         msgs = ag["agent"].sendMsg(agents, ag["agent"].id, n)
-        print("\nmessage values:")
-        print(msgs.values())
         for msg in msgs.values():
+            print("\n")
+            print(msg)
             data.sender = ag["agent"].id
             print(f'Sending from {data.sender}')
             data.recipient = n
@@ -507,11 +507,12 @@ while not rospy.is_shutdown() and (k < 200):
             data.infMat = msg["infMat"].flatten()
             data.infVec = msg["infVec"]
             pub.publish(data)
+            print(data)
 
         outMsg = ag["agent"].sendMsg(agents, ag_idx, n)
         ag["agent"].fusion.fusionLib[n].outMsg = outMsg
-        print("\n out message, time step " + str(k))
-        print(msgs)
+        # print("\n out message, time step " + str(k))
+        # print(msgs)
 
     rospy.wait_for_message("boss", String)  # Wait for go ahead
 
