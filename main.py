@@ -63,7 +63,14 @@ def convertMsgToDict(msg):
 # ROS callback functions
 def callback(data, agent):
     if data.recipient == agent["agent"].id:
-        agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
+        try: # inMsg already exists
+            agent["agent"].fusion.fusionLib[data.sender].inMsg # Tests to see if inMsg already exists
+
+            counter = max(agent["agent"].fusion.fusionLib[data.sender].inMsg.keys())+1
+            agent["agent"].fusion.fusionLib[data.sender].inMsg[counter] = convertMsgToDict(data)
+        except:# inMsg doesn't already exist
+            agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
+        
         print(agent["agent"].fusion.fusionLib[data.sender].inMsg)
 
         receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
