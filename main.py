@@ -67,7 +67,7 @@ def callback(data, agent):
             agent["agent"].fusion.fusionLib[data.sender].inMsg # Tests to see if inMsg already exists
 
             counter = max(agent["agent"].fusion.fusionLib[data.sender].inMsg.keys())+1
-            agent["agent"].fusion.fusionLib[data.sender].inMsg[counter] = convertMsgToDict(data)
+            agent["agent"].fusion.fusionLib[data.sender].inMsg[counter] = convertMsgToDict(data)[1]
         except:# inMsg doesn't already exist
             agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
         
