@@ -64,6 +64,7 @@ def convertMsgToDict(msg):
 def callback(data, agent):
     if data.recipient == agent["agent"].id:
         agent["agent"].fusion.fusionLib[data.sender].inMsg = convertMsgToDict(data)
+        print(agent["agent"].fusion.fusionLib[data.sender].inMsg)
 
         receive = np.random.choice(2, 1, p=[1-pMsg, pMsg])
         if receive == 0:
@@ -497,8 +498,8 @@ while not rospy.is_shutdown() and (k < 200):
         # Send message (a dictionary of factors):
         msgs = ag["agent"].sendMsg(agents, ag["agent"].id, n)
         for msg in msgs.values():
-            print("\n")
-            print(msg)
+            # print("\n")
+            # print(msg)
             data.sender = ag["agent"].id
             print(f'Sending from {data.sender}')
             data.recipient = n
@@ -507,10 +508,10 @@ while not rospy.is_shutdown() and (k < 200):
             data.infMat = msg["infMat"].flatten()
             data.infVec = msg["infVec"]
             pub.publish(data)
-            print(data)
+            # print(data)
 
-        outMsg = ag["agent"].sendMsg(agents, ag_idx, n)
-        ag["agent"].fusion.fusionLib[n].outMsg = outMsg
+        # outMsg = ag["agent"].sendMsg(agents, ag_idx, n)
+        ag["agent"].fusion.fusionLib[n].outMsg = msgs
         # print("\n out message, time step " + str(k))
         # print(msgs)
 
