@@ -228,9 +228,6 @@ class agent(object):
 
         for key, value in cliques.items():
             self.clique_fg.graph["cliqueFlag"] = 1
-            print("in agent")
-            print(self)
-            print(self.clique_fg.graph["cliqueFlag"])
             x = nodes.VNode("C" + str(c_counter), rv.Gaussian)
 
             self.clique_fg.set_node(x)
