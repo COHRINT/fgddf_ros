@@ -496,6 +496,7 @@ while not rospy.is_shutdown() and (k < 200):
     for n in ag["neighbors"]:
         # Send message (a dictionary of factors):
         msgs = ag["agent"].sendMsg(agents, ag["agent"].id, n)
+        print("\nmessage values:")
         print(msgs.values())
         for msg in msgs.values():
             data.sender = ag["agent"].id
