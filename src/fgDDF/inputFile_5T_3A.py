@@ -29,9 +29,9 @@ commonVars = dict()
 localVars = dict()
 
 # define local agent variable sets in dictionaries:
-varList[0] = {"T1", "T2",  "S1"}
+varList[0] = {"T1", "T2", "T3",  "S1"}
 varList[1] = {"T2", "T3", "T4", "S2"}
-varList[2] = {"T4", "T5",  "S3"}
+varList[2] = {"T3", "T4", "T5",  "S3"}
 
 
 localVars = {"S1", "S2", "S3", "T1", "T5"}
@@ -85,10 +85,8 @@ variables["dynamicList"] = dynamicList
 for i in range(nAgents):
     ag = dict()
     ag["measData"] = dict()
-    for ii in range(3):
+    for ii in range(4):
         ag["measData"][ii] = dict()
-    if i==1:
-        ag["measData"][3] = dict()
     ag["currentMeas"] = dict()
     ag["neighbors"] = dict()
     ag["results"] = dict()
@@ -119,6 +117,13 @@ agents[0]['measData'][2]['R'] = np.diag([3.0, 3.0])
 agents[0]['measData'][2]['invR'] = np.linalg.inv(agents[0]['measData'][2]['R'])
 agents[0]['measData'][2]['measuredVars'] = ['S1']   # has to be in the order of the variable vector
 agents[0]["measData"][2]["measType"] = "agentBias"
+
+agents[0]['measData'][3]['H'] = np.array([[1, 0, 0, 0, 1, 0],
+                                          [0, 0,  1, 0,  0, 1]], dtype=np.float64)
+agents[0]['measData'][3]['R'] = np.diag([1.0, 5.0])
+agents[0]['measData'][3]['invR'] = np.linalg.inv(agents[0]['measData'][3]['R'])
+agents[0]['measData'][3]['measuredVars'] = ['T3','S1']   # has to be in the order of the variable vector
+agents[0]["measData"][3]["measType"] = "targetPos"
 
 
 # agent 1:
@@ -176,12 +181,12 @@ agents[2]['measData'][2]['measuredVars'] = ['S2']   # has to be in the order of 
 agents[2]["measData"][2]["measType"] = "agentBias"
 # agents[1]['currentMeas'][3] = np.array([YData[1][4:6,1]]).T
 
-# agents[1]['measData'][4]['H'] = np.array([[1, 0, 1, 0],
-#                                           [0, 1, 0, 1]], dtype=np.float64)
-# agents[1]['measData'][4]['R'] = np.diag([1.0, 10.0])
-# agents[1]['measData'][4]['invR'] = np.linalg.inv(agents[1]['measData'][4]['R'])
-# agents[1]['measData'][4]['measuredVars'] = ['T6','S2']   # has to be in the order of the variable vector
-# agents[1]["measData"][4]["measType"] = "targetPos"
+agents[2]['measData'][3]['H'] = np.array([[1, 0, 1, 0],
+                                          [0, 1, 0, 1]], dtype=np.float64)
+agents[2]['measData'][3]['R'] = np.diag([1.0, 10.0])
+agents[2]['measData'][3]['invR'] = np.linalg.inv(agents[2]['measData'][3]['R'])
+agents[2]['measData'][3]['measuredVars'] = ['T3','S2']   # has to be in the order of the variable vector
+agents[2]["measData"][3]["measType"] = "targetPos"
 
 
 
