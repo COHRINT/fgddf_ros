@@ -18,7 +18,7 @@ from fgDDF.agent import *
 from fgDDF.factor_utils import *
 from fgDDF.FG_KF import *
 from fgDDF.fusionAlgo import *
-from fgDDF.inputFile_5T_2A import *
+from fgDDF.inputFile_5T_3A import *
 
 import rospy
 import rospkg
