@@ -595,7 +595,7 @@ while not rospy.is_shutdown() and (k < 200):
         pub_current_meas_data.publish(current_meas_data)
 
     for var in ag["agent"].varSet:
-        ag_tag = "S" + str(ag_idx + 1)
+        ag_tag = "S" + str(ag_idx+1)
         if var != ag_tag:
             agent_results = Results()
             agent_results.TimeStep = k-1
