@@ -1,13 +1,17 @@
 """Module for utilities.
+
 This module contains auxiliary functions for factor graphs.
 Functions:
+
+
 """
 import itertools
 
 from fglib import nodes, rv
-# from fglib import graphs, nodes, inference, rv, utils
+from fglib import inference
 import numpy as np
-# import networkx as nx
+import networkx as nx
+import matplotlib.pyplot as plt
 from copy import deepcopy
 from math import fabs, pi
 
@@ -151,6 +155,7 @@ def mergeFactors(agent, vList):
     return agent
 
 def findVNode(fg, nodeName):
+    nodeObj = []
     for n in list(fg.get_vnodes()):
         if str(n)==nodeName:
             nodeObj = n
@@ -167,14 +172,6 @@ def buildJointMatrix(agent):
         fList = list(agent.fg.get_fnodes())
     except:
         fList = list(agent.get_fnodes())
-
-
-    # infMat = deepcopy(fList[0])
-    #
-    # infMat.factor._W = infMat.factor._W*0
-    # infMat.factor._Wm = infMat.factor._Wm*0
-    #
-    # infMat.factor._dim=fList[0].factor._dim
 
     infMat =nodes.FNode("infMat",rv.Gaussian.inf_form(fList[0].factor._W*0, fList[0].factor._Wm*0, *fList[0].factor._dim))
     for f in fList:
@@ -295,6 +292,7 @@ def correctQuadrant(input_angle, y, x):
 
 def dis_union(G, H, factorCounter):
     ''' Union of disjoint factor graphs G and H
+
         This function adds all factors, variables and edges of factor graph H to factor graph G
     '''
 
@@ -324,12 +322,10 @@ def dis_union(G, H, factorCounter):
          G.set_edge(node_dict[str(e[0])], node_dict[str(e[1])])
 
 
-
-
     return factorCounter
-
 def union(G, H, factorCounter):
     ''' Union of factor graphs G and H
+
         This function adds all factors and edges of factor graph H to factor graph G
         assuming variable nodes in H already exist in G
     '''
@@ -359,3 +355,118 @@ def union(G, H, factorCounter):
 
 
     return factorCounter
+
+def inferState(agents, dynamicList, nAgents, m, firstRunFlag, saveFlag):
+    """
+    This function infers all variable marginals
+    """
+    tmpGraph = dict()
+
+    for a in range(nAgents):
+        if firstRunFlag:
+            agents[a]['results'][m] = dict()
+
+        tmpGraph[a] = agents[a]['agent'].fg
+
+
+        try:
+        # if agents[a]['agent'].clique_fg.graph['cliqueFlag']==0:
+            # for n in agents[a]['agent'].fg.get_vnodes():
+            for n in tmpGraph[a].get_vnodes():
+                #print('agent', a)
+                varStr = str(n)
+                for v in list(dynamicList):
+                    # if varStr.find(v) != -1:
+                    if varStr[:varStr.rfind('_')]==v:
+                        varStr = v
+                        break
+
+                # belief = inference.sum_product(agents[a]['agent'].fg, n);
+                belief = inference.sum_product(tmpGraph[a], n)
+                myu = belief.mean
+                if 'X' in str(varStr):
+                    myu[2] = wrapToPi(myu[2]) # wrapping angle to [-pi pi]
+
+                agents[a]['filter'].x_hat[varStr] = myu
+                # agents[a]['filter'].x_hat[varStr] = belief.mean
+
+                if saveFlag:
+                    # agents[a]['filter'].x_hat[varStr] = myu
+                    if firstRunFlag:
+                        agents[a]['results'][m][(varStr+'_mu')] = myu
+                        agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)
+                    else:
+                        agents[a]['results'][m][(varStr+'_mu')] = np.append(agents[a]['results'][m][(varStr+'_mu')], myu, axis = 1)
+                        agents[a]['results'][m][(varStr+'_cov')] = np.append(agents[a]['results'][m][(varStr+'_cov')], np.array(belief.cov), axis = 1)
+
+
+
+        except:
+        # else:
+            if agents[a]['agent'].clique_fg.graph['cliqueFlag']==0:
+                raise Exception("There is a problem with loops in the graph")
+            else:
+                tmpGraph[a] = agents[a]['agent'].add_factors_to_clique_fg()
+                for n in tmpGraph[a].get_vnodes():
+                    varCount = 0
+                    belief = inference.sum_product(tmpGraph[a], n)
+                    # print(a)
+                    # print(n)
+                    try:
+                        vNames = tmpGraph[a].nodes[n]['dims']
+                        for d in range(len(vNames)):
+                            if d<varCount:
+                                continue
+
+                            currentDims = [i for i, d in enumerate(vNames) if d == vNames[varCount]]
+                            varStr = vNames[varCount]
+                            for v in list(dynamicList):
+                                # if varStr.find(v) != -1:
+                                if varStr[:varStr.rfind('_')]==v:
+                                    varStr=v
+                                    break
+                            myu = np.array(belief.mean)[currentDims[0]:currentDims[-1]+1]
+                            if 'X' in str(varStr):
+                                myu[2] = wrapToPi(myu[2])
+
+                            agents[a]['filter'].x_hat[varStr] = myu
+                            # agents[a]['filter'].x_hat[varStr] = np.array(belief.mean)[currentDims[0]:currentDims[-1]+1]
+
+                            if saveFlag:
+                                # agents[a]['filter'].x_hat[varStr] = myu
+                                if firstRunFlag:
+                                    agents[a]['results'][m][(varStr+'_mu')] = myu
+                                    agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)[currentDims[0]:currentDims[-1]+1,currentDims[0]:currentDims[-1]+1]
+                                else:
+                                    agents[a]['results'][m][(varStr+'_mu')] = np.append(agents[a]['results'][m][(varStr+'_mu')], myu, axis = 1)
+                                    agents[a]['results'][m][(varStr+'_cov')] = np.append(agents[a]['results'][m][(varStr+'_cov')], np.array(belief.cov)[currentDims[0]:currentDims[-1]+1,currentDims[0]:currentDims[-1]+1], axis = 1)
+                            varCount = varCount+len(currentDims)
+
+                    except:
+                        varStr=str(n)
+                        for v in list(dynamicList):
+                            # if varStr.find(v) != -1:
+                            if varStr[:varStr.rfind('_')]==v:
+                                varStr=v
+                                break
+                        myu = belief.mean
+                        if 'X' in str(varStr):
+                            myu[2] = wrapToPi(myu[2]) # wrapping angle to [-pi pi]
+
+                        agents[a]['filter'].x_hat[varStr] = myu
+                        # agents[a]['filter'].x_hat[varStr] = belief.mean
+                        if saveFlag:
+                            # agents[a]['filter'].x_hat[varStr] = myu
+                            if firstRunFlag:
+                                agents[a]['results'][m][(varStr+'_mu')] = myu
+                                agents[a]['results'][m][(varStr+'_cov')] = np.array(belief.cov)
+                            else:
+                                agents[a]['results'][m][(varStr+'_mu')] = np.append(agents[a]['results'][m][(varStr+'_mu')], myu, axis = 1)
+                                agents[a]['results'][m][(varStr+'_cov')] = np.append(agents[a]['results'][m][(varStr+'_cov')], np.array(belief.cov), axis = 1)
+
+
+
+    del tmpGraph
+
+
+    return agents
