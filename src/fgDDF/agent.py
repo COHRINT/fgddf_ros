@@ -56,7 +56,7 @@ class agent(object):
 
 
             self.fg.set_node(x)
-            self.fg.nodes[x]['comOrLoc']=variables[var]['Type']
+            self.fg.nodes[x]["comOrLoc"]=variables[var]["Type"]
 
 
     def set_prior(self, prior):
