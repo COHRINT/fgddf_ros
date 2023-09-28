@@ -20,19 +20,27 @@ class agent(object):
         priors - a dictionary containing prior definitions for each variable in varSet
 
     """
-
-    def __init__(self, varSet, dynamicList, filter, fusionAlgorithm, condVar = None , variables = None ):
+    def __init__(
+        self,
+        varSet,
+        dynamicList,
+        filter,
+        fusionAlgorithm,
+        id,
+        condVar=None,
+        variables=None,
+    ):
         self.fg = graphs.FactorGraph()
         self.varSet = varSet
         self.factorCounter = 0
         self.filter = filter
-        self.id = id(self)
+        self.id = id
         self.dynamicList = dynamicList
         self.fusionAlgorithm = fusionAlgorithm
         self.varList = dict()
         self.fusion = globals()[fusionAlgorithm](fusionAlgorithm)
-        self.condVar = condVar   # need to be automated later
-       # self.x_hat = dict()
+        self.condVar = condVar  # need to be automated later
+        # self.x_hat = dict()
 
         for var in varSet:
             if var in dynamicList:
