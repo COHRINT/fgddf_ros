@@ -60,18 +60,18 @@ class agent(object):
 
 
     def set_prior(self, prior):
-        """ add prior factor to the graph
+        """add prior factor to the graph
 
-            input:
-                varNode - the variable node that the prior factor is defined on
-                prior - a dictionary containing definitions for the prior factor,
-                        currently only infMAt and infVec for a information form Gaussian pdf
-                        and: inst - Instances of the class VNode representing the variables of
-                        the mean vector and covariance matrix, respectively. The number
-                        of the positional arguments must match the number of dimensions
-                        of the Numpy arrays.
+        input:
+            varNode - the variable node that the prior factor is defined on
+            prior - a dictionary containing definitions for the prior factor,
+                    currently only infMAt and infVec for a information form Gaussian pdf
+                    and: inst - Instances of the class VNode representing the variables of
+                    the mean vector and covariance matrix, respectively. The number
+                    of the positional arguments must match the number of dimensions
+                    of the Numpy arrays.
 
-            for now the factors are defined as Gaussian in information form
+        for now the factors are defined as Gaussian in information form
 
         """
         self.prior = prior
@@ -79,44 +79,68 @@ class agent(object):
         varNode = []
         for i in range(len(list_vnodes)):
             if str(list_vnodes[i]) in prior:
-                 varNode = list_vnodes[i]
+                varNode = list_vnodes[i]
 
             instances = []
             try:
-                for j in range(prior[str(list_vnodes[i])]['dim']):
+                for j in range(prior[str(list_vnodes[i])]["dim"]):
                     instances.append(varNode)
 
-
-                f = nodes.FNode('f_'+str(self.factorCounter), rv.Gaussian.inf_form(prior[str(list_vnodes[i])]['infMat'],
-                    prior[str(list_vnodes[i])]['infVec'], *instances))
-                self.factorCounter = self.factorCounter+1
+                f = nodes.FNode(
+                    "f_" + str(self.factorCounter),
+                    rv.Gaussian.inf_form(
+                        prior[str(list_vnodes[i])]["infMat"],
+                        prior[str(list_vnodes[i])]["infVec"],
+                        *instances,
+                    ),
+                )
+                self.factorCounter = self.factorCounter + 1
                 self.fg.set_node(f)
                 self.fg.set_edge(varNode, f)
             except:
-                print('No prior defined for variable ', str(list_vnodes[i]))
+                print("No prior defined for variable ", str(list_vnodes[i]))
 
     def set_fusion(self, agent_j, variables):
         self.fusion.set_channel(self, agent_j)
 
-        if 'CF' in self.fusionAlgorithm:
+        if "CF" in self.fusionAlgorithm:
             commonVars = self.fusion.commonVars[agent_j.id]
             dynamicList = self.dynamicList & commonVars
-            self.fusion.fusionLib[agent_j.id] = agent(commonVars, dynamicList, self.filter, self.fusionAlgorithm, None, variables )
+            self.fusion.fusionLib[agent_j.id] = agent(
+                commonVars,
+                dynamicList,
+                self.filter,
+                self.fusionAlgorithm,
+                agent_j.id,
+                None,
+                variables,
+            )
             self.fusion.fusionLib[agent_j.id].set_prior(self.prior)
         elif 'CI' in self.fusionAlgorithm:
             commonVars = self.fusion.commonVars[agent_j.id]
             dynamicList = self.dynamicList & commonVars
-            self.fusion.fusionLib[agent_j.id] = agent(commonVars, dynamicList, self.filter, self.fusionAlgorithm, None, variables )
+            self.fusion.fusionLib[agent_j.id] = agent(
+                commonVars,
+                dynamicList,
+                self.filter,
+                self.fusionAlgorithm,
+                agent_j.id,
+                None,
+                variables,
+            )
 
-
-    def sendMsg(self, agents, agent_i, agent_j):
+    def sendMsg(self, agents, agent_i, agent_j_id):
         """
-            returns a dictionary of with keys: dims, infMat, infVec
-            dims is a list of names of variables
+        returns a dictionary of with keys: dims, infMat, infVec
+        dims is a list of names of variables
         """
-        commonVars = self.fusion.commonVars[agents[agent_j]['agent'].id]
-        msg = self.fusion.prepare_msg(agents[agent_i]['agent'], agents[agent_i]['filter'], commonVars, agents[agent_j]['agent'].id)
-
+        commonVars = self.fusion.commonVars[agent_j_id]
+        msg = self.fusion.prepare_msg(
+            self,
+            agents[agent_i]["filter"],
+            commonVars,
+            agent_j_id,
+        )
         return msg
 
 
