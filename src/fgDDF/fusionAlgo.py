@@ -340,7 +340,10 @@ class HS_CI(fusionAlgo):
         for key in self.fusionLib:
             inMsg = self.fusionLib[key].inMsg
             if inMsg is not None:
-                outMsg = self.fusionLib[key].outMsg
+                
+		commonVars = self.commonVars[key]
+                outMsg = self.prepare_msg(agent_i, agent_i.filter, commonVars, key)
+
 
                 omega_optimal = scipy.optimize.minimize_scalar(HS_CI.computeCIweight, bounds=(0,1), method="bounded", args=(inMsg, outMsg), options={'xatol': 1e-4}).x
 
@@ -355,7 +358,9 @@ class HS_CI(fusionAlgo):
 
                     for d in inMsg[f_key]['dims']:
                         for v in agent_i.varList:
-                            if str(d).find(v) !=-1:
+                            varStr = str(d)
+                            
+                            if varStr[:varStr.rfind('_')]==v:
                                 var = v
                                 break
                         instances.append(agent_i.varList[var])
