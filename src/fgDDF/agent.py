@@ -6,11 +6,11 @@ agent is the base class for all agents in the network
 """
 # sys.path.append(r"D:\Studies\Research\Code\pythonCode\fglib")
 from fglib import graphs , nodes, inference, rv, utils
-from fusionAlgo import *
+from fgDDF.fusionAlgo import *
 import networkx as nx
 import matplotlib.pyplot as plt
 # from copy import deepcopy
-from factor_utils import *
+from fgDDF.factor_utils import *
 
 class agent(object):
 
