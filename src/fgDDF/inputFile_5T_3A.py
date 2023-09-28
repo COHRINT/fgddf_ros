@@ -57,7 +57,7 @@ T5 = {'n' : 4}
 
 variables["T1"], variables["T2"], variables["T3"], variables["T4"], variables["T5"] = T1, T2, T3, T4, T5
 
-variables["S1"], variables["S2"], variables["S2"]  = S1, S2, S3
+variables["S1"], variables["S2"], variables["S3"]  = S1, S2, S3
 
 for var in variables:
     if var in localVars:
@@ -171,7 +171,7 @@ agents[2]["measData"][1]["measType"] = "targetPos"
 agents[2]['measData'][2]['H'] = np.array([[ 1, 0], [ 0, 1]], dtype=np.float64)
 agents[2]['measData'][2]['R'] = np.diag([3.0, 3.0])
 agents[2]['measData'][2]['invR'] = np.linalg.inv(agents[2]['measData'][2]['R'])
-agents[2]['measData'][2]['measuredVars'] = ['S2']   # has to be in the order of the variable vector
+agents[2]['measData'][2]['measuredVars'] = ['S3']   # has to be in the order of the variable vector
 agents[2]["measData"][2]["measType"] = "agentBias"
 # agents[1]['currentMeas'][3] = np.array([YData[1][4:6,1]]).T
 
