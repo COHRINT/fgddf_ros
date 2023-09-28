@@ -295,9 +295,7 @@ for i, a in enumerate(agents):
     print("Initializing agent:", i)
     # a = agents[i]
     a["filter"] = FG_KF(variables, varSet[i], a["measData"], uData)
-    a["agent"] = agent(
-        varSet[i], dynamicList, a["filter"], "HS_CF", i, condVar[i], variables
-    )
+    a["agent"] = agent(varSet[i], dynamicList, a["filter"], "HS_CF", i, condVar[i], variables)
     a["agent"].set_prior(prior)
 
     # Add prediction nodes to the agent's graph
