@@ -149,6 +149,7 @@ class agent(object):
 
         cliqueFlag - if 0: no cliques, graph is identical to the agents' graph (with no loops)
                      if 1: there are cliques and new factors need to be built
+        Checking that this version is on the Jackals
         """
         self.clique_fg = graphs.FactorGraph()
         self.clique_fg.graph["cliqueFlag"] = 0
