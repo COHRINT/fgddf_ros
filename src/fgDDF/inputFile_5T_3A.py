@@ -175,8 +175,6 @@ agents[2]['measData'][2]['measuredVars'] = ['S2']   # has to be in the order of 
 agents[2]["measData"][2]["measType"] = "agentBias"
 # agents[1]['currentMeas'][3] = np.array([YData[1][4:6,1]]).T
 
-a
-
 # agents[1]['measData'][4]['H'] = np.array([[1, 0, 1, 0],
 #                                           [0, 1, 0, 1]], dtype=np.float64)
 # agents[1]['measData'][4]['R'] = np.diag([1.0, 10.0])
