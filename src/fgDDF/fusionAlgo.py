@@ -1,8 +1,6 @@
-
 """
 fusion class for decentralized data fusion (DDF)
 agent is the base class for all agents in the network
-
 """
 import networkx as nx
 
@@ -48,12 +46,9 @@ class HS_CF(fusionAlgo):
     def prepare_msg(self, agent_i, filter, commonVars, agent_j_id):
         """ prepare a message to send to neighbor
             In general that means marginalizing common variables
-
             It accounts for common information by removing it using the CF
-
             input:
             commonVars
-
         """
 
         list_vnodes = agent_i.fg.get_vnodes()
@@ -67,8 +62,7 @@ class HS_CF(fusionAlgo):
         varDict = {}
         for var in strVnodes:
             for c in commonVars:
-                # if var.find(c) != -1:
-                if var[:var.rfind('_')]==c:
+                if var.find(c) != -1:
                     vToRemove.append(var)
                     varDict[var] = self.fusionLib[agent_j_id].varList[c]
                     break
@@ -136,10 +130,10 @@ class HS_CF(fusionAlgo):
 
                         F2_remove.append(F2)
                         matchFlag = 1
-            # changed 7/27/23 - I think that was a mistake to remove those factors from the CF graph!
+
             for r in F2_remove:
                 list_fnodes_CFgraph.remove(r)
-            #     CFgraph.remove_node(r)
+                CFgraph.remove_node(r)
 
             if matchFlag==0: #only factor over this node
                 f_dict[counter] = dict()
@@ -182,25 +176,6 @@ class HS_CF(fusionAlgo):
             msgGraph.remove_node(F1)
             self.fusionLib[agent_j_id].factorCounter = CF_fcounter
 
-
-        # Add factors that are still in the CF factor list to the msg with (-) sign
-        # Added this part on 2/6/2023
-        F2_remove = []
-        for F2 in list_fnodes_CFgraph:  # go over factors in CF graph
-            f2_dims = F2.factor.dim
-            f2_dim_list = []
-            for i in f2_dims:
-                f2_dim_list.append(str(i))
-            f_dict[counter] = dict()
-            f_dict[counter]['dims'] = f2_dim_list
-            f_dict[counter]['infMat'] = -F2.factor._W
-            f_dict[counter]['infVec'] = -F2.factor._Wm
-            F2_remove.append(F2)
-            counter+=1
-        for r in F2_remove:
-            self.fusionLib[agent_j_id].fg.remove_node(r)
-
-
         del CFgraph
         return f_dict
 
@@ -223,9 +198,7 @@ class HS_CF(fusionAlgo):
 
                     for d in inMsg[f_key]['dims']:
                         for v in agent_i.varList:
-                            varStr = str(d)
-                            # if str(d).find(v) !=-1:
-                            if varStr[:varStr.rfind('_')]==v:
+                            if str(d).find(v) !=-1:
                                 var = v
                                 break
                         instances.append(agent_i.varList[var])
@@ -292,12 +265,9 @@ class HS_CI(fusionAlgo):
     def prepare_msg(self, agent_i, filter, commonVars, agent_j_id):
         """ prepare a message to send to neighbor
 		   In general that means marginalizing common variables
-
 		   It accounts for common information by removing it using the CF
-
 		   input:
 		   commonVars
-
 	   """
 
         list_vnodes = agent_i.fg.get_vnodes()
@@ -311,7 +281,7 @@ class HS_CI(fusionAlgo):
         varDict = {}
         for var in strVnodes:
             for c in commonVars:
-                if var[:var.rfind('_')]==c:
+                if var.find(c) != -1:
                     vToRemove.append(var)
                     varDict[var] = self.fusionLib[agent_j_id].varList[c]
                     break
@@ -370,13 +340,9 @@ class HS_CI(fusionAlgo):
         for key in self.fusionLib:
             inMsg = self.fusionLib[key].inMsg
             if inMsg is not None:
-
-                commonVars = self.commonVars[key]
-                outMsg = self.prepare_msg(agent_i, agent_i.filter, commonVars, key)
+                outMsg = self.fusionLib[key].outMsg
 
                 omega_optimal = scipy.optimize.minimize_scalar(HS_CI.computeCIweight, bounds=(0,1), method="bounded", args=(inMsg, outMsg), options={'xatol': 1e-4}).x
-
-                #TODO fix, for multiple fusion occurences s.t sum(w_i)=1
 
                 # build a graph of minus (-) the approximated `common' pdf - p_ij=(1-w)*p_i+w*p_j
                 # this is so when we add this graph to the agent, factors are removed
@@ -389,9 +355,7 @@ class HS_CI(fusionAlgo):
 
                     for d in inMsg[f_key]['dims']:
                         for v in agent_i.varList:
-                            varStr = str(d)
-                            # if str(d).find(v) !=-1:
-                            if varStr[:varStr.rfind('_')]==v:
+                            if str(d).find(v) !=-1:
                                 var = v
                                 break
                         instances.append(agent_i.varList[var])
@@ -430,7 +394,6 @@ class HS_CI(fusionAlgo):
         Arguments:
             infMatA {np.ndarray} -- information matrix of agent i
             infMatB {np.ndarray} -- information matrix of agent j
-
         Returns:
             omega_optimal -- optimal weight
         """
@@ -519,4 +482,3 @@ class HS_CI(fusionAlgo):
 
 
         return CIgraph
-
