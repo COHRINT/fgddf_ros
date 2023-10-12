@@ -158,30 +158,48 @@ class agent(object):
         separator = set()
         commonVars = []
         i = 1
-        j = 1
-        # 1. reason about cliques:
-        for key in self.fusion.commonVars:
-            [commonVars.append(c) for c in self.fusion.commonVars[key]]
-            if len(self.fusion.commonVars[key]) > 1:
-                for k in cliques:
-                    if cliques[k] & self.fusion.commonVars[key]:
-                        tmp = list(cliques[k] & self.fusion.commonVars[key])
-                        for n in tmp:
-                            separator.add(n)
-                        [cliques[k].remove(s) for s in separator if s in cliques[k]]
+        # j = 1
+        s = set()
+        sets = list(self.fusion.commonVars.values())
+        separator = set.intersection(*sets)
 
-                cliques[i] = self.fusion.commonVars[key] - separator
-                [Vars.remove(v) for v in cliques[i] if v in Vars]
-                i += 1
+        # Initialize an empty set for the intersection of other sets
+        intersection_other = set()
+        # Calculate the intersection of other sets
+        if len(sets)>2:
+            for k in range(len(sets)):
+                other_sets = [s for j, s in enumerate(sets) if j != k]
+                intersection = set.intersection(*other_sets)
+                intersection_other.update(intersection)
+        # Calculate the variables that are in the intersection of other sets but not all sets
+            intersection_other.difference_update(separator)
+        if len(intersection_other)>0:
+            cliques[i] = intersection_other
+            i+=1
+        # Calculate the variables that are not in any intersection
+        not_in_any_intersection = set.union(*sets) - set.union(separator, intersection_other)
 
-        # need to check independence
+
+        for v in not_in_any_intersection:
+            cliques[i] = {v}
+            i+=1    
+     
         separationClique = self.condVar | separator  # union
         [Vars.remove(v) for v in separationClique if v in Vars]
+
+        #TODO check, and add local variables to clique
+        # separationClique = separationClique | Vars
+        [Vars.remove(v) for v in separationClique if v in Vars]
+
+        if len(cliques)==1 and len(cliques[0]-set(commonVars))==0 and len(Vars)==0:
+            return
+
+    
 
         vnodes = self.fg.get_vnodes()
         # find and change the dynamic variable name in cliques:
         nodesToRemove = []
-        for n in range(1, i):
+        for n in range(0, i):
             varName = []
             for var in cliques[n]:
                 for v in vnodes:
@@ -191,8 +209,14 @@ class agent(object):
                         break
             cliques[n] = set(varName)
 
-        for v in nodesToRemove:
-            vnodes.remove(v)
+        try:
+            for v in nodesToRemove:
+                print(str(v))
+                vnodes.remove(v)
+        except:
+            1
+
+
         # find and change the dynamic variable name in Vars:
         nodesToRemove = []
         varName = []
