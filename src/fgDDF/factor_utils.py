@@ -151,6 +151,7 @@ def mergeFactors(agent, vList):
     return agent
 
 def findVNode(fg, nodeName):
+    nodeObj = []
     for n in list(fg.get_vnodes()):
         if str(n)==nodeName:
             nodeObj = n
