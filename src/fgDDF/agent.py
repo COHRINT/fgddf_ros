@@ -162,6 +162,9 @@ class agent(object):
         s = set()
         sets = list(self.fusion.commonVars.values())
         separator = set.intersection(*sets)
+         for j in range(len(sets)):
+            cliques[j] = sets[j]
+        i=j+1
 
         # Initialize an empty set for the intersection of other sets
         intersection_other = set()
@@ -173,16 +176,16 @@ class agent(object):
                 intersection_other.update(intersection)
         # Calculate the variables that are in the intersection of other sets but not all sets
             intersection_other.difference_update(separator)
-        if len(intersection_other)>0:
-            cliques[i] = intersection_other
-            i+=1
+        # if len(intersection_other)>0:
+        #     cliques[i] = intersection_other
+        #     i+=1
         # Calculate the variables that are not in any intersection
-        not_in_any_intersection = set.union(*sets) - set.union(separator, intersection_other)
+        # not_in_any_intersection = set.union(*sets) - set.union(separator, intersection_other)
 
 
-        for v in not_in_any_intersection:
-            cliques[i] = {v}
-            i+=1    
+        # for v in not_in_any_intersection:
+        #     cliques[i] = {v}
+        #     i+=1    
      
         separationClique = self.condVar | separator  # union
         [Vars.remove(v) for v in separationClique if v in Vars]
@@ -191,11 +194,18 @@ class agent(object):
         # separationClique = separationClique | Vars
         [Vars.remove(v) for v in separationClique if v in Vars]
 
+        for key, val in cliques.items():
+            cliques[key] = val.intersection(Vars)
+
+        for j in range(len(cliques)):
+            if len(cliques[j]) == 0:
+                del cliques[j]
+                i-=1
+
         if len(cliques)==1 and len(cliques[0]-set(commonVars))==0 and len(Vars)==0:
             return
 
-    
-
+        
         vnodes = self.fg.get_vnodes()
         # find and change the dynamic variable name in cliques:
         nodesToRemove = []
