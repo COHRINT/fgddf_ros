@@ -41,7 +41,7 @@ varSet[1] = set(varList[1])
 varSet[2] = set(varList[2])
 
 
-condVar[0], condVar[1], condVar[2] = {'S1'}, {'S2'}, {'S3'}
+condVar[0], condVar[1], condVar[2] = {'S1', 'T1'}, {'S2'}, {'S3','T5'}
 
 S1 = {'n' : 2}
 S2 = {'n' : 2}  #{'n' : 2}
