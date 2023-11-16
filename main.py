@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+# Import required Python packages
 from typing import Counter
 from fglib import graphs, nodes, inference, rv, utils
 import networkx as nx
@@ -11,41 +12,61 @@ from scipy.io import savemat
 import itertools
 from copy import deepcopy
 import time
+import os.path as path
 
+# Import custom Python packages
 import fgDDF
-
 from fgDDF.agent import *
 from fgDDF.factor_utils import *
 from fgDDF.FG_KF import *
 from fgDDF.fusionAlgo import *
 from fgDDF.inputFile_5T_3A import *
 
+# Import standard ROS packages
 import rospy
 import rospkg
-import os.path as path
+
+# Import standard ROS messages
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
+
+# Import custom ROS messages
 from fgddf_ros.msg import ChannelFilter
 from fgddf_ros.msg import Results
 from fgddf_ros.msg import TruthData
 from fgddf_ros.msg import CurrentMeasData
 
-# Function definitions
+# Function to simulate a noisy measurement of a target's position
+#    Inputs:
+#        current_agent: the agent that is measuring the target's position
+#    Outputs:
+#        measurement: the simulated measurement of the target's position
 def get_target_pos(current_agent):
+    # Extract the target's number
     for var in current_agent["measuredVars"]:
         if "T" in var:
             temp = list(var)
             temp = temp[1:]
             target_num = int("".join(temp))
+
+    # Generate random AWGN noise
     mu = np.array([0,0])
     noise = np.random.multivariate_normal(mu,current_agent["R"])
+
+    # Simulate target position measurement to be target truth position + agent bias + AWGN noise
     measurement = target_pos[target_num-1] + bias + noise
     measurement = measurement.reshape((len(measurement),1))
+
+    # Return measurement
     return measurement
 
+# Function to return a measurement of an agent's bias + AWGN noise
 def get_agent_bias(current_agent):
+    # Generate AWGN noise
     mu = np.array([0,0])
     noise = np.random.multivariate_normal(mu,current_agent["R"])
+
+    # Create measurement
     measurement = bias + noise
     measurement = measurement.reshape((len(measurement),1))
     return measurement
